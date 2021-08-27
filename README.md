@@ -40,7 +40,6 @@ Below you can find speed metrics of each algorithm when generating ten-million h
 [SHA-512/256] : 41597  ms
 ```
 
-<br>
 <h1><i>Using Hash++</i></h1>
 My original design idea behind Hash++ was for it to be <b>simple</b>. This has remained unchanged.
 <br><br>
