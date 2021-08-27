@@ -23,6 +23,24 @@ Hash++ also aims to be a suitable alternative to heavier, statically and dynamic
 
 No, it doesn't. 
 <br>
+
+<h1><i>Algorithm Speed Comparison</i></h1>
+Below you can find speed metrics of each algorithm when generating ten-million hashes of 4 repetitions of the upper and lowercase alphabet, plus base 10 digits.
+
+```
+[MD5]         : 17132  ms
+[MD4]         : 11616  ms
+[MD2]         : 344455 ms
+[SHA1]        : 19649  ms
+[SHA-224]     : 26341  ms
+[SHA-256]     : 27350  ms
+[SHA-384]     : 42159  ms
+[SHA-512]     : 43013  ms
+[SHA-512/224] : 41364  ms
+[SHA-512/256] : 41597  ms
+```
+
+<br>
 <h1><i>Using Hash++</i></h1>
 My original design idea behind Hash++ was for it to be <b>simple</b>. This has remained unchanged.
 <br><br>
