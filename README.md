@@ -3,4 +3,26 @@
 </p>
 <hr>
 <br>
-Hash++ is a header-file only library that allows a user to retrieve multiple types of hashes from data, raw bytes, files, and files in nested directories--all through a simple interface!
+<h1><i>Purpose</i></h1>
+Hash++ is a header-file only library that allows a user to retrieve multiple types of hashes from data, raw bytes, files, and files in nested directories. The original purpose behind this library was to create a header-file only implementation of multiple different hash algorithm. You can find a list of the <i>currently</i> supported hash algorithms below.
+
+<h1><i>Supported Algorithms</i></h1>
+<ul>
+  <li>MD5</li>
+  <li>MD4</li>
+  <li>MD2</li>
+  <li>SHA-1</li>
+  <li>SHA-224</li>
+  <li>SHA-256</li>
+  <li>SHA-384</li>
+  <li>SHA-512</li>
+  <li>SHA-512/224</li>
+  <li>SHA-512/256 </li>
+</ul>
+
+Hash++ also aims to be a suitable alternative to heavier, statically and dynamically-linked libraries such as OpenSSL and Crypto++. I created it keeping in mind the mindset of a programmer who simply wants a header-only file that lets them easily and comfortably <i>"just hash sh*t."</i> Does it really have to be that hard?
+
+No, it doesn't. 
+
+<h1><i>Using Hash++</i></h1>
+Add documentation stuffs here ...
