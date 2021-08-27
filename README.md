@@ -26,7 +26,7 @@ No, it doesn't.
 <h1><i>Using Hash++</i></h1>
 My original design idea behind Hash++ was for it to be <b>simple</b>. This has remained unchanged.
 <br><br>
-Below, you can find the signatures of the <i>only</i> functions necessary to accomplish retrieving hashes from both single or multiple sets data, raw bytes, files, and files in nested directories. All functions are located in the <code>hashpp</code> namespace under class <code>get</code> (<code>hashpp::get</code>).
+Below, you can find the signatures of the <i>only</i> functions necessary to accomplish retrieving hashes from both single or multiple sets of data, raw bytes, files, and files in nested directories. All functions are located in the <code>hashpp</code> namespace under class <code>get</code> (<code>hashpp::get</code>).
 <br><br>
 You can find examples of Hash++ in use in the <a href="/examples">/examples</a> directory.
 <br>
