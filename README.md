@@ -1,6 +1,5 @@
 <p align="center">
-  <img src="/images/hppimg.png">
-  <p align="center"><i>Just hash sh*t.</i></p>
+  <img src="/images/hpp.png">
 </p>
 <hr>
 <h1><i>Purpose</i></h1>
