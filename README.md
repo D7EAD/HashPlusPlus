@@ -28,3 +28,4 @@ Add documentation stuffs here ...
 
 <h1><i>Notes</i></h1>
 I designed this library <i>without</i> machine endianness in mind. A lot of common architectures are either little-endian or bi-endian, so, I decided to simply design it following what byte-order is most common.
+This has only been tested on little-endian architectures.
