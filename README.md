@@ -28,16 +28,16 @@ No, it doesn't.
 Below you can find speed metrics of each algorithm when generating ten-million hashes of 4 repetitions of the upper and lowercase alphabet, plus base 10 digits.
 
 ```
-[MD5]         : 17132  ms
-[MD4]         : 11616  ms
-[MD2]         : 344455 ms
-[SHA1]        : 19649  ms
-[SHA-224]     : 26341  ms
-[SHA-256]     : 27350  ms
-[SHA-384]     : 42159  ms
-[SHA-512]     : 43013  ms
-[SHA-512/224] : 41364  ms
-[SHA-512/256] : 41597  ms
+[MD5]          : 17132  ms
+[MD4]          : 11616  ms
+[MD2]          : 344455 ms
+[SHA1]         : 19649  ms
+[SHA2-224]     : 26341  ms
+[SHA2-256]     : 27350  ms
+[SHA2-384]     : 42159  ms
+[SHA2-512]     : 43013  ms
+[SHA2-512/224] : 41364  ms
+[SHA2-512/256] : 41597  ms
 ```
 
 <h1><i>Using Hash++</i></h1>
