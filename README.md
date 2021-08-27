@@ -65,7 +65,7 @@ static hashpp::hashCollection getFilesHashes(std::vector<std::pair<hashpp::ALGOR
 ```
 
 <h3><code>getBytes</code></h3>
-Retrieve a single array of hash bytes from a single piece of data--or several.
+Retrieve one or more arrays of hash bytes from one or more pieces of data.
 
 ```cpp
 // return the bytes of the resulting hash of passed data based on supplied ALGORITHM (returned array is heap-allocated)
