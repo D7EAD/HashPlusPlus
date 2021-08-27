@@ -11,12 +11,12 @@ Hash++ is a header-file only library that allows a user to retrieve multiple typ
   <li>MD4</li>
   <li>MD2</li>
   <li>SHA-1</li>
-  <li>SHA-224</li>
-  <li>SHA-256</li>
-  <li>SHA-384</li>
-  <li>SHA-512</li>
-  <li>SHA-512/224</li>
-  <li>SHA-512/256 </li>
+  <li>SHA2-224</li>
+  <li>SHA2-256</li>
+  <li>SHA2-384</li>
+  <li>SHA2-512</li>
+  <li>SHA2-512/224</li>
+  <li>SHA2-512/256</li>
 </ul>
 
 Hash++ also aims to be a suitable alternative to heavier, statically and dynamically-linked libraries such as OpenSSL and Crypto++. I created it keeping in mind the mindset of a programmer who simply wants a header-only file that lets them easily and comfortably <i>"just hash sh*t."</i> Does it really have to be that difficult?
