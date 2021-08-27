@@ -2,7 +2,6 @@
   <img src="/images/hppimg.png">
 </p>
 <hr>
-<br>
 <h1><i>Purpose</i></h1>
 Hash++ is a header-file only library that allows a user to retrieve multiple types of hashes from data, raw bytes, files, and files in nested directories. The original purpose behind this library was to create a header-file only implementation of multiple different hash algorithm. You can find a list of the <i>currently</i> supported hash algorithms below.
 
