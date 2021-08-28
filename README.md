@@ -87,7 +87,8 @@ Retrieve one or more arrays of hash bytes from one or more pieces of data.
 ```cpp
 // return the bytes of the resulting hash of passed data based on supplied ALGORITHM (returned array is heap-allocated)
 constexpr static uint8_t* getBytes(hashpp::ALGORITHMS algorithm, std::string data)
-
+```
+```cpp
 // return vector containing the bytes of the resulting hashes of passed data based on supplied ALGORITHMS (returned arrays in vector are heap-allocated)
 constexpr static std::vector<uint8_t*> getBytes(std::vector<std::pair<hashpp::ALGORITHMS, std::vector<std::string>>> algorithmDataPairs)
 ```
