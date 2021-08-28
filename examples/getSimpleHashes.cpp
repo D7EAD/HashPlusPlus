@@ -12,11 +12,11 @@ using namespace hashpp;
 int main() {
 	// get a hash collection containing the MD5 and MD4 hashes for all passed data
 	hashCollection collection = get::getHashes({ {ALGORITHMS::MD4, {"data1", "data2", "data3",
-		                                                              "data4", "data5", "data6",
-		                                                              "data7", "data8", "data9"} },
-												                       {ALGORITHMS::MD5, {"data1", "data2", "data3",
-																	                                "data4", "data5", "data6",
-																	                                "data7", "data8", "data9"} } });
+		                                                        "data4", "data5", "data6",
+		                                                        "data7", "data8", "data9"} },
+						     {ALGORITHMS::MD5, {"data1", "data2", "data3",
+					                                "data4", "data5", "data6",
+					                                "data7", "data8", "data9"} } });
 
   // the method above of getting multiple hashes is equivalent to the below
 	std::vector<std::string> data1 = { "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9" };
