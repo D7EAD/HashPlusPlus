@@ -29,7 +29,7 @@ Below you can find speed metrics of each algorithm when generating ten-million h
 
 ```
 [MD5]          : 17132  ms | 17.132  s
-[MD4]          : 11616  ms | 11.6156 s
+[MD4]          : 11616  ms | 11.616  s
 [MD2]          : 344455 ms | 344.455 s
 [SHA1]         : 19649  ms | 19.649  s
 [SHA2-224]     : 26341  ms | 26.341  s
