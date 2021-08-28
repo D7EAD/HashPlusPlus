@@ -30,4 +30,6 @@ int main() {
 	for (auto i : collection["MD4"]) {
 		std::cout << i << std::endl;
 	}
+	
+	// the above will iterate through the hashes of "data1"-"data9" for both MD5 and MD4
 }
