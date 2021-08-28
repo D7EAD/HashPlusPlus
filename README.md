@@ -81,17 +81,6 @@ Retrieve a collection of hashes from multiple files or files in directories.
 static hashpp::hashCollection getFilesHashes(std::vector<std::pair<hashpp::ALGORITHMS, std::vector<std::string>>> algorithmPathPairs)
 ```
 
-<h3><code>getBytes</code></h3>
-Retrieve one or more arrays of hash bytes from one or more pieces of data.
-
-```cpp
-// return the bytes of the resulting hash of passed data based on supplied ALGORITHM (returned array is heap-allocated)
-constexpr static uint8_t* getBytes(hashpp::ALGORITHMS algorithm, std::string data)
-```
-```cpp
-// return vector containing the bytes of the resulting hashes of passed data based on supplied ALGORITHMS (returned arrays in vector are heap-allocated)
-constexpr static std::vector<uint8_t*> getBytes(std::vector<std::pair<hashpp::ALGORITHMS, std::vector<std::string>>> algorithmDataPairs)
-```
 <br>
 <h1><i>Notes</i></h1>
 I designed this library <i>without</i> machine endianness in mind. A lot of common architectures are either little-endian or bi-endian, so, I decided to simply design it following what byte-order is most common. This has only been tested on little-endian architectures.
