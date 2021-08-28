@@ -17,7 +17,7 @@ int main() {
 	// output: bc658c641ef71739fb9995bded59b21150bbff4367f6e4e4c7934b489b9d2c00
 	std::cout << get::getHash(ALGORITHMS::SHA2_256, dataToBeHashed) << std::endl;
 
-	// ... or, we can capture the return hashpp::hash object
+	// ... or, we can capture the returned hashpp::hash object
 	hash _hex = get::getHash(ALGORITHMS::SHA2_256, dataToBeHashed);
 	std::cout << _hex << std::endl;
 
