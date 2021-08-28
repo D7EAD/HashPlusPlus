@@ -17,6 +17,6 @@ int main() {
 	hash _hex = get::getHash<uint8_t*>(ALGORITHMS::SHA2_256, byteArray);
 	// or use .getString()
 
-  // print the hex representation of the string
+  	// print the hex representation of the string
 	std::cout << _hex;
 }
