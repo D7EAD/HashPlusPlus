@@ -1,7 +1,7 @@
 /*
 
   getHashFromBytes.cpp
-    Example to show how to get the byte array of hashed data.
+    Example to show how to get the hex representation of a hash from its bytes.
   
 */
 
