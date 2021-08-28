@@ -18,7 +18,7 @@ int main() {
 					                                "data4", "data5", "data6",
 					                                "data7", "data8", "data9"} } });
 
-  // the method above of getting multiple hashes is equivalent to the below
+	// the method above of getting multiple hashes is equivalent to the below
 	std::vector<std::string> data1 = { "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9" };
 	std::vector<std::string> data2 = { "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9" };
 	hashCollection collection2 = get::getHashes({ {ALGORITHMS::MD4, data1}, {ALGORITHMS::MD5, data2} });
