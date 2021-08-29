@@ -1748,7 +1748,7 @@ namespace hashpp {
 			}
 		}
 		constexpr void hashpp::SHA::SHA2_512::ctx_update(const uint8_t* data, size_t len) {
-			uint32_t left, fill, rlen = len;;
+			uint32_t left, fill, rlen = len;
 			const uint8_t* ptr = data;
 
 			if (len != 0) {
@@ -1896,7 +1896,7 @@ namespace hashpp {
 			}
 		}
 		constexpr void hashpp::SHA::SHA2_512_224::ctx_update(const uint8_t* data, size_t len) {
-			uint32_t left, fill, rlen = len;;
+			uint32_t left, fill, rlen = len;
 			const uint8_t* ptr = data;
 
 			if (len != 0) {
@@ -2041,7 +2041,7 @@ namespace hashpp {
 			}
 		}
 		constexpr void hashpp::SHA::SHA2_512_256::ctx_update(const uint8_t* data, size_t len) {
-			uint32_t left, fill, rlen = len;;
+			uint32_t left, fill, rlen = len;
 			const uint8_t* ptr = data;
 
 			if (len != 0) {
@@ -2183,7 +2183,7 @@ namespace hashpp {
 				}
 			}
 			// if no pair in collection contains requested algorithm ID
-			// just return an` empty vector
+			// just return an empty vector
 			return std::vector<std::string>();
 		}
 	};
@@ -2215,39 +2215,39 @@ namespace hashpp {
 		// function to return a resulting hash from selected ALGORITHM and passed data
 		constexpr static hashpp::hash getHash(hashpp::ALGORITHMS algorithm, std::string data) {
 			switch (algorithm) {
-			case hashpp::ALGORITHMS::MD5: {
-				return { hashpp::MD::MD5().getHash(data) };
-			}
-			case hashpp::ALGORITHMS::MD4: {
-				return { hashpp::MD::MD4().getHash(data) };
-			}
-			case hashpp::ALGORITHMS::MD2: {
-				return { hashpp::MD::MD2().getHash(data) };
-			}
-			case hashpp::ALGORITHMS::SHA1: {
-				return { hashpp::SHA::SHA1().getHash(data) };
-			}
-			case hashpp::ALGORITHMS::SHA2_224: {
-				return { hashpp::SHA::SHA2_224().getHash(data) };
-			}
-			case hashpp::ALGORITHMS::SHA2_256: {
-				return { hashpp::SHA::SHA2_256().getHash(data) };
-			}
-			case hashpp::ALGORITHMS::SHA2_384: {
-				return { hashpp::SHA::SHA2_384().getHash(data) };
-			}
-			case hashpp::ALGORITHMS::SHA2_512: {
-				return { hashpp::SHA::SHA2_512().getHash(data) };
-			}
-			case hashpp::ALGORITHMS::SHA2_512_224: {
-				return { hashpp::SHA::SHA2_512_224().getHash(data) };
-			}
-			case hashpp::ALGORITHMS::SHA2_512_256: {
-				return { hashpp::SHA::SHA2_512_256().getHash(data) };
-			}
-			default: {
-				return hashpp::hash();
-			}
+				case hashpp::ALGORITHMS::MD5: {
+					return { hashpp::MD::MD5().getHash(data) };
+				}
+				case hashpp::ALGORITHMS::MD4: {
+					return { hashpp::MD::MD4().getHash(data) };
+				}
+				case hashpp::ALGORITHMS::MD2: {
+					return { hashpp::MD::MD2().getHash(data) };
+				}
+				case hashpp::ALGORITHMS::SHA1: {
+					return { hashpp::SHA::SHA1().getHash(data) };
+				}
+				case hashpp::ALGORITHMS::SHA2_224: {
+					return { hashpp::SHA::SHA2_224().getHash(data) };
+				}
+				case hashpp::ALGORITHMS::SHA2_256: {
+					return { hashpp::SHA::SHA2_256().getHash(data) };
+				}
+				case hashpp::ALGORITHMS::SHA2_384: {
+					return { hashpp::SHA::SHA2_384().getHash(data) };
+				}
+				case hashpp::ALGORITHMS::SHA2_512: {
+					return { hashpp::SHA::SHA2_512().getHash(data) };
+				}
+				case hashpp::ALGORITHMS::SHA2_512_224: {
+					return { hashpp::SHA::SHA2_512_224().getHash(data) };
+				}
+				case hashpp::ALGORITHMS::SHA2_512_256: {
+					return { hashpp::SHA::SHA2_512_256().getHash(data) };
+				}
+				default: {
+					return hashpp::hash();
+				}
 			}
 		}
 
@@ -2258,50 +2258,50 @@ namespace hashpp {
 			for (std::pair<hashpp::ALGORITHMS, std::vector<std::string>> twin : algorithmDataPairs) {
 				for (std::string _data : twin.second) {
 					switch (twin.first) {
-					case hashpp::ALGORITHMS::MD5: {
-						vMD5.push_back(hashpp::MD::MD5().getHash(_data));
-						break;
-					}
-					case hashpp::ALGORITHMS::MD4: {
-						vMD4.push_back(hashpp::MD::MD4().getHash(_data));
-						break;
-					}
-					case hashpp::ALGORITHMS::MD2: {
-						vMD2.push_back(hashpp::MD::MD2().getHash(_data));
-						break;
-					}
-					case hashpp::ALGORITHMS::SHA1: {
-						vSHA1.push_back(hashpp::SHA::SHA1().getHash(_data));
-						break;
-					}
-					case hashpp::ALGORITHMS::SHA2_224: {
-						vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(_data));
-						break;
-					}
-					case hashpp::ALGORITHMS::SHA2_256: {
-						vSHA2_224.push_back(hashpp::SHA::SHA2_256().getHash(_data));
-						break;
-					}
-					case hashpp::ALGORITHMS::SHA2_384: {
-						vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(_data));
-						break;
-					}
-					case hashpp::ALGORITHMS::SHA2_512: {
-						vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(_data));
-						break;
-					}
-					case hashpp::ALGORITHMS::SHA2_512_224: {
-						vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(_data));
-						break;
-					}
-					case hashpp::ALGORITHMS::SHA2_512_256: {
-						vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(_data));
-						break;
-					}
+						case hashpp::ALGORITHMS::MD5: {
+							vMD5.push_back(hashpp::MD::MD5().getHash(_data));
+							break;
+						}
+						case hashpp::ALGORITHMS::MD4: {
+							vMD4.push_back(hashpp::MD::MD4().getHash(_data));
+							break;
+						}
+						case hashpp::ALGORITHMS::MD2: {
+							vMD2.push_back(hashpp::MD::MD2().getHash(_data));
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA1: {
+							vSHA1.push_back(hashpp::SHA::SHA1().getHash(_data));
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_224: {
+							vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(_data));
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_256: {
+							vSHA2_224.push_back(hashpp::SHA::SHA2_256().getHash(_data));
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_384: {
+							vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(_data));
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_512: {
+							vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(_data));
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_512_224: {
+							vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(_data));
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_512_256: {
+							vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(_data));
+							break;
+						}
 					}
 				}
 			}
-			return hashCollection{
+			return hashCollection {
 				{
 					{ "MD5", vMD5 },
 					{ "MD4", vMD4 },
@@ -2321,69 +2321,69 @@ namespace hashpp {
 		static hashpp::hash getFileHash(hashpp::ALGORITHMS algorithm, std::string path) {
 			if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
 				switch (algorithm) {
-				case hashpp::ALGORITHMS::MD5: {
-					std::ifstream tmp(path, std::ios::binary);
-					std::stringstream ss;
-					ss << tmp.rdbuf();
-					return { hashpp::MD::MD5().getHash(ss.str()) };
-				}
-				case hashpp::ALGORITHMS::MD4: {
-					std::ifstream tmp(path, std::ios::binary);
-					std::stringstream ss;
-					ss << tmp.rdbuf();
-					return { hashpp::MD::MD4().getHash(ss.str()) };
-				}
-				case hashpp::ALGORITHMS::MD2: {
-					std::ifstream tmp(path, std::ios::binary);
-					std::stringstream ss;
-					ss << tmp.rdbuf();
-					return { hashpp::MD::MD2().getHash(ss.str()) };
-				}
-				case hashpp::ALGORITHMS::SHA1: {
-					std::ifstream tmp(path, std::ios::binary);
-					std::stringstream ss;
-					ss << tmp.rdbuf();
-					return { hashpp::SHA::SHA1().getHash(ss.str()) };
-				}
-				case hashpp::ALGORITHMS::SHA2_224: {
-					std::ifstream tmp(path, std::ios::binary);
-					std::stringstream ss;
-					ss << tmp.rdbuf();
-					return { hashpp::SHA::SHA2_224().getHash(ss.str()) };
-				}
-				case hashpp::ALGORITHMS::SHA2_256: {
-					std::ifstream tmp(path, std::ios::binary);
-					std::stringstream ss;
-					ss << tmp.rdbuf();
-					return { hashpp::SHA::SHA2_224().getHash(ss.str()) };
-				}
-				case hashpp::ALGORITHMS::SHA2_384: {
-					std::ifstream tmp(path, std::ios::binary);
-					std::stringstream ss;
-					ss << tmp.rdbuf();
-					return { hashpp::SHA::SHA2_384().getHash(ss.str()) };
-				}
-				case hashpp::ALGORITHMS::SHA2_512: {
-					std::ifstream tmp(path, std::ios::binary);
-					std::stringstream ss;
-					ss << tmp.rdbuf();
-					return { hashpp::SHA::SHA2_512().getHash(ss.str()) };
-				}
-				case hashpp::ALGORITHMS::SHA2_512_224: {
-					std::ifstream tmp(path, std::ios::binary);
-					std::stringstream ss;
-					ss << tmp.rdbuf();
-					return { hashpp::SHA::SHA2_512_224().getHash(ss.str()) };
-				}
-				case hashpp::ALGORITHMS::SHA2_512_256: {
-					std::ifstream tmp(path, std::ios::binary);
-					std::stringstream ss;
-					ss << tmp.rdbuf();
-					return { hashpp::SHA::SHA2_512_256().getHash(ss.str()) };
-				}
-				default: {
-					return hashpp::hash();
-				}
+					case hashpp::ALGORITHMS::MD5: {
+						std::ifstream tmp(path, std::ios::binary);
+						std::stringstream ss;
+						ss << tmp.rdbuf();
+						return { hashpp::MD::MD5().getHash(ss.str()) };
+					}
+					case hashpp::ALGORITHMS::MD4: {
+						std::ifstream tmp(path, std::ios::binary);
+						std::stringstream ss;
+						ss << tmp.rdbuf();
+						return { hashpp::MD::MD4().getHash(ss.str()) };
+					}
+					case hashpp::ALGORITHMS::MD2: {
+						std::ifstream tmp(path, std::ios::binary);
+						std::stringstream ss;
+						ss << tmp.rdbuf();
+						return { hashpp::MD::MD2().getHash(ss.str()) };
+					}
+					case hashpp::ALGORITHMS::SHA1: {
+						std::ifstream tmp(path, std::ios::binary);
+						std::stringstream ss;
+						ss << tmp.rdbuf();
+						return { hashpp::SHA::SHA1().getHash(ss.str()) };
+					}
+					case hashpp::ALGORITHMS::SHA2_224: {
+						std::ifstream tmp(path, std::ios::binary);
+						std::stringstream ss;
+						ss << tmp.rdbuf();
+						return { hashpp::SHA::SHA2_224().getHash(ss.str()) };
+					}
+					case hashpp::ALGORITHMS::SHA2_256: {
+						std::ifstream tmp(path, std::ios::binary);
+						std::stringstream ss;
+						ss << tmp.rdbuf();
+						return { hashpp::SHA::SHA2_224().getHash(ss.str()) };
+					}
+					case hashpp::ALGORITHMS::SHA2_384: {
+						std::ifstream tmp(path, std::ios::binary);
+						std::stringstream ss;
+						ss << tmp.rdbuf();
+						return { hashpp::SHA::SHA2_384().getHash(ss.str()) };
+					}
+					case hashpp::ALGORITHMS::SHA2_512: {
+						std::ifstream tmp(path, std::ios::binary);
+						std::stringstream ss;
+						ss << tmp.rdbuf();
+						return { hashpp::SHA::SHA2_512().getHash(ss.str()) };
+					}
+					case hashpp::ALGORITHMS::SHA2_512_224: {
+						std::ifstream tmp(path, std::ios::binary);
+						std::stringstream ss;
+						ss << tmp.rdbuf();
+						return { hashpp::SHA::SHA2_512_224().getHash(ss.str()) };
+					}
+					case hashpp::ALGORITHMS::SHA2_512_256: {
+						std::ifstream tmp(path, std::ios::binary);
+						std::stringstream ss;
+						ss << tmp.rdbuf();
+						return { hashpp::SHA::SHA2_512_256().getHash(ss.str()) };
+					}
+					default: {
+						return hashpp::hash();
+					}
 				}
 			}
 			else {
@@ -2399,159 +2399,159 @@ namespace hashpp {
 				for (std::string _path : twin.second) {
 					if (std::filesystem::exists(_path) && std::filesystem::is_regular_file(_path)) {
 						switch (twin.first) {
-						case hashpp::ALGORITHMS::MD5: {
-							std::ifstream tmp(_path, std::ios::binary);
-							std::stringstream ss;
-							ss << tmp.rdbuf();
-							vMD5.push_back(hashpp::MD::MD5().getHash(ss.str()));
-							break;
-						}
-						case hashpp::ALGORITHMS::MD4: {
-							std::ifstream tmp(_path, std::ios::binary);
-							std::stringstream ss;
-							ss << tmp.rdbuf();
-							vMD4.push_back(hashpp::MD::MD4().getHash(ss.str()));
-							break;
-						}
-						case hashpp::ALGORITHMS::MD2: {
-							std::ifstream tmp(_path, std::ios::binary);
-							std::stringstream ss;
-							ss << tmp.rdbuf();
-							vMD2.push_back(hashpp::MD::MD2().getHash(ss.str()));
-							break;
-						}
-						case hashpp::ALGORITHMS::SHA1: {
-							std::ifstream tmp(_path, std::ios::binary);
-							std::stringstream ss;
-							ss << tmp.rdbuf();
-							vSHA1.push_back(hashpp::SHA::SHA1().getHash(ss.str()));
-							break;
-						}
-						case hashpp::ALGORITHMS::SHA2_224: {
-							std::ifstream tmp(_path, std::ios::binary);
-							std::stringstream ss;
-							ss << tmp.rdbuf();
-							vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(ss.str()));
-							break;
-						}
-						case hashpp::ALGORITHMS::SHA2_256: {
-							std::ifstream tmp(_path, std::ios::binary);
-							std::stringstream ss;
-							ss << tmp.rdbuf();
-							vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(ss.str()));
-							break;
-						}
-						case hashpp::ALGORITHMS::SHA2_384: {
-							std::ifstream tmp(_path, std::ios::binary);
-							std::stringstream ss;
-							ss << tmp.rdbuf();
-							vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(ss.str()));
-							break;
-						}
-						case hashpp::ALGORITHMS::SHA2_512: {
-							std::ifstream tmp(_path, std::ios::binary);
-							std::stringstream ss;
-							ss << tmp.rdbuf();
-							vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(ss.str()));
-							break;
-						}
-						case hashpp::ALGORITHMS::SHA2_512_224: {
-							std::ifstream tmp(_path, std::ios::binary);
-							std::stringstream ss;
-							ss << tmp.rdbuf();
-							vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(ss.str()));
-							break;
-						}
-						case hashpp::ALGORITHMS::SHA2_512_256: {
-							std::ifstream tmp(_path, std::ios::binary);
-							std::stringstream ss;
-							ss << tmp.rdbuf();
-							vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(ss.str()));
-							break;
-						}
+							case hashpp::ALGORITHMS::MD5: {
+								std::ifstream tmp(_path, std::ios::binary);
+								std::stringstream ss;
+								ss << tmp.rdbuf();
+								vMD5.push_back(hashpp::MD::MD5().getHash(ss.str()));
+								break;
+							}
+							case hashpp::ALGORITHMS::MD4: {
+								std::ifstream tmp(_path, std::ios::binary);
+								std::stringstream ss;
+								ss << tmp.rdbuf();
+								vMD4.push_back(hashpp::MD::MD4().getHash(ss.str()));
+								break;
+							}
+							case hashpp::ALGORITHMS::MD2: {
+								std::ifstream tmp(_path, std::ios::binary);
+								std::stringstream ss;
+								ss << tmp.rdbuf();
+								vMD2.push_back(hashpp::MD::MD2().getHash(ss.str()));
+								break;
+							}
+							case hashpp::ALGORITHMS::SHA1: {
+								std::ifstream tmp(_path, std::ios::binary);
+								std::stringstream ss;
+								ss << tmp.rdbuf();
+								vSHA1.push_back(hashpp::SHA::SHA1().getHash(ss.str()));
+								break;
+							}
+							case hashpp::ALGORITHMS::SHA2_224: {
+								std::ifstream tmp(_path, std::ios::binary);
+								std::stringstream ss;
+								ss << tmp.rdbuf();
+								vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(ss.str()));
+								break;
+							}
+							case hashpp::ALGORITHMS::SHA2_256: {
+								std::ifstream tmp(_path, std::ios::binary);
+								std::stringstream ss;
+								ss << tmp.rdbuf();
+								vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(ss.str()));
+								break;
+							}
+							case hashpp::ALGORITHMS::SHA2_384: {
+								std::ifstream tmp(_path, std::ios::binary);
+								std::stringstream ss;
+								ss << tmp.rdbuf();
+								vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(ss.str()));
+								break;
+							}
+							case hashpp::ALGORITHMS::SHA2_512: {
+								std::ifstream tmp(_path, std::ios::binary);
+								std::stringstream ss;
+								ss << tmp.rdbuf();
+								vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(ss.str()));
+								break;
+							}
+							case hashpp::ALGORITHMS::SHA2_512_224: {
+								std::ifstream tmp(_path, std::ios::binary);
+								std::stringstream ss;
+								ss << tmp.rdbuf();
+								vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(ss.str()));
+								break;
+							}
+							case hashpp::ALGORITHMS::SHA2_512_256: {
+								std::ifstream tmp(_path, std::ios::binary);
+								std::stringstream ss;
+								ss << tmp.rdbuf();
+								vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(ss.str()));
+								break;
+							}
 						}
 					}
 					else if (std::filesystem::exists(_path) && std::filesystem::is_directory(_path)) {
 						for (auto& item : std::filesystem::recursive_directory_iterator(_path)) {
 							if (item.is_regular_file()) {
 								switch (twin.first) {
-								case hashpp::ALGORITHMS::MD5: {
-									std::ifstream tmp(item, std::ios::binary);
-									std::stringstream ss;
-									ss << tmp.rdbuf();
-									vMD5.push_back(hashpp::MD::MD5().getHash(ss.str()));
-									break;
-								}
-								case hashpp::ALGORITHMS::MD4: {
-									std::ifstream tmp(item, std::ios::binary);
-									std::stringstream ss;
-									ss << tmp.rdbuf();
-									vMD4.push_back(hashpp::MD::MD4().getHash(ss.str()));
-									break;
-								}
-								case hashpp::ALGORITHMS::MD2: {
-									std::ifstream tmp(item, std::ios::binary);
-									std::stringstream ss;
-									ss << tmp.rdbuf();
-									vMD2.push_back(hashpp::MD::MD2().getHash(ss.str()));
-									break;
-								}
-								case hashpp::ALGORITHMS::SHA1: {
-									std::ifstream tmp(item, std::ios::binary);
-									std::stringstream ss;
-									ss << tmp.rdbuf();
-									vSHA1.push_back(hashpp::SHA::SHA1().getHash(ss.str()));
-									break;
-								}
-								case hashpp::ALGORITHMS::SHA2_224: {
-									std::ifstream tmp(item, std::ios::binary);
-									std::stringstream ss;
-									ss << tmp.rdbuf();
-									vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(ss.str()));
-									break;
-								}
-								case hashpp::ALGORITHMS::SHA2_256: {
-									std::ifstream tmp(item, std::ios::binary);
-									std::stringstream ss;
-									ss << tmp.rdbuf();
-									vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(ss.str()));
-									break;
-								}
-								case hashpp::ALGORITHMS::SHA2_384: {
-									std::ifstream tmp(item, std::ios::binary);
-									std::stringstream ss;
-									ss << tmp.rdbuf();
-									vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(ss.str()));
-									break;
-								}
-								case hashpp::ALGORITHMS::SHA2_512: {
-									std::ifstream tmp(item, std::ios::binary);
-									std::stringstream ss;
-									ss << tmp.rdbuf();
-									vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(ss.str()));
-									break;
-								}
-								case hashpp::ALGORITHMS::SHA2_512_224: {
-									std::ifstream tmp(item, std::ios::binary);
-									std::stringstream ss;
-									ss << tmp.rdbuf();
-									vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(ss.str()));
-									break;
-								}
-								case hashpp::ALGORITHMS::SHA2_512_256: {
-									std::ifstream tmp(item, std::ios::binary);
-									std::stringstream ss;
-									ss << tmp.rdbuf();
-									vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(ss.str()));
-									break;
-								}
+									case hashpp::ALGORITHMS::MD5: {
+										std::ifstream tmp(item, std::ios::binary);
+										std::stringstream ss;
+										ss << tmp.rdbuf();
+										vMD5.push_back(hashpp::MD::MD5().getHash(ss.str()));
+										break;
+									}
+									case hashpp::ALGORITHMS::MD4: {
+										std::ifstream tmp(item, std::ios::binary);
+										std::stringstream ss;
+										ss << tmp.rdbuf();
+										vMD4.push_back(hashpp::MD::MD4().getHash(ss.str()));
+										break;
+									}
+									case hashpp::ALGORITHMS::MD2: {
+										std::ifstream tmp(item, std::ios::binary);
+										std::stringstream ss;
+										ss << tmp.rdbuf();
+										vMD2.push_back(hashpp::MD::MD2().getHash(ss.str()));
+										break;
+									}
+									case hashpp::ALGORITHMS::SHA1: {
+										std::ifstream tmp(item, std::ios::binary);
+										std::stringstream ss;
+										ss << tmp.rdbuf();
+										vSHA1.push_back(hashpp::SHA::SHA1().getHash(ss.str()));
+										break;
+									}
+									case hashpp::ALGORITHMS::SHA2_224: {
+										std::ifstream tmp(item, std::ios::binary);
+										std::stringstream ss;
+										ss << tmp.rdbuf();
+										vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(ss.str()));
+										break;
+									}
+									case hashpp::ALGORITHMS::SHA2_256: {
+										std::ifstream tmp(item, std::ios::binary);
+										std::stringstream ss;
+										ss << tmp.rdbuf();
+										vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(ss.str()));
+										break;
+									}
+									case hashpp::ALGORITHMS::SHA2_384: {
+										std::ifstream tmp(item, std::ios::binary);
+										std::stringstream ss;
+										ss << tmp.rdbuf();
+										vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(ss.str()));
+										break;
+									}
+									case hashpp::ALGORITHMS::SHA2_512: {
+										std::ifstream tmp(item, std::ios::binary);
+										std::stringstream ss;
+										ss << tmp.rdbuf();
+										vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(ss.str()));
+										break;
+									}
+									case hashpp::ALGORITHMS::SHA2_512_224: {
+										std::ifstream tmp(item, std::ios::binary);
+										std::stringstream ss;
+										ss << tmp.rdbuf();
+										vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(ss.str()));
+										break;
+									}
+									case hashpp::ALGORITHMS::SHA2_512_256: {
+										std::ifstream tmp(item, std::ios::binary);
+										std::stringstream ss;
+										ss << tmp.rdbuf();
+										vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(ss.str()));
+										break;
+									}
 								}
 							}
 						}
 					}
 				}
 			}
-			return hashCollection{
+			return hashCollection {
 				{
 					{ "MD5", vMD5 },
 					{ "MD4", vMD4 },
