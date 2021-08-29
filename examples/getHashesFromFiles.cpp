@@ -1,5 +1,5 @@
 /*
-* 
+
   getHashesFromFiles:
 	Example to show how to get the hashes of multiple files in a directory
 	or nested directory.
