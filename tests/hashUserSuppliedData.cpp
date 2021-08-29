@@ -1,6 +1,6 @@
 /*
 
-	Simple program to hash comman-line supplied data
+	Simple program to hash command-line supplied data
 		Example:
 			./program.exe data1 data2 data3
 
