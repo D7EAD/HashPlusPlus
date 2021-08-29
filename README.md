@@ -40,7 +40,7 @@ Below you can find speed metrics of each algorithm when generating ten million h
 |   [SHA2-512]     : 19245  ms | 19.245  s | 519,615  hashes/s |
 |   [SHA2-512/224] : 16886  ms | 16.886  s | 592,207  hashes/s |
 |   [SHA2-512/256] : 17204  ms | 17.204  s | 581,260  hashes/s |
-|------------------------------------------|-------------------|
+|------------------------------|-----------|-------------------|
 | 32-bit test:                 |           |                   |
 |   [MD5]          : 17994  ms | 17.994  s | 555,741  hashes/s |
 |   [MD4]          : 12499  ms | 12.499  s | 800,064  hashes/s |
