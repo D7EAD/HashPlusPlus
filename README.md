@@ -51,18 +51,16 @@ You can find examples of Hash++ in use in the <a href="/examples">/examples</a> 
 Retrieve a single hash from a single piece of data.
 
 ```cpp
-// function to return a resulting hash from selected ALGORITHM and passed data (byte array or string)
-template <typename _Ty = std::string>
-constexpr static hashpp::hash getHash(hashpp::ALGORITHMS algorithm, _Ty data);
+// function to return a resulting hash from selected ALGORITHM and passed data
+constexpr static hashpp::hash getHash(hashpp::ALGORITHMS algorithm, std::string data)
 ```
 
 <h3><code>getHashes</code></h3>
 Retrieve a collection of hashes from multiple pieces of data.
 
 ```cpp
-// function to return a collection of resulting hashes from selected ALGORITHMS and passed data (byte arrays or strings)
-template <typename _Ty = std::string>
-constexpr static hashpp::hashCollection getHashes(std::vector<std::pair<hashpp::ALGORITHMS, std::vector<_Ty>>> algorithmDataPairs)
+// function to return a collection of resulting hashes from selected ALGORITHMS and passed data
+static hashpp::hashCollection getHashes(std::vector<std::pair<hashpp::ALGORITHMS, std::vector<std::string>>> algorithmDataPairs)
 ```
 
 <h3><code>getFileHash</code></h3>
