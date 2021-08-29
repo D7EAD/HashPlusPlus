@@ -5,15 +5,15 @@
 		or nested directory.
 
 		Assume relative path used has structure:
-			.
-			|--> /folder1
-					     |--> /folder2
-					             |--  item6.txt
-               |--  item1.txt
-					     |--  item2.txt
-					     |--  item3.txt
-					     |--  item4.txt
-					     |--  item5.txt
+		 .
+		 |--> /folder1
+			 |--> /folder2
+				 |--  item6.txt
+                         |--  item1.txt
+		         |--  item2.txt
+		         |--  item3.txt
+		         |--  item4.txt
+		         |--  item5.txt
 
 		hashpp::get::getFilesHashes() traverses directories and hashes files
 		alphabetically.
