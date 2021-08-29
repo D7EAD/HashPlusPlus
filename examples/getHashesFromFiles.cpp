@@ -34,11 +34,11 @@ int main() {
 	}
 
 	/* the output is as follows:
-			11ddbaf3386aea1f2974eee984542152 -> ./folder1/folder2/item6.txt
-			4817a091b69d5e89d7d5757e6ce19609 -> ./folder1/item1.txt
-			15cd0e3d368b6a8eb7378dc81ad40dfb -> ./folder1/item2.txt
-			e09ab0e2ff8e94687f228eac8a627887 -> ./folder1/item3.txt
-			2995ff3cd4c7d15b529bf3fa76e5cc71 -> ./folder1/item4.txt
-			8188577c8d593f7654c3cc621fdfa009 -> ./folder1/item5.txt
+		11ddbaf3386aea1f2974eee984542152 -> ./folder1/folder2/item6.txt
+		4817a091b69d5e89d7d5757e6ce19609 -> ./folder1/item1.txt
+		15cd0e3d368b6a8eb7378dc81ad40dfb -> ./folder1/item2.txt
+		e09ab0e2ff8e94687f228eac8a627887 -> ./folder1/item3.txt
+		2995ff3cd4c7d15b529bf3fa76e5cc71 -> ./folder1/item4.txt
+		8188577c8d593f7654c3cc621fdfa009 -> ./folder1/item5.txt
 	*/
 }
