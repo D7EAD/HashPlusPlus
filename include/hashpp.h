@@ -32,7 +32,7 @@
 
 */
 
-#define GU64B(x, y, z) do {					   \
+#define GU64B(x, y, z) do {		           \
 	(x) = ( ((uint64_t) (y)[(z)]) << 56 )	   \
 	| ( ((uint64_t) (y)[(z) + 1]) << 48 )	   \
 	| ( ((uint64_t) (y)[(z) + 2]) << 40 )	   \
@@ -41,9 +41,9 @@
 	| ( ((uint64_t) (y)[(z) + 5]) << 16 )	   \
 	| ( ((uint64_t) (y)[(z) + 6]) <<  8 )	   \
 	| ( ((uint64_t) (y)[(z) + 7])	    );	   \
-} while(0)									   \
+} while(0)					   \
 
-#define PU64B(x, y, z) do {				       \
+#define PU64B(x, y, z) do {			   \
 	(y)[(z)    ] = (uint8_t) ( (x) >> 56 );	   \
 	(y)[(z) + 1] = (uint8_t) ( (x) >> 48 );	   \
 	(y)[(z) + 2] = (uint8_t) ( (x) >> 40 );	   \
@@ -52,12 +52,12 @@
 	(y)[(z) + 5] = (uint8_t) ( (x) >> 16 );	   \
 	(y)[(z) + 6] = (uint8_t) ( (x) >>  8 );	   \
 	(y)[(z) + 7] = (uint8_t) ( (x)       );	   \
-} while(0)									   \
+} while(0)					   \
 
-#define PU128B(l,h,y,z) do {				   \
+#define PU128B(l,h,y,z) do {		 	   \
 	PU64B(((l) >> 61) ^ ((h) << 3), (y), (z)); \
 	PU64B(((l) << 3), (y), (z) + 8);           \
-} while(0)									   \
+} while(0)					   \
 
 #include <iostream>
 #include <fstream>
@@ -405,10 +405,9 @@ namespace hashpp {
 				results[0] = t;
 			}	
 
-			this->context.buf[0] += results[0];
-			this->context.buf[1] += results[1];
-			this->context.buf[2] += results[2];
-			this->context.buf[3] += results[3];
+			for (int z = 0; z < 4; z++) {
+				this->context.buf[z] += results[z];
+			}
 		}
 		constexpr void hashpp::MD::MD5::ctx_update(const uint8_t* data, size_t len) {
 			uint32_t input[16];
@@ -2222,13 +2221,13 @@ namespace hashpp {
 
 
 	//  interface class to allow use of static methods to access
-	//	all algorithm classes and use their functions without
-	//	the need of several instantiations of each class in 
-	// 	the main source code of the user
+	//  all algorithm classes and use their functions without
+	//  the need of several instantiations of each class in 
+	//  the main source code of the user
 	//
-	//	i.e., if a user wants to pass data to one or several
-	//	algorithms and get the hash(es), they can do so via:
-	//	hashpp::get::getHash or hashpp::get::getHashes
+	//  i.e., if a user wants to pass data to one or several
+	//  algorithms and get the hash(es), they can do so via:
+	//  hashpp::get::getHash or hashpp::get::getHashes
 	//
 	//  the retrieval of file hashes is also possible via
 	//  hashpp::get::getFileHash or collectively via 
