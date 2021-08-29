@@ -72,7 +72,7 @@ static hashpp::hash getFileHash(hashpp::ALGORITHMS algorithm, std::string path)
 ```
 
 <h3><code>getFilesHashes</code></h3>
-Retrieve a collection of hashes from multiple files or files in directories.
+Retrieve a collection of hashes from multiple files or files in nested directories.
 
 ```cpp
 // function to return a collection of resulting hashes from selected ALGORITHMS and passed files (with recursive directory support)
