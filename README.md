@@ -3,7 +3,7 @@
 </p>
 <hr>
 <h1><i>Purpose</i></h1>
-Hash++ is a C++20 header-file only library that allows a user to retrieve multiple types of hashes from data, files, and files in nested directories. The original purpose behind this library was to create a header-file only implementation of multiple different hash algorithms. You can find a list of the <i>currently</i> supported hash algorithms below.
+Hash++ is a C++20 header-only library that allows a user to retrieve multiple types of hashes from data, files, and files in nested directories. The original purpose behind this library was to create a header-file only implementation of multiple different hash algorithms. You can find a list of the <i>currently</i> supported hash algorithms below.
 <br>
 <h1><i>Supported Algorithms</i></h1>
 <ul>
