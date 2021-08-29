@@ -3,7 +3,7 @@
 </p>
 <hr>
 <h1><i>Purpose</i></h1>
-Hash++ is a header-file only library that allows a user to retrieve multiple types of hashes from data, raw bytes, files, and files in nested directories. The original purpose behind this library was to create a header-file only implementation of multiple different hash algorithms. You can find a list of the <i>currently</i> supported hash algorithms below.
+Hash++ is a header-file only library that allows a user to retrieve multiple types of hashes from data, files, and files in nested directories. The original purpose behind this library was to create a header-file only implementation of multiple different hash algorithms. You can find a list of the <i>currently</i> supported hash algorithms below.
 <br>
 <h1><i>Supported Algorithms</i></h1>
 <ul>
@@ -43,7 +43,7 @@ Below you can find speed metrics of each algorithm when generating ten million h
 <h1><i>Using Hash++</i></h1>
 My original design idea behind Hash++ was for it to be <b>simple</b>. This has remained unchanged.
 <br><br>
-Below, you can find the signatures of the <i>only</i> functions necessary to accomplish retrieving hashes from both single or multiple sets of data, raw bytes, files, and files in nested directories. All functions are located in the <code>hashpp</code> namespace under class <code>get</code> (<code>hashpp::get</code>).
+Below, you can find the signatures of the <i>only</i> functions necessary to accomplish retrieving hashes from both single or multiple sets of data, files, and files in nested directories. All functions are located in the <code>hashpp</code> namespace under class <code>get</code> (<code>hashpp::get</code>).
 <br><br>
 You can find examples of Hash++ in use in the <a href="/examples">/examples</a> directory.
 <br>
