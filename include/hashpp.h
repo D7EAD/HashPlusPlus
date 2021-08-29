@@ -24,11 +24,11 @@
 	----------------------------------------------------------------------
 
 	hash++ : header-only hash implementations in C++
-		This header file contains implementations of Message Digest
-		and Secure Hash Algorithm family hash algorithms for others
-		to view internal mechanisms of said algorithms, as well as
-		for substitution in sources absent the need for heavier
-		crypto-related libraries such as OpenSSL or Crypto++
+		 This header file contains implementations of Message Digest
+		 and Secure Hash Algorithm family hash algorithms for others
+		 to view internal mechanisms of said algorithms, as well as
+		 for substitution in sources absent the need for heavier
+		 crypto-related libraries such as OpenSSL or Crypto++
 
 */
 
