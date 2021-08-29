@@ -71,7 +71,7 @@ namespace hashpp {
 		// MDX Family
 		MD5, MD4, MD2,
 
-		// SHA-X Family : SHA-1 to SHAKE256
+		// SHA-X Family
 		SHA1, SHA2_224, SHA2_256,
 		SHA2_384, SHA2_512, SHA2_512_224,
 		SHA2_512_256 /*, SHA3_224, SHA3_256,
