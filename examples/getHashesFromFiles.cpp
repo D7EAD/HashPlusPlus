@@ -1,22 +1,22 @@
 /*
 * 
   getHashesFromFiles:
-		Example to show how to get the hashes of multiple files in a directory
-		or nested directory.
+	Example to show how to get the hashes of multiple files in a directory
+	or nested directory.
 
-		Assume relative path used has structure:
-		 .
-		 |--> /folder1
-			 |--> /folder2
-				 |--  item6.txt
-                         |--  item1.txt
-		         |--  item2.txt
-		         |--  item3.txt
-		         |--  item4.txt
-		         |--  item5.txt
+	Assume relative path used has structure:
+	 .
+	 |--> /folder1
+		 |--> /folder2
+			 |--  item6.txt
+                 |--  item1.txt
+		 |--  item2.txt
+		 |--  item3.txt
+		 |--  item4.txt
+		 |--  item5.txt
 
-		hashpp::get::getFilesHashes() traverses directories and hashes files
-		alphabetically.
+	hashpp::get::getFilesHashes() traverses directories and hashes files
+	alphabetically.
 
 */
 
