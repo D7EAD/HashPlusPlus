@@ -25,7 +25,7 @@
 using namespace hashpp;
 
 int main() {
-	// get a collection of hashes in the directory ./folder1
+	// get a collection of hashes from files in relative directory folder1 and subsequent dirs
 	hashCollection _a = get::getFilesHashes({ {ALGORITHMS::MD5, {"./folder1"}} });
 
 	// print each MD5 hash collected
