@@ -2203,9 +2203,7 @@ namespace hashpp {
 	//  hashpp::get::getFileHashes
 	//
 	//  all hashpp::get methods return a hashpp::hash or a 
-	//  hashpp::hashCollection object (with the exception of
-	//  hashpp::get::getBytes which returns bytes or vector of
-	//  bytes)
+	//  hashpp::hashCollection object.
 	//
 	//  refer to the class definitions of both hashpp::hash and 
 	//  hashpp::hashCollection for info on how to use them
