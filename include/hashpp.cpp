@@ -1,3 +1,6 @@
+#ifndef HASHPP_H
+#define HASHPP_H
+
 /*
 
 	Copyright (c) 2012-2021 Scott Chacon and others
@@ -2566,3 +2569,5 @@ namespace hashpp {
 			}
 	};
 }
+
+#endif
