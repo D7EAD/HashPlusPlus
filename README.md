@@ -24,7 +24,7 @@ Hash++ also aims to be a suitable alternative to heavier, statically and dynamic
 No, it doesn't. 
 <br>
 
-<h1><i>Algorithm Speed Comparison</i></h1>
+<h1><i>Algorithm Metrics</i></h1>
 Below you can find speed metrics of each algorithm when generating ten million hashes of 4 repetitions of the upper and lowercase alphabet, plus base 10 digits: 4(a-z+A-Z+0-9)
 
 ```
