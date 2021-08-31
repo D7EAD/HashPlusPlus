@@ -17,7 +17,7 @@ Hash++ is a C++20 header-only library that allows a user to retrieve multiple ty
   <li>SHA2-512</li>
   <li>SHA2-512/224</li>
   <li>SHA2-512/256</li>
-  <li>Upcoming Algorithms:<ul>
+  <li>Upcoming (Sooner-or-Later) Algorithms:<ul>
     <li>SHA3</li>    
     <li>BLAKE</li>
     <li>Whirlpool</li>
