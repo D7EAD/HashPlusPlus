@@ -31,7 +31,7 @@
 		 and Secure Hash Algorithm family hash algorithms for others
 		 to view internal mechanisms of said algorithms, as well as
 		 for substitution in sources absent the need for heavier
-		 crypto-related libraries such as OpenSSL or Crypto++
+		 crypto-related libraries such as OpenSSL or Crypto++.
 
 */
 
