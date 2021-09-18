@@ -354,7 +354,7 @@ namespace hashpp {
 		std::string hashpp::MD::MD5::getHash(std::string data) {
 			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
 			for (int i = 0; i < 16; i++) {
-				data += this->hexTable[static_cast<uint8_t>(bytes[i])];
+				data += this->hexTable[bytes[i]];
 			}
 			return data;
 		}
@@ -470,7 +470,7 @@ namespace hashpp {
 		std::string hashpp::MD::MD4::getHash(std::string data) {
 			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
 			for (int i = 0; i < 16; i++) {
-				data += this->hexTable[static_cast<uint8_t>(bytes[i])];
+				data += this->hexTable[bytes[i]];
 			}
 			return data;
 		}
@@ -588,7 +588,7 @@ namespace hashpp {
 		std::string hashpp::MD::MD2::getHash(std::string data) {
 			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
 			for (int i = 0; i < 16; i++) {
-				data += this->hexTable[static_cast<uint8_t>(bytes[i])];
+				data += this->hexTable[bytes[i]];
 			}
 			return data;
 		}
@@ -1143,7 +1143,7 @@ namespace hashpp {
 		std::string hashpp::SHA::SHA1::getHash(std::string data) {
 			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
 			for (int i = 0; i < 20; i++) {
-				data += this->hexTable[static_cast<uint8_t>(bytes[i])];
+				data += this->hexTable[bytes[i]];
 			}
 			return data;
 		}
@@ -1285,7 +1285,7 @@ namespace hashpp {
 		std::string hashpp::SHA::SHA2_224::getHash(std::string data) {
 			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
 			for (int i = 0; i < 28; i++) {
-				data += this->hexTable[static_cast<uint8_t>(bytes[i])];
+				data += this->hexTable[bytes[i]];
 			}
 			return data;
 		}
@@ -1413,7 +1413,7 @@ namespace hashpp {
 		std::string hashpp::SHA::SHA2_256::getHash(std::string data) {
 			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
 			for (int i = 0; i < 32; i++) {
-				data += this->hexTable[static_cast<uint8_t>(bytes[i])];
+				data += this->hexTable[bytes[i]];
 			}
 			return data;
 		}
@@ -1542,7 +1542,7 @@ namespace hashpp {
 		std::string hashpp::SHA::SHA2_384::getHash(std::string data) {
 			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
 			for (int i = 0; i < 48; i++) {
-				data += this->hexTable[static_cast<uint8_t>(bytes[i])];
+				data += this->hexTable[bytes[i]];
 			}
 			return data;
 		}
@@ -1688,7 +1688,7 @@ namespace hashpp {
 		std::string hashpp::SHA::SHA2_512::getHash(std::string data) {
 			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
 			for (int i = 0; i < 64; i++) {
-				data += this->hexTable[static_cast<uint8_t>(bytes[i])];
+				data += this->hexTable[bytes[i]];
 			}
 			return data;
 		}
@@ -1836,7 +1836,7 @@ namespace hashpp {
 		std::string hashpp::SHA::SHA2_512_224::getHash(std::string data) {
 			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
 			for (int i = 0; i < 28; i++) {
-				data += this->hexTable[static_cast<uint8_t>(bytes[i])];
+				data += this->hexTable[bytes[i]];
 			}
 			return data;
 		}
@@ -1981,7 +1981,7 @@ namespace hashpp {
 		std::string hashpp::SHA::SHA2_512_256::getHash(std::string data) {
 			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
 			for (int i = 0; i < 32; i++) {
-				data += this->hexTable[static_cast<uint8_t>(bytes[i])];
+				data += this->hexTable[bytes[i]];
 			}
 			return data;
 		}
