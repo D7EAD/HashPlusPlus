@@ -105,7 +105,7 @@ namespace hashpp {
 
 			// hex table for converting bytes to representable
 			// hexadecimal strings for output via getHash
-			const std::array<const char*, 256> hexTable{
+			const std::array<const char*, 256> hexTable {
 				"00", "01", "02", "03", "04", "05", "06", "07",
 				"08", "09", "0a", "0b", "0c", "0d", "0e", "0f",
 				"10", "11", "12", "13", "14", "15", "16", "17",
@@ -166,7 +166,7 @@ namespace hashpp {
 
 				// per-round shift amounts
 				// as per: https://en.wikipedia.org/wiki/MD5#Pseudocode
-				const std::array<uint8_t, 64> S{
+				const std::array<uint8_t, 64> S {
 					7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
 					5,  9, 14, 20, 5,  9, 14, 20, 5,  9, 14, 20, 5,  9, 14, 20,
 					4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
@@ -174,7 +174,7 @@ namespace hashpp {
 				};
 
 				// as per: https://en.wikipedia.org/wiki/MD5#Pseudocode
-				const std::array<uint32_t, 64> K{
+				const std::array<uint32_t, 64> K {
 					0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
 					0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be, 0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
 					0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa, 0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
@@ -186,7 +186,7 @@ namespace hashpp {
 				};
 
 				// pad data for when we need to... well.. pad to appropriate size
-				std::array<uint8_t, 64> pad{
+				std::array<uint8_t, 64> pad {
 					0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 					0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 					0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -240,14 +240,14 @@ namespace hashpp {
 				// CTX context instance
 				CTX context = { 0 };
 
-				const std::array<uint8_t, 64> S{
+				const std::array<uint8_t, 64> S {
 					7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
 					5,  9, 14, 20, 5,  9, 14, 20, 5,  9, 14, 20, 5,  9, 14, 20,
 					4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
 					6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
 				};
 
-				const std::array<uint32_t, 64> K{
+				const std::array<uint32_t, 64> K {
 					0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
 					0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be, 0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
 					0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa, 0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
@@ -259,7 +259,7 @@ namespace hashpp {
 				};
 
 				// pad data for when we need to... well.. pad to appropriate size
-				std::array<uint8_t, 64> pad{
+				std::array<uint8_t, 64> pad {
 					0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 					0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 					0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -316,7 +316,7 @@ namespace hashpp {
 
 				// S-table values for MD2 algorithm 
 				// as per: https://en.wikipedia.org/wiki/MD2_(hash_function)#Description
-				const std::array<uint8_t, 256> S{
+				const std::array<uint8_t, 256> S {
 					0x29, 0x2E, 0x43, 0xC9, 0xA2, 0xD8, 0x7C, 0x01, 0x3D, 0x36, 0x54, 0xA1, 0xEC, 0xF0, 0x06, 0x13,
 					0x62, 0xA7, 0x05, 0xF3, 0xC0, 0xC7, 0x73, 0x8C, 0x98, 0x93, 0x2B, 0xD9, 0xBC, 0x4C, 0x82, 0xCA,
 					0x1E, 0x9B, 0x57, 0x3C, 0xFD, 0xD4, 0xE0, 0x16, 0x67, 0x42, 0x6F, 0x18, 0x8A, 0x17, 0xE5, 0x12,
@@ -365,7 +365,7 @@ namespace hashpp {
 			};
 		}
 		constexpr void hashpp::MD::MD5::ctx_transform(const uint32_t* data) {
-			std::array<uint32_t, 4> results{
+			std::array<uint32_t, 4> results {
 				this->context.buf[0], // a0
 				this->context.buf[1], // b0
 				this->context.buf[2], // c0
@@ -481,7 +481,7 @@ namespace hashpp {
 			};
 		}
 		constexpr void hashpp::MD::MD4::ctx_transform(const uint32_t* data) {
-			std::array<uint32_t, 4> results{
+			std::array<uint32_t, 4> results {
 				this->context.buf[0], // a0
 				this->context.buf[1], // b0
 				this->context.buf[2], // c0
@@ -682,7 +682,7 @@ namespace hashpp {
 
 				// constants (H) defined by SHA-1 algorithm
 				// as per: https://datatracker.ietf.org/doc/html/rfc3174
-				const std::array<uint32_t, 5> H{
+				const std::array<uint32_t, 5> H {
 					0x67452301,
 					0xEFCDAB89,
 					0x98BADCFE,
@@ -691,7 +691,7 @@ namespace hashpp {
 				};
 
 				// more constants (K)... as per above
-				const std::array<uint32_t, 4> K{
+				const std::array<uint32_t, 4> K {
 					0x5a827999,
 					0x6ed9eba1,
 					0x8f1bbcdc,
@@ -734,7 +734,7 @@ namespace hashpp {
 
 				// constants (H) defined by SHA2-224 algorithm
 				// as per: https://datatracker.ietf.org/doc/html/rfc3874
-				const std::array<uint32_t, 8> H{
+				const std::array<uint32_t, 8> H {
 					0xC1059ED8,
 					0x367CD507,
 					0x3070DD17,
@@ -746,7 +746,7 @@ namespace hashpp {
 				};
 
 				// more constants (K)... as per above
-				const std::array<uint32_t, 64> K{
+				const std::array<uint32_t, 64> K {
 					0x428A2F98, 0x71374491, 0xB5C0FBCF, 0xE9B5DBA5,
 					0x3956C25B, 0x59F111F1, 0x923F82A4, 0xAB1C5ED5,
 					0xD807AA98, 0x12835B01, 0x243185BE, 0x550C7DC3,
@@ -802,7 +802,7 @@ namespace hashpp {
 
 				// constants (H) defined by SHA-256 algorithm
 				// as per: https://datatracker.ietf.org/doc/html/rfc6234
-				const std::array<uint32_t, 8> H{
+				const std::array<uint32_t, 8> H {
 					0x6a09e667,
 					0xbb67ae85,
 					0x3c6ef372,
@@ -814,7 +814,7 @@ namespace hashpp {
 				};
 
 				// more constants (K)... as per above
-				const std::array<uint32_t, 64> K{
+				const std::array<uint32_t, 64> K {
 					0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
 					0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
 					0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
@@ -869,7 +869,7 @@ namespace hashpp {
 
 				// constants (H) defined by SHA-512 algorithm
 				// as per: https://datatracker.ietf.org/doc/html/rfc4634
-				const std::array<uint64_t, 8> H{
+				const std::array<uint64_t, 8> H {
 					0xCBBB9D5DC1059ED8,
 					0x629A292A367CD507,
 					0x9159015A3070DD17,
@@ -881,7 +881,7 @@ namespace hashpp {
 				};
 
 				// more constants (K)... as per above
-				const std::array<uint64_t, 80> K{
+				const std::array<uint64_t, 80> K {
 					0x428A2F98D728AE22, 0x7137449123EF65CD, 0xB5C0FBCFEC4D3B2F, 0xE9B5DBA58189DBBC,
 					0x3956C25BF348B538, 0x59F111F1B605D019, 0x923F82A4AF194F9B, 0xAB1C5ED5DA6D8118,
 					0xD807AA98A3030242, 0x12835B0145706FBE, 0x243185BE4EE4B28C, 0x550C7DC3D5FFB4E2,
@@ -939,7 +939,7 @@ namespace hashpp {
 
 				// constants (H) defined by SHA-512 algorithm
 				// as per: https://datatracker.ietf.org/doc/html/rfc4634
-				const std::array<uint64_t, 8> H{
+				const std::array<uint64_t, 8> H {
 					0x6A09E667F3BCC908,
 					0xBB67AE8584CAA73B,
 					0x3C6EF372FE94F82B,
@@ -951,7 +951,7 @@ namespace hashpp {
 				};
 
 				// more constants (K)... as per above
-				const std::array<uint64_t, 80> K{
+				const std::array<uint64_t, 80> K {
 					0x428A2F98D728AE22, 0x7137449123EF65CD, 0xB5C0FBCFEC4D3B2F, 0xE9B5DBA58189DBBC,
 					0x3956C25BF348B538, 0x59F111F1B605D019, 0x923F82A4AF194F9B, 0xAB1C5ED5DA6D8118,
 					0xD807AA98A3030242, 0x12835B0145706FBE, 0x243185BE4EE4B28C, 0x550C7DC3D5FFB4E2,
@@ -1009,7 +1009,7 @@ namespace hashpp {
 
 				// constants (H) defined by SHA-512/224 algorithm
 				// as per: https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/SHA512_224.pdf
-				const std::array<uint64_t, 8> H{
+				const std::array<uint64_t, 8> H {
 					0x8C3D37C819544DA2,
 					0x73E1996689DCD4D6,
 					0x1DFAB7AE32FF9C82,
@@ -1021,7 +1021,7 @@ namespace hashpp {
 				};
 
 				// more constants (K)... as per above
-				const std::array<uint64_t, 80> K{
+				const std::array<uint64_t, 80> K {
 					0x428A2F98D728AE22, 0x7137449123EF65CD, 0xB5C0FBCFEC4D3B2F, 0xE9B5DBA58189DBBC,
 					0x3956C25BF348B538, 0x59F111F1B605D019, 0x923F82A4AF194F9B, 0xAB1C5ED5DA6D8118,
 					0xD807AA98A3030242, 0x12835B0145706FBE, 0x243185BE4EE4B28C, 0x550C7DC3D5FFB4E2,
@@ -1079,7 +1079,7 @@ namespace hashpp {
 
 				// constants (H) defined by SHA-512/256 algorithm
 				// as per: https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/SHA512_256.pdf
-				const std::array<uint64_t, 8> H{
+				const std::array<uint64_t, 8> H {
 					0x22312194FC2BF72C,
 					0x9F555FA3C84C64C2,
 					0x2393B86B6F53B151,
@@ -1091,7 +1091,7 @@ namespace hashpp {
 				};
 
 				// more constants (K)... as per above
-				const std::array<uint64_t, 80> K{
+				const std::array<uint64_t, 80> K {
 					0x428A2F98D728AE22, 0x7137449123EF65CD, 0xB5C0FBCFEC4D3B2F, 0xE9B5DBA58189DBBC,
 					0x3956C25BF348B538, 0x59F111F1B605D019, 0x923F82A4AF194F9B, 0xAB1C5ED5DA6D8118,
 					0xD807AA98A3030242, 0x12835B0145706FBE, 0x243185BE4EE4B28C, 0x550C7DC3D5FFB4E2,
