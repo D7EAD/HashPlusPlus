@@ -32,7 +32,7 @@ No, it doesn't.
 <br>
 
 <h1><i>Algorithm Metrics</i></h1>
-Below you can find speed metrics of each algorithm when generating ten million hashes of 4 repetitions of the upper and lowercase alphabet, plus base 10 digits: 4(a-z+A-Z+0-9)
+Below you can find single-threaded speed metrics of each algorithm when generating ten million hashes of 4 repetitions of the upper and lowercase alphabet, plus base 10 digits: 4(a-z+A-Z+0-9)
 
 ```
 +--------------------------------------------------------------+
