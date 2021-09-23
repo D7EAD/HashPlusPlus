@@ -353,7 +353,7 @@ namespace hashpp {
 		}
 		std::string hashpp::MD::MD5::getHash(std::string data) {
 			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
-			for (int i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++) {
 				data += this->hexTable[bytes[i]];
 			}
 			return data;
@@ -373,7 +373,7 @@ namespace hashpp {
 			};
 
 			uint32_t E, j, t;
-			for (unsigned int i = 0; i < 64; ++i) {
+			for (uint32_t i = 0; i < 64; ++i) {
 				switch (i / 16) {
 					case 0: {
 						E = this->F(results[1], results[2], results[3]);
@@ -403,7 +403,7 @@ namespace hashpp {
 				results[0] = t;
 			}
 
-			for (int z = 0; z < 4; z++) {
+			for (uint32_t z = 0; z < 4; z++) {
 				this->context.buf[z] += results[z];
 			}
 		}
@@ -411,11 +411,11 @@ namespace hashpp {
 			uint32_t input[16], offset = this->context.size % 64;
 			this->context.size += static_cast<uint64_t>(len);
 
-			for (unsigned int i = 0; i < len; ++i) {
+			for (uint32_t i = 0; i < len; ++i) {
 				this->context.in[offset++] = static_cast<uint8_t>(*(data + i));
 
 				if (offset % 64 == 0) {
-					for (unsigned int j = 0; j < 16; ++j) {
+					for (uint32_t j = 0; j < 16; ++j) {
 						input[j] = static_cast<uint32_t>(this->context.in[(j * 4) + 3]) << 24 |
 							static_cast<uint32_t>(this->context.in[(j * 4) + 2]) << 16 |
 							static_cast<uint32_t>(this->context.in[(j * 4) + 1]) << 8 |
@@ -428,13 +428,13 @@ namespace hashpp {
 		}
 		constexpr void hashpp::MD::MD5::ctx_final() {
 			uint32_t input[16];
-			unsigned int offset = this->context.size % 64;
-			unsigned int plen = offset < 56 ? 56 - offset : (56 + 64) - offset;
+			uint32_t offset = this->context.size % 64;
+			uint32_t plen = offset < 56 ? 56 - offset : (56 + 64) - offset;
 
 			this->ctx_update(this->pad._Elems, plen);
 			this->context.size -= static_cast<uint64_t>(plen);
 
-			for (unsigned int j = 0; j < 14; ++j) {
+			for (uint32_t j = 0; j < 14; ++j) {
 				input[j] = static_cast<uint32_t>(this->context.in[(j * 4) + 3]) << 24 |
 					static_cast<uint32_t>(this->context.in[(j * 4) + 2]) << 16 |
 					static_cast<uint32_t>(this->context.in[(j * 4) + 1]) << 8 |
@@ -445,7 +445,7 @@ namespace hashpp {
 
 			this->ctx_transform(input);
 
-			for (unsigned int i = 0; i < 4; ++i) {
+			for (uint32_t i = 0; i < 4; ++i) {
 				this->context.digest[(i * 4) + 0] = static_cast<uint8_t>((this->context.buf[i] & 0x000000FF));
 				this->context.digest[(i * 4) + 1] = static_cast<uint8_t>((this->context.buf[i] & 0x0000FF00) >> 8);
 				this->context.digest[(i * 4) + 2] = static_cast<uint8_t>((this->context.buf[i] & 0x00FF0000) >> 16);
@@ -469,7 +469,7 @@ namespace hashpp {
 		}
 		std::string hashpp::MD::MD4::getHash(std::string data) {
 			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
-			for (int i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++) {
 				data += this->hexTable[bytes[i]];
 			}
 			return data;
@@ -490,21 +490,21 @@ namespace hashpp {
 
 			// perform rounds as described by the algorithm
 			// as per: http://practicalcryptography.com/hashes/md4-hash/
-			for (int i = 0, j = 0; i < 4; ++i, j += 4) {
+			for (uint32_t i = 0, j = 0; i < 4; ++i, j += 4) {
 				this->R1(results[0], results[1], results[2], results[3], data[j], 3);
 				this->R1(results[3], results[0], results[1], results[2], data[j + 1], 7);
 				this->R1(results[2], results[3], results[0], results[1], data[j + 2], 11);
 				this->R1(results[1], results[2], results[3], results[0], data[j + 3], 19);
 			}
 
-			for (int i = 0; i < 4; ++i) {
+			for (uint32_t i = 0; i < 4; ++i) {
 				this->R2(results[0], results[1], results[2], results[3], data[0 + i], 3);
 				this->R2(results[3], results[0], results[1], results[2], data[4 + i], 5);
 				this->R2(results[2], results[3], results[0], results[1], data[8 + i], 9);
 				this->R2(results[1], results[2], results[3], results[0], data[12 + i], 13);
 			}
 
-			for (int i = 0, _h = 0; i < 4; ++i) {
+			for (uint32_t i = 0, _h = 0; i < 4; ++i) {
 				i == 1 ? _h = 2 : 0; i == 2 ? _h = 1 : 0; i == 3 ? _h = 3 : 0;
 				this->R3(results[0], results[1], results[2], results[3], data[0 + _h], 3);
 				this->R3(results[3], results[0], results[1], results[2], data[8 + _h], 9);
@@ -512,7 +512,7 @@ namespace hashpp {
 				this->R3(results[1], results[2], results[3], results[0], data[12 + _h], 15);
 			}
 
-			for (int z = 0; z < 4; z++) {
+			for (uint32_t z = 0; z < 4; z++) {
 				this->context.buf[z] += results[z];
 			}
 		}
@@ -520,11 +520,11 @@ namespace hashpp {
 			uint32_t input[16], offset = this->context.size % 64;
 			this->context.size += static_cast<uint64_t>(len);
 
-			for (unsigned int i = 0; i < len; ++i) {
+			for (uint32_t i = 0; i < len; ++i) {
 				this->context.in[offset++] = static_cast<uint8_t>(*(data + i));
 
 				if (offset % 64 == 0) {
-					for (unsigned int j = 0; j < 16; ++j) {
+					for (uint32_t j = 0; j < 16; ++j) {
 						input[j] = static_cast<uint32_t>(this->context.in[(j * 4) + 3]) << 24 |
 							static_cast<uint32_t>(this->context.in[(j * 4) + 2]) << 16 |
 							static_cast<uint32_t>(this->context.in[(j * 4) + 1]) << 8 |
@@ -537,12 +537,12 @@ namespace hashpp {
 		}
 		constexpr void hashpp::MD::MD4::ctx_final() {
 			uint32_t input[16];
-			unsigned int offset = this->context.size % 64, plen = offset < 56 ? 56 - offset : (56 + 64) - offset;
+			uint32_t offset = this->context.size % 64, plen = offset < 56 ? 56 - offset : (56 + 64) - offset;
 
 			this->ctx_update(this->pad._Elems, plen);
 			this->context.size -= static_cast<uint64_t>(plen);
 
-			for (unsigned int j = 0; j < 14; ++j) {
+			for (uint32_t j = 0; j < 14; ++j) {
 				input[j] = static_cast<uint32_t>(this->context.in[(j * 4) + 3]) << 24 |
 					static_cast<uint32_t>(this->context.in[(j * 4) + 2]) << 16 |
 					static_cast<uint32_t>(this->context.in[(j * 4) + 1]) << 8 |
@@ -555,7 +555,7 @@ namespace hashpp {
 
 			// move to digest as big-endian
 			// as per: https://stackoverflow.com/questions/19275955/convert-little-endian-to-big-endian/19276193
-			for (unsigned int i = 0; i < 4; ++i) {
+			for (uint32_t i = 0; i < 4; ++i) {
 				this->context.digest[(i * 4) + 0] = static_cast<uint8_t>((this->context.buf[i] & 0x000000FF));
 				this->context.digest[(i * 4) + 1] = static_cast<uint8_t>((this->context.buf[i] & 0x0000FF00) >> 8);
 				this->context.digest[(i * 4) + 2] = static_cast<uint8_t>((this->context.buf[i] & 0x00FF0000) >> 16);
@@ -587,7 +587,7 @@ namespace hashpp {
 		}
 		std::string hashpp::MD::MD2::getHash(std::string data) {
 			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
-			for (int i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++) {
 				data += this->hexTable[bytes[i]];
 			}
 			return data;
@@ -600,7 +600,7 @@ namespace hashpp {
 			this->context.size = 0;
 		}
 		constexpr void hashpp::MD::MD2::ctx_transform(const uint8_t* data) {
-			int j, k, t;
+			uint32_t j, k, t;
 
 			for (j = 0; j < 16; ++j) {
 				this->context.state[j + 16] = data[j];
@@ -1142,7 +1142,7 @@ namespace hashpp {
 		}
 		std::string hashpp::SHA::SHA1::getHash(std::string data) {
 			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
-			for (int i = 0; i < 20; i++) {
+			for (uint32_t i = 0; i < 20; i++) {
 				data += this->hexTable[bytes[i]];
 			}
 			return data;
@@ -1207,7 +1207,7 @@ namespace hashpp {
 				results[0] = t;
 			}
 
-			for (int z = 0; z < 5; z++) {
+			for (uint32_t z = 0; z < 5; z++) {
 				this->context.state[z] += results[z];
 			}
 		}
@@ -1284,7 +1284,7 @@ namespace hashpp {
 		}
 		std::string hashpp::SHA::SHA2_224::getHash(std::string data) {
 			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
-			for (int i = 0; i < 28; i++) {
+			for (uint32_t i = 0; i < 28; i++) {
 				data += this->hexTable[bytes[i]];
 			}
 			return data;
@@ -1334,7 +1334,7 @@ namespace hashpp {
 				results[0] = t1 + t2;
 			}
 
-			for (int z = 0; z < 8; z++) {
+			for (uint32_t z = 0; z < 8; z++) {
 				this->context.state[z] += results[z];
 			}
 		}
@@ -1412,7 +1412,7 @@ namespace hashpp {
 		}
 		std::string hashpp::SHA::SHA2_256::getHash(std::string data) {
 			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
-			for (int i = 0; i < 32; i++) {
+			for (uint32_t i = 0; i < 32; i++) {
 				data += this->hexTable[bytes[i]];
 			}
 			return data;
@@ -1462,7 +1462,7 @@ namespace hashpp {
 				results[0] = t1 + t2;
 			}
 
-			for (int z = 0; z < 8; z++) {
+			for (uint32_t z = 0; z < 8; z++) {
 				this->context.state[z] += results[z];
 			}
 		}
@@ -1541,7 +1541,7 @@ namespace hashpp {
 		}
 		std::string hashpp::SHA::SHA2_384::getHash(std::string data) {
 			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
-			for (int i = 0; i < 48; i++) {
+			for (uint32_t i = 0; i < 48; i++) {
 				data += this->hexTable[bytes[i]];
 			}
 			return data;
@@ -1557,7 +1557,7 @@ namespace hashpp {
 		}
 		constexpr void hashpp::SHA::SHA2_384::ctx_transform(const uint8_t* data) {
 			uint64_t W[80];
-			unsigned int i;
+			uint32_t i;
 
 			std::array<uint64_t, 8> results = {
 				this->context.state[0],
@@ -1600,7 +1600,7 @@ namespace hashpp {
 				(results[0]) = t1 + t2;
 			}
 
-			for (int z = 0; z < 8; z++) {
+			for (uint32_t z = 0; z < 8; z++) {
 				this->context.state[z] += results[z];
 			}
 		}
@@ -1637,7 +1637,7 @@ namespace hashpp {
 			}
 		}
 		constexpr void hashpp::SHA::SHA2_384::ctx_final() {
-			unsigned int block_present = 0;
+			uint32_t block_present = 0;
 			uint8_t last_padded_block[2 * 128];
 
 			memset(last_padded_block, 0, sizeof(last_padded_block));
@@ -1687,7 +1687,7 @@ namespace hashpp {
 		}
 		std::string hashpp::SHA::SHA2_512::getHash(std::string data) {
 			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
-			for (int i = 0; i < 64; i++) {
+			for (uint32_t i = 0; i < 64; i++) {
 				data += this->hexTable[bytes[i]];
 			}
 			return data;
@@ -1703,7 +1703,7 @@ namespace hashpp {
 		}
 		constexpr void hashpp::SHA::SHA2_512::ctx_transform(const uint8_t* data) {
 			uint64_t W[80];
-			unsigned int i;
+			uint32_t i;
 
 			std::array<uint64_t, 8> results = {
 				this->context.state[0],
@@ -1746,7 +1746,7 @@ namespace hashpp {
 				(results[0]) = t1 + t2;
 			}
 
-			for (int z = 0; z < 8; z++) {
+			for (uint32_t z = 0; z < 8; z++) {
 				this->context.state[z] += results[z];
 			}
 		}
@@ -1783,7 +1783,7 @@ namespace hashpp {
 			}
 		}
 		constexpr void hashpp::SHA::SHA2_512::ctx_final() {
-			unsigned int block_present = 0;
+			uint32_t block_present = 0;
 			uint8_t last_padded_block[2 * 128];
 
 			memset(last_padded_block, 0, sizeof(last_padded_block));
@@ -1835,7 +1835,7 @@ namespace hashpp {
 		}
 		std::string hashpp::SHA::SHA2_512_224::getHash(std::string data) {
 			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
-			for (int i = 0; i < 28; i++) {
+			for (uint32_t i = 0; i < 28; i++) {
 				data += this->hexTable[bytes[i]];
 			}
 			return data;
@@ -1851,7 +1851,7 @@ namespace hashpp {
 		}
 		constexpr void hashpp::SHA::SHA2_512_224::ctx_transform(const uint8_t* data) {
 			uint64_t W[80];
-			unsigned int i;
+			uint32_t i;
 
 			std::array<uint64_t, 8> results = {
 				this->context.state[0],
@@ -1894,7 +1894,7 @@ namespace hashpp {
 				(results[0]) = t1 + t2;
 			}
 
-			for (int z = 0; z < 8; z++) {
+			for (uint32_t z = 0; z < 8; z++) {
 				this->context.state[z] += results[z];
 			}
 		}
@@ -1931,7 +1931,7 @@ namespace hashpp {
 			}
 		}
 		constexpr void hashpp::SHA::SHA2_512_224::ctx_final() {
-			unsigned int block_present = 0;
+			uint32_t block_present = 0;
 			uint8_t last_padded_block[2 * 128];
 
 			memset(last_padded_block, 0, sizeof(last_padded_block));
@@ -1980,7 +1980,7 @@ namespace hashpp {
 		}
 		std::string hashpp::SHA::SHA2_512_256::getHash(std::string data) {
 			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
-			for (int i = 0; i < 32; i++) {
+			for (uint32_t i = 0; i < 32; i++) {
 				data += this->hexTable[bytes[i]];
 			}
 			return data;
@@ -1996,7 +1996,7 @@ namespace hashpp {
 		}
 		constexpr void hashpp::SHA::SHA2_512_256::ctx_transform(const uint8_t* data) {
 			uint64_t W[80];
-			unsigned int i;
+			uint32_t i;
 
 			std::array<uint64_t, 8> results = {
 				this->context.state[0],
@@ -2039,7 +2039,7 @@ namespace hashpp {
 				(results[0]) = t1 + t2;
 			}
 
-			for (int z = 0; z < 8; z++) {
+			for (uint32_t z = 0; z < 8; z++) {
 				this->context.state[z] += results[z];
 			}
 		}
@@ -2076,7 +2076,7 @@ namespace hashpp {
 			}
 		}
 		constexpr void hashpp::SHA::SHA2_512_256::ctx_final() {
-			unsigned int block_present = 0;
+			uint32_t block_present = 0;
 			uint8_t last_padded_block[2 * 128];
 
 			memset(last_padded_block, 0, sizeof(last_padded_block));
