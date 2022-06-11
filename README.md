@@ -77,7 +77,7 @@ Retrieve a single hash from a single piece of data.
 
 ```cpp
 // function to return a resulting hash from selected ALGORITHM and passed data
-constexpr static hashpp::hash getHash(hashpp::ALGORITHMS algorithm, std::string data)
+static hashpp::hash getHash(hashpp::ALGORITHMS algorithm, std::string data)
 ```
 
 <h3><code>getHashes</code></h3>
