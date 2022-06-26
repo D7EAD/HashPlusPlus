@@ -96,9 +96,3 @@ Retrieve a collection of hashes from multiple files or files in nested directori
 // function to return a collection of resulting hashes from selected ALGORITHMS and passed files (with recursive directory support)
 static hashpp::hashCollection getFilesHashes(std::vector<std::pair<hashpp::ALGORITHMS, std::vector<std::string>>> algorithmPathPairs)
 ```
-
-<br>
-<h1><i>Notes</i></h1>
-I designed this library <i>without</i> machine endianness in mind. A lot of common architectures are either little-endian or bi-endian, so, I decided to simply design it following what byte-order is most common. This has only been tested on little-endian architectures.
-<br><br>
-I have noticed some strange behavior with <code>getFilesHashes</code> and some duplicate hashes showing up for different files. This could have been an error on my part during testing, but I am keeping an eye on it.
