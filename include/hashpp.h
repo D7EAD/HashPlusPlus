@@ -345,7 +345,7 @@ namespace hashpp {
 		// MD5
 		uint8_t* hashpp::MD::MD5::getBytes(std::string data) {
 			this->ctx_init();
-			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), strlen(data.c_str()));
+			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.length());
 			this->ctx_final();
 
 			uint8_t* result = new uint8_t[16];
@@ -461,7 +461,7 @@ namespace hashpp {
 		// MD4
 		uint8_t* hashpp::MD::MD4::getBytes(std::string data) {
 			this->ctx_init();
-			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), strlen(data.c_str()));
+			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.length());
 			this->ctx_final();
 
 			uint8_t* result = new uint8_t[16];
@@ -579,7 +579,7 @@ namespace hashpp {
 		// MD2
 		uint8_t* hashpp::MD::MD2::getBytes(std::string data) {
 			this->ctx_init();
-			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), strlen(data.c_str()));
+			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.length());
 			this->ctx_final();
 
 			uint8_t* result = new uint8_t[16];
@@ -1134,7 +1134,7 @@ namespace hashpp {
 		// SHA-1
 		uint8_t* hashpp::SHA::SHA1::getBytes(std::string data) {
 			this->ctx_init();
-			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), strlen(data.c_str()));
+			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.length());
 			this->ctx_final();
 
 			uint8_t* result = new uint8_t[20];
@@ -1275,7 +1275,7 @@ namespace hashpp {
 		// SHA2-224
 		uint8_t* hashpp::SHA::SHA2_224::getBytes(std::string data) {
 			this->ctx_init();
-			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), strlen(data.c_str()));
+			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.length());
 			this->ctx_final();
 
 			uint8_t* result = new uint8_t[28];
@@ -1399,7 +1399,7 @@ namespace hashpp {
 		// SHA2-256
 		uint8_t* hashpp::SHA::SHA2_256::getBytes(std::string data) {
 			this->ctx_init();
-			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), strlen(data.c_str()));
+			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.length());
 			this->ctx_final();
 
 			uint8_t* result = new uint8_t[32];
@@ -1525,7 +1525,7 @@ namespace hashpp {
 		// SHA2-384
 		uint8_t* hashpp::SHA::SHA2_384::getBytes(std::string data) {
 			this->ctx_init();
-			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), strlen(data.c_str()));
+			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.length());
 			this->ctx_final();
 
 			uint8_t* result = new uint8_t[48];
@@ -1669,7 +1669,7 @@ namespace hashpp {
 		// SHA2-512
 		uint8_t* hashpp::SHA::SHA2_512::getBytes(std::string data) {
 			this->ctx_init();
-			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), strlen(data.c_str()));
+			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.length());
 			this->ctx_final();
 
 			uint8_t* result = new uint8_t[64];
@@ -1815,7 +1815,7 @@ namespace hashpp {
 		// SHA2-512-224
 		uint8_t* hashpp::SHA::SHA2_512_224::getBytes(std::string data) {
 			this->ctx_init();
-			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), strlen(data.c_str()));
+			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.length());
 			this->ctx_final();
 
 			uint8_t* result = new uint8_t[28];
@@ -1958,7 +1958,7 @@ namespace hashpp {
 		// SHA2-512-256
 		uint8_t* hashpp::SHA::SHA2_512_256::getBytes(std::string data) {
 			this->ctx_init();
-			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), strlen(data.c_str()));
+			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.length());
 			this->ctx_final();
 
 			uint8_t* result = new uint8_t[32];
