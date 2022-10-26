@@ -2265,7 +2265,7 @@ namespace hashpp {
 							break;
 						}
 						case hashpp::ALGORITHMS::SHA2_256: {
-							vSHA2_224.push_back(hashpp::SHA::SHA2_256().getHash(_data));
+							vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(_data));
 							break;
 						}
 						case hashpp::ALGORITHMS::SHA2_384: {
