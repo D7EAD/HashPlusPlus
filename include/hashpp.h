@@ -2265,7 +2265,7 @@ namespace hashpp {
 							break;
 						}
 						case hashpp::ALGORITHMS::SHA2_256: {
-							vSHA2_224.push_back(hashpp::SHA::SHA2_256().getHash(_data));
+							vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(_data));
 							break;
 						}
 						case hashpp::ALGORITHMS::SHA2_384: {
@@ -2341,7 +2341,7 @@ namespace hashpp {
 						std::ifstream tmp(path, std::ios::binary);
 						std::stringstream ss;
 						ss << tmp.rdbuf();
-						return { hashpp::SHA::SHA2_224().getHash(ss.str()) };
+						return { hashpp::SHA::SHA2_256().getHash(ss.str()) };
 					}
 					case hashpp::ALGORITHMS::SHA2_384: {
 						std::ifstream tmp(path, std::ios::binary);
