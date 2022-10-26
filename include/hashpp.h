@@ -792,6 +792,10 @@ namespace hashpp {
 			// - handles dynamic allocation internally
 			std::string getHash(std::string data);
 
+			// get hexadecimal hash from supplied string data
+			// - handles dynamic allocation internally
+			std::string getHash(std::filesystem::path path);
+
 		private:
 			typedef struct {
 				uint32_t state[8], size;
@@ -1412,6 +1416,23 @@ namespace hashpp {
 				data += this->hexTable[bytes[i]];
 			}
 			return data;
+		}
+		std::string hashpp::SHA::SHA2_256::getHash(std::filesystem::path path) {
+			this->ctx_init();
+			{
+				std::ifstream file(path, std::ios::binary);
+				std::vector<char> buf(1024 * 1024, 0);
+				while (!file.eof()) {
+					file.read(buf.data(), buf.size());
+					this->ctx_update(reinterpret_cast<uint8_t*>(buf.data()), file.gcount());
+				}
+			}
+			this->ctx_final();
+			std::string hash;
+			for (uint8_t i = 0; i < 32; i++) {
+				hash += this->hexTable[context.digest[i]];
+			}
+			return hash;
 		}
 		void hashpp::SHA::SHA2_256::ctx_init() {
 			this->context = {
@@ -2338,10 +2359,7 @@ namespace hashpp {
 						return { hashpp::SHA::SHA2_224().getHash(ss.str()) };
 					}
 					case hashpp::ALGORITHMS::SHA2_256: {
-						std::ifstream tmp(path, std::ios::binary);
-						std::stringstream ss;
-						ss << tmp.rdbuf();
-						return { hashpp::SHA::SHA2_256().getHash(ss.str()) };
+						return hashpp::SHA::SHA2_256().getHash(std::filesystem::path(path));
 					}
 					case hashpp::ALGORITHMS::SHA2_384: {
 						std::ifstream tmp(path, std::ios::binary);
