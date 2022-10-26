@@ -208,7 +208,7 @@ namespace hashpp {
 			// private class methods
 		private:
 			// initialize our context for this hash function
-			constexpr void ctx_init();
+			void ctx_init();
 			void ctx_transform(const uint32_t* data);
 			void ctx_update(const uint8_t* data, size_t len);
 			void ctx_final();
@@ -280,8 +280,8 @@ namespace hashpp {
 			// private class methods
 		private:
 			// initialize our context for this hash function
-			constexpr void ctx_init();
-			constexpr void ctx_transform(const uint32_t* data);
+			void ctx_init();
+			void ctx_transform(const uint32_t* data);
 			void ctx_update(const uint8_t* data, size_t len);
 			void ctx_final();
 
@@ -336,9 +336,9 @@ namespace hashpp {
 				0x31, 0x44, 0x50, 0xB4, 0x8F, 0xED, 0x1F, 0x1A, 0xDB, 0x99, 0x8D, 0x33, 0x9F, 0x11, 0x83, 0x14
 			};
 
-			constexpr void ctx_init();
+			void ctx_init();
 			void ctx_transform(const uint8_t* data);
-			constexpr void ctx_update(const uint8_t* data, size_t len);
+			void ctx_update(const uint8_t* data, size_t len);
 			void ctx_final();
 		};
 
@@ -359,7 +359,7 @@ namespace hashpp {
 			}
 			return data;
 		}
-		constexpr void hashpp::MD::MD5::ctx_init() {
+		void hashpp::MD::MD5::ctx_init() {
 			this->context = {
 				0,
 				{this->A, this->B, this->C, this->D}				
@@ -475,13 +475,13 @@ namespace hashpp {
 			}
 			return data;
 		}
-		constexpr void hashpp::MD::MD4::ctx_init() {
+		void hashpp::MD::MD4::ctx_init() {
 			this->context = {
 				0,
 				{this->A, this->B, this->C, this->D}
 			};
 		}
-		constexpr void hashpp::MD::MD4::ctx_transform(const uint32_t* data) {
+		void hashpp::MD::MD4::ctx_transform(const uint32_t* data) {
 			std::array<uint32_t, 4> results{
 				this->context.buf[0], // a0
 				this->context.buf[1], // b0
@@ -593,7 +593,7 @@ namespace hashpp {
 			}
 			return data;
 		}
-		constexpr void hashpp::MD::MD2::ctx_init() {
+		void hashpp::MD::MD2::ctx_init() {
 			memset(this->context.state, 0, 48);
 			memset(this->context.checksum, 0, 16);
 			memset(this->context.buf, 0, 16);
@@ -623,7 +623,7 @@ namespace hashpp {
 				t = this->context.checksum[j];
 			}
 		}
-		constexpr void hashpp::MD::MD2::ctx_update(const uint8_t* data, size_t len) {
+		void hashpp::MD::MD2::ctx_update(const uint8_t* data, size_t len) {
 			for (uint16_t i = 0; i < len; ++i) {
 				this->context.buf[this->context.size] = data[i];
 				this->context.size++;
@@ -699,7 +699,7 @@ namespace hashpp {
 				0xca62c1d6
 			};
 
-			constexpr void ctx_init();
+			void ctx_init();
 			void ctx_transform(const uint8_t* data);
 			void ctx_update(const uint8_t* data, size_t len);
 			void ctx_final();
@@ -766,7 +766,7 @@ namespace hashpp {
 				0x90BEFFFA, 0xA4506CEB, 0xBEF9A3F7, 0xC67178F2
 			};
 
-			constexpr void ctx_init();
+			void ctx_init();
 			void ctx_transform(const uint8_t* data);
 			void ctx_update(const uint8_t* data, size_t len);
 			void ctx_final();
@@ -834,7 +834,7 @@ namespace hashpp {
 				0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 			};
 
-			constexpr void ctx_init();
+			void ctx_init();
 			void ctx_transform(const uint8_t* data);
 			void ctx_update(const uint8_t* data, size_t len);
 			void ctx_final();
@@ -905,7 +905,7 @@ namespace hashpp {
 				0x4CC5D4BECB3E42B6, 0x597F299CFC657E2A, 0x5FCB6FAB3AD6FAEC, 0x6C44198C4A475817
 			};
 
-			constexpr void ctx_init();
+			void ctx_init();
 			void ctx_transform(const uint8_t* data);
 			void ctx_update(const uint8_t* data, size_t len);
 			void ctx_final();
@@ -975,7 +975,7 @@ namespace hashpp {
 				0x4CC5D4BECB3E42B6, 0x597F299CFC657E2A, 0x5FCB6FAB3AD6FAEC, 0x6C44198C4A475817
 			};
 
-			constexpr void ctx_init();
+			void ctx_init();
 			void ctx_transform(const uint8_t* data);
 			void ctx_update(const uint8_t* data, size_t len);
 			void ctx_final();
@@ -1045,7 +1045,7 @@ namespace hashpp {
 				0x4CC5D4BECB3E42B6, 0x597F299CFC657E2A, 0x5FCB6FAB3AD6FAEC, 0x6C44198C4A475817
 			};
 
-			constexpr void ctx_init();
+			void ctx_init();
 			void ctx_transform(const uint8_t* data);
 			void ctx_update(const uint8_t* data, size_t len);
 			void ctx_final();
@@ -1115,7 +1115,7 @@ namespace hashpp {
 				0x4CC5D4BECB3E42B6, 0x597F299CFC657E2A, 0x5FCB6FAB3AD6FAEC, 0x6C44198C4A475817
 			};
 
-			constexpr void ctx_init();
+			void ctx_init();
 			void ctx_transform(const uint8_t* data);
 			void ctx_update(const uint8_t* data, size_t len);
 			void ctx_final();
@@ -1148,7 +1148,7 @@ namespace hashpp {
 			}
 			return data;
 		}
-		constexpr void hashpp::SHA::SHA1::ctx_init() {
+		void hashpp::SHA::SHA1::ctx_init() {
 			this->context = {
 				{this->H[0], this->H[1], this->H[2], this->H[3], this->H[4]},
 				{this->K[0], this->K[1], this->K[2], this->K[3]},
@@ -1289,7 +1289,7 @@ namespace hashpp {
 			}
 			return data;
 		}
-		constexpr void hashpp::SHA::SHA2_224::ctx_init() {
+		void hashpp::SHA::SHA2_224::ctx_init() {
 			this->context = {
 				{this->H[0], this->H[1], this->H[2], this->H[3],
 					this->H[4], this->H[5], this->H[6], this->H[7]},
@@ -1413,7 +1413,7 @@ namespace hashpp {
 			}
 			return data;
 		}
-		constexpr void hashpp::SHA::SHA2_256::ctx_init() {
+		void hashpp::SHA::SHA2_256::ctx_init() {
 			this->context = {
 				{this->H[0], this->H[1], this->H[2], this->H[3],
 					this->H[4], this->H[5], this->H[6], this->H[7]},
@@ -1539,7 +1539,7 @@ namespace hashpp {
 			}
 			return data;
 		}
-		constexpr void hashpp::SHA::SHA2_384::ctx_init() {
+		void hashpp::SHA::SHA2_384::ctx_init() {
 			this->context = {
 				{this->H[0], this->H[1], this->H[2], this->H[3],
 					this->H[4], this->H[5], this->H[6], this->H[7]},
@@ -1683,7 +1683,7 @@ namespace hashpp {
 			}
 			return data;
 		}
-		constexpr void hashpp::SHA::SHA2_512::ctx_init() {
+		void hashpp::SHA::SHA2_512::ctx_init() {
 			this->context = {
 				{this->H[0], this->H[1], this->H[2], this->H[3],
 					this->H[4], this->H[5], this->H[6], this->H[7]},
@@ -1829,7 +1829,7 @@ namespace hashpp {
 			}
 			return data;
 		}
-		constexpr void hashpp::SHA::SHA2_512_224::ctx_init() {
+		void hashpp::SHA::SHA2_512_224::ctx_init() {
 			this->context = {
 				{this->H[0], this->H[1], this->H[2], this->H[3],
 					this->H[4], this->H[5], this->H[6], this->H[7]},
@@ -1972,7 +1972,7 @@ namespace hashpp {
 			}
 			return data;
 		}
-		constexpr void hashpp::SHA::SHA2_512_256::ctx_init() {
+		void hashpp::SHA::SHA2_512_256::ctx_init() {
 			this->context = {
 				{this->H[0], this->H[1], this->H[2], this->H[3],
 					this->H[4], this->H[5], this->H[6], this->H[7]},
