@@ -140,21 +140,55 @@ namespace hashpp {
 			"f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7",
 			"f8", "f9", "fa", "fb", "fc", "fd", "fe", "ff"
 		};
+
+		// get hexadecimal hash from supplied string data
+		std::string getHash(const std::string& data) {
+			ctx_init();
+			ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.length());
+			ctx_final();
+			return getHashStr();
+		}
+
+		// get hexadecimal hash from file
+		std::string getHash(const std::filesystem::path& path) {
+			this->ctx_init();
+			{
+				std::ifstream file(path, std::ios::binary);
+				std::vector<char> buf(1024 * 1024, 0);
+				while (!file.eof()) {
+					file.read(buf.data(), buf.size());
+					this->ctx_update(reinterpret_cast<uint8_t*>(buf.data()), file.gcount());
+				}
+			}
+			this->ctx_final();
+			return getHashStr();
+		}
+
+	protected:
+		// virtual functions that must be defined by hashers
+		virtual std::vector<uint8_t> getDigest() = 0;
+	  virtual void ctx_init() = 0;
+		virtual void ctx_update(const uint8_t* data, size_t len) = 0;
+		virtual void ctx_final() = 0;
+
+	private:
+		// convert hash from binary to string
+		std::string getHashStr() {
+			const std::vector<uint8_t>& digest = getDigest();
+			std::string hash;
+			for (const auto& d : digest)
+				hash += this->hexTable[d];
+			return hash;
+		}
 	};
 
 	// Message Digest (MDX) hash family - excluding MD6
 	namespace MD {
-		class MD5 : private common {
-		public:
-			// get byte-array of hash created from parameter 'data'
-			// - return heap-allocated pointer to array of hash bytes
-			uint8_t* getBytes(std::string data);
-
-			// get hexadecimal hash from supplied string data
-			// - handles dynamic allocation internally
-			std::string getHash(std::string data);
-
-			// private members
+		class MD5 : public common {
+		protected:
+			std::vector<uint8_t> getDigest() override {
+				return std::vector<uint8_t>(context.digest, context.digest + 16);
+			}
 		private:
 			typedef struct {
 				uint64_t size;
@@ -208,10 +242,10 @@ namespace hashpp {
 			// private class methods
 		private:
 			// initialize our context for this hash function
-			void ctx_init();
+			void ctx_init() override;
 			void ctx_transform(const uint32_t* data);
-			void ctx_update(const uint8_t* data, size_t len);
-			void ctx_final();
+			void ctx_update(const uint8_t* data, size_t len) override;
+			void ctx_final() override;
 
 			// auxiliary functions defined by the algorithm
 			// as per: https://en.wikipedia.org/wiki/MD5#Algorithm
@@ -220,17 +254,11 @@ namespace hashpp {
 			constexpr uint32_t H(const uint32_t B, const uint32_t C, const uint32_t D);
 			constexpr uint32_t I(const uint32_t B, const uint32_t C, const uint32_t D);
 		};
-		class MD4 : private common {
-		public:
-			// get byte-array of hash created from parameter 'data'
-			// - return heap-allocated pointer to array of hash bytes
-			uint8_t* getBytes(std::string data);
-
-			// get hexadecimal hash from supplied string data
-			// - handles dynamic allocation internally
-			std::string getHash(std::string data);
-
-			// private members
+		class MD4 : public common {
+		protected:
+			std::vector<uint8_t> getDigest() override {
+				return std::vector<uint8_t>(context.digest, context.digest + 16);
+			}
 		private:
 			typedef struct {
 				uint64_t size;
@@ -280,10 +308,10 @@ namespace hashpp {
 			// private class methods
 		private:
 			// initialize our context for this hash function
-			void ctx_init();
+			void ctx_init() override;
 			void ctx_transform(const uint32_t* data);
-			void ctx_update(const uint8_t* data, size_t len);
-			void ctx_final();
+			void ctx_update(const uint8_t* data, size_t len) override;
+			void ctx_final() override;
 
 			// auxiliary functions defined by the algorithm
 			// as per: http://practicalcryptography.com/hashes/md4-hash/
@@ -296,17 +324,11 @@ namespace hashpp {
 			void R2(uint32_t& a, const uint32_t b, const uint32_t c, const uint32_t d, const uint32_t k, const uint32_t s);
 			void R3(uint32_t& a, const uint32_t b, const uint32_t c, const uint32_t d, const uint32_t k, const uint32_t s);
 		};
-		class MD2 : private common {
-		public:
-			// get byte-array of hash created from parameter 'data'
-			// - return heap-allocated pointer to array of hash bytes
-			uint8_t* getBytes(std::string data);
-
-			// get hexadecimal hash from supplied string data
-			// - handles dynamic allocation internally
-			std::string getHash(std::string data);
-
-			// private members
+		class MD2 : public common {
+		protected:
+			std::vector<uint8_t> getDigest() override {
+				return std::vector<uint8_t>(context.digest, context.digest + 16);
+			}
 		private:
 			typedef struct {
 				uint8_t buf[16], state[48], checksum[16], digest[16];
@@ -336,29 +358,13 @@ namespace hashpp {
 				0x31, 0x44, 0x50, 0xB4, 0x8F, 0xED, 0x1F, 0x1A, 0xDB, 0x99, 0x8D, 0x33, 0x9F, 0x11, 0x83, 0x14
 			};
 
-			void ctx_init();
+			void ctx_init() override;
 			void ctx_transform(const uint8_t* data);
-			void ctx_update(const uint8_t* data, size_t len);
-			void ctx_final();
+			void ctx_update(const uint8_t* data, size_t len) override;
+			void ctx_final() override;
 		};
 
 		// MD5
-		uint8_t* hashpp::MD::MD5::getBytes(std::string data) {
-			this->ctx_init();
-			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.length());
-			this->ctx_final();
-
-			uint8_t* result = new uint8_t[16];
-			memcpy(result, context.digest, 16);
-			return result;
-		}
-		std::string hashpp::MD::MD5::getHash(std::string data) {
-			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
-			for (uint32_t i = 0; i < 16; i++) {
-				data += this->hexTable[bytes[i]];
-			}
-			return data;
-		}
 		void hashpp::MD::MD5::ctx_init() {
 			this->context = {
 				0,
@@ -459,22 +465,6 @@ namespace hashpp {
 		constexpr uint32_t hashpp::MD::MD5::I(const uint32_t B, const uint32_t C, const uint32_t D) { return (C ^ (B | ~D)); }
 
 		// MD4
-		uint8_t* hashpp::MD::MD4::getBytes(std::string data) {
-			this->ctx_init();
-			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.length());
-			this->ctx_final();
-
-			uint8_t* result = new uint8_t[16];
-			memcpy(result, context.digest, 16);
-			return result;
-		}
-		std::string hashpp::MD::MD4::getHash(std::string data) {
-			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
-			for (uint32_t i = 0; i < 16; i++) {
-				data += this->hexTable[bytes[i]];
-			}
-			return data;
-		}
 		void hashpp::MD::MD4::ctx_init() {
 			this->context = {
 				0,
@@ -577,22 +567,6 @@ namespace hashpp {
 		}
 
 		// MD2
-		uint8_t* hashpp::MD::MD2::getBytes(std::string data) {
-			this->ctx_init();
-			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.length());
-			this->ctx_final();
-
-			uint8_t* result = new uint8_t[16];
-			memcpy(result, context.digest, 16);
-			return result;
-		}
-		std::string hashpp::MD::MD2::getHash(std::string data) {
-			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
-			for (uint32_t i = 0; i < 16; i++) {
-				data += this->hexTable[bytes[i]];
-			}
-			return data;
-		}
 		void hashpp::MD::MD2::ctx_init() {
 			memset(this->context.state, 0, 48);
 			memset(this->context.checksum, 0, 16);
@@ -662,16 +636,11 @@ namespace hashpp {
 		// H-constant values from the orignal
 		// algorithm.
 
-		class SHA1 : private common {
-		public:
-			// get byte-array of hash created from parameter 'data'
-			// - return heap-allocated pointer to array of hash bytes
-			uint8_t* getBytes(std::string data);
-
-			// get hexadecimal hash from supplied string data
-			// - handles dynamic allocation internally
-			std::string getHash(std::string data);
-
+		class SHA1 : public common {
+		protected:
+			std::vector<uint8_t> getDigest() override {
+				return std::vector<uint8_t>(context.digest, context.digest + 20);
+			}
 		private:
 			typedef struct {
 				uint32_t state[5], k[4], size;
@@ -699,10 +668,10 @@ namespace hashpp {
 				0xca62c1d6
 			};
 
-			void ctx_init();
+			void ctx_init() override;
 			void ctx_transform(const uint8_t* data);
-			void ctx_update(const uint8_t* data, size_t len);
-			void ctx_final();
+			void ctx_update(const uint8_t* data, size_t len) override;
+			void ctx_final() override;
 
 			// SHA-1 functions defined by the algorithm
 			constexpr uint32_t A(const uint32_t A, const uint32_t B, const uint32_t C, const uint32_t D);
@@ -714,16 +683,11 @@ namespace hashpp {
 			constexpr uint32_t G(const uint32_t B, const uint32_t C, const uint32_t D);
 			constexpr uint32_t J(const uint32_t B, const uint32_t C, const uint32_t D);
 		};
-		class SHA2_224 : private common {
-		public:
-			// get byte-array of hash created from parameter 'data'
-			// - return heap-allocated pointer to array of hash bytes
-			uint8_t* getBytes(std::string data);
-
-			// get hexadecimal hash from supplied string data
-			// - handles dynamic allocation internally
-			std::string getHash(std::string data);
-
+		class SHA2_224 : public common {
+		protected:
+			std::vector<uint8_t> getDigest() override {
+				return std::vector<uint8_t>(context.digest, context.digest + 28);
+			}
 		private:
 			typedef struct {
 				uint32_t state[8];
@@ -766,10 +730,10 @@ namespace hashpp {
 				0x90BEFFFA, 0xA4506CEB, 0xBEF9A3F7, 0xC67178F2
 			};
 
-			void ctx_init();
+			void ctx_init() override;
 			void ctx_transform(const uint8_t* data);
-			void ctx_update(const uint8_t* data, size_t len);
-			void ctx_final();
+			void ctx_update(const uint8_t* data, size_t len) override;
+			void ctx_final() override;
 
 			constexpr uint32_t A(const uint32_t A, const uint32_t B, const uint32_t C, const uint32_t D);
 			constexpr uint32_t F(const uint32_t B, const uint32_t C, const uint32_t D);
@@ -782,20 +746,11 @@ namespace hashpp {
 			uint32_t SIGMA2(const uint32_t A);
 			uint32_t SIGMA3(const uint32_t A);
 		};
-		class SHA2_256 : private common {
-		public:
-			// get byte-array of hash created from parameter 'data'
-			// - return heap-allocated pointer to array of hash bytes
-			uint8_t* getBytes(std::string data);
-
-			// get hexadecimal hash from supplied string data
-			// - handles dynamic allocation internally
-			std::string getHash(std::string data);
-
-			// get hexadecimal hash from supplied string data
-			// - handles dynamic allocation internally
-			std::string getHash(std::filesystem::path path);
-
+		class SHA2_256 : public common {
+		protected:
+			std::vector<uint8_t> getDigest() override {
+				return std::vector<uint8_t>(context.digest, context.digest + 32);
+			}
 		private:
 			typedef struct {
 				uint32_t state[8], size;
@@ -838,10 +793,10 @@ namespace hashpp {
 				0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 			};
 
-			void ctx_init();
+			void ctx_init() override;
 			void ctx_transform(const uint8_t* data);
-			void ctx_update(const uint8_t* data, size_t len);
-			void ctx_final();
+			void ctx_update(const uint8_t* data, size_t len) override;
+			void ctx_final() override;
 
 			constexpr uint32_t A(const uint32_t A, const uint32_t B, const uint32_t C, const uint32_t D);
 			constexpr uint32_t F(const uint32_t B, const uint32_t C, const uint32_t D);
@@ -854,16 +809,11 @@ namespace hashpp {
 			uint32_t SIGMA2(const uint32_t A);
 			uint32_t SIGMA3(const uint32_t A);
 		};
-		class SHA2_384 : private common {
-		public:
-			// get byte-array of hash created from parameter 'data'
-			// - return heap-allocated pointer to array of hash bytes
-			uint8_t* getBytes(std::string data);
-
-			// get hexadecimal hash from supplied string data
-			// - handles dynamic allocation internally
-			std::string getHash(std::string data);
-
+		class SHA2_384 : public common {
+		protected:
+			std::vector<uint8_t> getDigest() override {
+				return std::vector<uint8_t>(context.digest, context.digest + 48);
+			}
 		private:
 			typedef struct {
 				uint64_t state[8], count[2];
@@ -909,10 +859,10 @@ namespace hashpp {
 				0x4CC5D4BECB3E42B6, 0x597F299CFC657E2A, 0x5FCB6FAB3AD6FAEC, 0x6C44198C4A475817
 			};
 
-			void ctx_init();
+			void ctx_init() override;
 			void ctx_transform(const uint8_t* data);
-			void ctx_update(const uint8_t* data, size_t len);
-			void ctx_final();
+			void ctx_update(const uint8_t* data, size_t len) override;
+			void ctx_final() override;
 
 			constexpr uint64_t F(const uint64_t A, const uint64_t B, const uint64_t C);
 			constexpr uint64_t G(const uint64_t A, const uint64_t B, const uint64_t C);
@@ -924,16 +874,11 @@ namespace hashpp {
 			uint64_t SIGMA2(const uint64_t A);
 			uint64_t SIGMA3(const uint64_t A);
 		};
-		class SHA2_512 : private common {
-		public:
-			// get byte-array of hash created from parameter 'data'
-			// - return heap-allocated pointer to array of hash bytes
-			uint8_t* getBytes(std::string data);
-
-			// get hexadecimal hash from supplied string data
-			// - handles dynamic allocation internally
-			std::string getHash(std::string data);
-
+		class SHA2_512 : public common {
+		protected:
+			std::vector<uint8_t> getDigest() override {
+				return std::vector<uint8_t>(context.digest, context.digest + 64);
+			}
 		private:
 			typedef struct {
 				uint64_t state[8], count[2];
@@ -979,10 +924,10 @@ namespace hashpp {
 				0x4CC5D4BECB3E42B6, 0x597F299CFC657E2A, 0x5FCB6FAB3AD6FAEC, 0x6C44198C4A475817
 			};
 
-			void ctx_init();
+			void ctx_init() override;
 			void ctx_transform(const uint8_t* data);
-			void ctx_update(const uint8_t* data, size_t len);
-			void ctx_final();
+			void ctx_update(const uint8_t* data, size_t len) override;
+			void ctx_final() override;
 
 			constexpr uint64_t F(const uint64_t A, const uint64_t B, const uint64_t C);
 			constexpr uint64_t G(const uint64_t A, const uint64_t B, const uint64_t C);
@@ -994,16 +939,11 @@ namespace hashpp {
 			uint64_t SIGMA2(const uint64_t A);
 			uint64_t SIGMA3(const uint64_t A);
 		};
-		class SHA2_512_224 : private common {
-		public:
-			// get byte-array of hash created from parameter 'data'
-			// - return heap-allocated pointer to array of hash bytes
-			uint8_t* getBytes(std::string data);
-
-			// get hexadecimal hash from supplied string data
-			// - handles dynamic allocation internally
-			std::string getHash(std::string data);
-
+		class SHA2_512_224 : public common {
+		protected:
+			std::vector<uint8_t> getDigest() override {
+				return std::vector<uint8_t>(context.digest, context.digest + 32);
+			}
 		private:
 			typedef struct {
 				uint64_t state[8], count[2];
@@ -1049,10 +989,10 @@ namespace hashpp {
 				0x4CC5D4BECB3E42B6, 0x597F299CFC657E2A, 0x5FCB6FAB3AD6FAEC, 0x6C44198C4A475817
 			};
 
-			void ctx_init();
+			void ctx_init() override;
 			void ctx_transform(const uint8_t* data);
-			void ctx_update(const uint8_t* data, size_t len);
-			void ctx_final();
+			void ctx_update(const uint8_t* data, size_t len) override;
+			void ctx_final() override;
 
 			constexpr uint64_t F(const uint64_t A, const uint64_t B, const uint64_t C);
 			constexpr uint64_t G(const uint64_t A, const uint64_t B, const uint64_t C);
@@ -1064,16 +1004,11 @@ namespace hashpp {
 			uint64_t SIGMA2(const uint64_t A);
 			uint64_t SIGMA3(const uint64_t A);
 		};
-		class SHA2_512_256 : private common {
-		public:
-			// get byte-array of hash created from parameter 'data'
-			// - return heap-allocated pointer to array of hash bytes
-			uint8_t* getBytes(std::string data);
-
-			// get hexadecimal hash from supplied string data
-			// - handles dynamic allocation internally
-			std::string getHash(std::string data);
-
+		class SHA2_512_256 : public common {
+		protected:
+			std::vector<uint8_t> getDigest() override {
+				return std::vector<uint8_t>(context.digest, context.digest + 32);
+			}
 		private:
 			typedef struct {
 				uint64_t state[8], count[2];
@@ -1119,10 +1054,10 @@ namespace hashpp {
 				0x4CC5D4BECB3E42B6, 0x597F299CFC657E2A, 0x5FCB6FAB3AD6FAEC, 0x6C44198C4A475817
 			};
 
-			void ctx_init();
+			void ctx_init() override;
 			void ctx_transform(const uint8_t* data);
-			void ctx_update(const uint8_t* data, size_t len);
-			void ctx_final();
+			void ctx_update(const uint8_t* data, size_t len) override;
+			void ctx_final() override;
 
 			constexpr uint64_t F(const uint64_t A, const uint64_t B, const uint64_t C);
 			constexpr uint64_t G(const uint64_t A, const uint64_t B, const uint64_t C);
@@ -1136,22 +1071,6 @@ namespace hashpp {
 		};
 
 		// SHA-1
-		uint8_t* hashpp::SHA::SHA1::getBytes(std::string data) {
-			this->ctx_init();
-			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.length());
-			this->ctx_final();
-
-			uint8_t* result = new uint8_t[20];
-			memcpy(result, context.digest, 20);
-			return result;
-		}
-		std::string hashpp::SHA::SHA1::getHash(std::string data) {
-			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
-			for (uint32_t i = 0; i < 20; i++) {
-				data += this->hexTable[bytes[i]];
-			}
-			return data;
-		}
 		void hashpp::SHA::SHA1::ctx_init() {
 			this->context = {
 				{this->H[0], this->H[1], this->H[2], this->H[3], this->H[4]},
@@ -1277,22 +1196,6 @@ namespace hashpp {
 		constexpr uint32_t hashpp::SHA::SHA1::J(const uint32_t B, const uint32_t C, const uint32_t D) { return ((B ^ C ^ D)); }
 
 		// SHA2-224
-		uint8_t* hashpp::SHA::SHA2_224::getBytes(std::string data) {
-			this->ctx_init();
-			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.length());
-			this->ctx_final();
-
-			uint8_t* result = new uint8_t[28];
-			memcpy(result, context.digest, 28);
-			return result;
-		}
-		std::string hashpp::SHA::SHA2_224::getHash(std::string data) {
-			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
-			for (uint32_t i = 0; i < 28; i++) {
-				data += this->hexTable[bytes[i]];
-			}
-			return data;
-		}
 		void hashpp::SHA::SHA2_224::ctx_init() {
 			this->context = {
 				{this->H[0], this->H[1], this->H[2], this->H[3],
@@ -1401,39 +1304,6 @@ namespace hashpp {
 		uint32_t hashpp::SHA::SHA2_224::SIGMA3(const uint32_t A) { return (this->rr32(A, 17) ^ this->rr32(A, 19) ^ ((A) >> 10)); }
 
 		// SHA2-256
-		uint8_t* hashpp::SHA::SHA2_256::getBytes(std::string data) {
-			this->ctx_init();
-			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.length());
-			this->ctx_final();
-
-			uint8_t* result = new uint8_t[32];
-			memcpy(result, context.digest, 32);
-			return result;
-		}
-		std::string hashpp::SHA::SHA2_256::getHash(std::string data) {
-			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
-			for (uint32_t i = 0; i < 32; i++) {
-				data += this->hexTable[bytes[i]];
-			}
-			return data;
-		}
-		std::string hashpp::SHA::SHA2_256::getHash(std::filesystem::path path) {
-			this->ctx_init();
-			{
-				std::ifstream file(path, std::ios::binary);
-				std::vector<char> buf(1024 * 1024, 0);
-				while (!file.eof()) {
-					file.read(buf.data(), buf.size());
-					this->ctx_update(reinterpret_cast<uint8_t*>(buf.data()), file.gcount());
-				}
-			}
-			this->ctx_final();
-			std::string hash;
-			for (uint8_t i = 0; i < 32; i++) {
-				hash += this->hexTable[context.digest[i]];
-			}
-			return hash;
-		}
 		void hashpp::SHA::SHA2_256::ctx_init() {
 			this->context = {
 				{this->H[0], this->H[1], this->H[2], this->H[3],
@@ -1544,22 +1414,6 @@ namespace hashpp {
 		uint32_t hashpp::SHA::SHA2_256::SIGMA3(const uint32_t A) { return (this->rr32(A, 17) ^ this->rr32(A, 19) ^ ((A) >> 10)); }
 
 		// SHA2-384
-		uint8_t* hashpp::SHA::SHA2_384::getBytes(std::string data) {
-			this->ctx_init();
-			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.length());
-			this->ctx_final();
-
-			uint8_t* result = new uint8_t[48];
-			memcpy(result, context.digest, 48);
-			return result;
-		}
-		std::string hashpp::SHA::SHA2_384::getHash(std::string data) {
-			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
-			for (uint32_t i = 0; i < 48; i++) {
-				data += this->hexTable[bytes[i]];
-			}
-			return data;
-		}
 		void hashpp::SHA::SHA2_384::ctx_init() {
 			this->context = {
 				{this->H[0], this->H[1], this->H[2], this->H[3],
@@ -1688,22 +1542,6 @@ namespace hashpp {
 		uint64_t hashpp::SHA::SHA2_384::SIGMA3(const uint64_t A) { return this->rr64(A, 19) ^ this->rr64(A, 61) ^ (A >> 6); }
 
 		// SHA2-512
-		uint8_t* hashpp::SHA::SHA2_512::getBytes(std::string data) {
-			this->ctx_init();
-			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.length());
-			this->ctx_final();
-
-			uint8_t* result = new uint8_t[64];
-			memcpy(result, context.digest, 64);
-			return result;
-		}
-		std::string hashpp::SHA::SHA2_512::getHash(std::string data) {
-			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
-			for (uint32_t i = 0; i < 64; i++) {
-				data += this->hexTable[bytes[i]];
-			}
-			return data;
-		}
 		void hashpp::SHA::SHA2_512::ctx_init() {
 			this->context = {
 				{this->H[0], this->H[1], this->H[2], this->H[3],
@@ -1834,22 +1672,6 @@ namespace hashpp {
 		uint64_t hashpp::SHA::SHA2_512::SIGMA3(const uint64_t A) { return this->rr64(A, 19) ^ this->rr64(A, 61) ^ (A >> 6); }
 
 		// SHA2-512-224
-		uint8_t* hashpp::SHA::SHA2_512_224::getBytes(std::string data) {
-			this->ctx_init();
-			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.length());
-			this->ctx_final();
-
-			uint8_t* result = new uint8_t[28];
-			memcpy(result, context.digest, 28);
-			return result;
-		}
-		std::string hashpp::SHA::SHA2_512_224::getHash(std::string data) {
-			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
-			for (uint32_t i = 0; i < 28; i++) {
-				data += this->hexTable[bytes[i]];
-			}
-			return data;
-		}
 		void hashpp::SHA::SHA2_512_224::ctx_init() {
 			this->context = {
 				{this->H[0], this->H[1], this->H[2], this->H[3],
@@ -1977,22 +1799,6 @@ namespace hashpp {
 		uint64_t hashpp::SHA::SHA2_512_224::SIGMA3(const uint64_t A) { return this->rr64(A, 19) ^ this->rr64(A, 61) ^ (A >> 6); }
 
 		// SHA2-512-256
-		uint8_t* hashpp::SHA::SHA2_512_256::getBytes(std::string data) {
-			this->ctx_init();
-			this->ctx_update(reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())), data.length());
-			this->ctx_final();
-
-			uint8_t* result = new uint8_t[32];
-			memcpy(result, context.digest, 32);
-			return result;
-		}
-		std::string hashpp::SHA::SHA2_512_256::getHash(std::string data) {
-			std::unique_ptr<uint8_t[]> bytes(this->getBytes(data)); data.clear();
-			for (uint32_t i = 0; i < 32; i++) {
-				data += this->hexTable[bytes[i]];
-			}
-			return data;
-		}
 		void hashpp::SHA::SHA2_512_256::ctx_init() {
 			this->context = {
 				{this->H[0], this->H[1], this->H[2], this->H[3],
@@ -2329,61 +2135,34 @@ namespace hashpp {
 			if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
 				switch (algorithm) {
 					case hashpp::ALGORITHMS::MD5: {
-						std::ifstream tmp(path, std::ios::binary);
-						std::stringstream ss;
-						ss << tmp.rdbuf();
-						return { hashpp::MD::MD5().getHash(ss.str()) };
+						return hashpp::MD::MD5().getHash(std::filesystem::path(path));
 					}
 					case hashpp::ALGORITHMS::MD4: {
-						std::ifstream tmp(path, std::ios::binary);
-						std::stringstream ss;
-						ss << tmp.rdbuf();
-						return { hashpp::MD::MD4().getHash(ss.str()) };
+						return hashpp::MD::MD4().getHash(std::filesystem::path(path));
 					}
 					case hashpp::ALGORITHMS::MD2: {
-						std::ifstream tmp(path, std::ios::binary);
-						std::stringstream ss;
-						ss << tmp.rdbuf();
-						return { hashpp::MD::MD2().getHash(ss.str()) };
+						return hashpp::MD::MD2().getHash(std::filesystem::path(path));
 					}
 					case hashpp::ALGORITHMS::SHA1: {
-						std::ifstream tmp(path, std::ios::binary);
-						std::stringstream ss;
-						ss << tmp.rdbuf();
-						return { hashpp::SHA::SHA1().getHash(ss.str()) };
+						return hashpp::SHA::SHA1().getHash(std::filesystem::path(path));
 					}
 					case hashpp::ALGORITHMS::SHA2_224: {
-						std::ifstream tmp(path, std::ios::binary);
-						std::stringstream ss;
-						ss << tmp.rdbuf();
-						return { hashpp::SHA::SHA2_224().getHash(ss.str()) };
+						return hashpp::SHA::SHA2_224().getHash(std::filesystem::path(path));
 					}
 					case hashpp::ALGORITHMS::SHA2_256: {
 						return hashpp::SHA::SHA2_256().getHash(std::filesystem::path(path));
 					}
 					case hashpp::ALGORITHMS::SHA2_384: {
-						std::ifstream tmp(path, std::ios::binary);
-						std::stringstream ss;
-						ss << tmp.rdbuf();
-						return { hashpp::SHA::SHA2_384().getHash(ss.str()) };
+						return hashpp::SHA::SHA2_384().getHash(std::filesystem::path(path));
 					}
 					case hashpp::ALGORITHMS::SHA2_512: {
-						std::ifstream tmp(path, std::ios::binary);
-						std::stringstream ss;
-						ss << tmp.rdbuf();
-						return { hashpp::SHA::SHA2_512().getHash(ss.str()) };
+						return hashpp::SHA::SHA2_512().getHash(std::filesystem::path(path));
 					}
 					case hashpp::ALGORITHMS::SHA2_512_224: {
-						std::ifstream tmp(path, std::ios::binary);
-						std::stringstream ss;
-						ss << tmp.rdbuf();
-						return { hashpp::SHA::SHA2_512_224().getHash(ss.str()) };
+						return hashpp::SHA::SHA2_512_224().getHash(std::filesystem::path(path));
 					}
 					case hashpp::ALGORITHMS::SHA2_512_256: {
-						std::ifstream tmp(path, std::ios::binary);
-						std::stringstream ss;
-						ss << tmp.rdbuf();
-						return { hashpp::SHA::SHA2_512_256().getHash(ss.str()) };
+						return hashpp::SHA::SHA2_512_256().getHash(std::filesystem::path(path));
 					}
 					default: {
 						return hashpp::hash();
@@ -2404,73 +2183,43 @@ namespace hashpp {
 					if (std::filesystem::exists(_path) && std::filesystem::is_regular_file(_path)) {
 						switch (twin.first) {
 							case hashpp::ALGORITHMS::MD5: {
-								std::ifstream tmp(_path, std::ios::binary);
-								std::stringstream ss;
-								ss << tmp.rdbuf();
-								vMD5.push_back(hashpp::MD::MD5().getHash(ss.str()));
+								vMD5.push_back(hashpp::MD::MD5().getHash(std::filesystem::path(_path)));
 								break;
 							}
 							case hashpp::ALGORITHMS::MD4: {
-								std::ifstream tmp(_path, std::ios::binary);
-								std::stringstream ss;
-								ss << tmp.rdbuf();
-								vMD4.push_back(hashpp::MD::MD4().getHash(ss.str()));
+								vMD4.push_back(hashpp::MD::MD4().getHash(std::filesystem::path(_path)));
 								break;
 							}
 							case hashpp::ALGORITHMS::MD2: {
-								std::ifstream tmp(_path, std::ios::binary);
-								std::stringstream ss;
-								ss << tmp.rdbuf();
-								vMD2.push_back(hashpp::MD::MD2().getHash(ss.str()));
+								vMD2.push_back(hashpp::MD::MD2().getHash(std::filesystem::path(_path)));
 								break;
 							}
 							case hashpp::ALGORITHMS::SHA1: {
-								std::ifstream tmp(_path, std::ios::binary);
-								std::stringstream ss;
-								ss << tmp.rdbuf();
-								vSHA1.push_back(hashpp::SHA::SHA1().getHash(ss.str()));
+								vSHA1.push_back(hashpp::SHA::SHA1().getHash(std::filesystem::path(_path)));
 								break;
 							}
 							case hashpp::ALGORITHMS::SHA2_224: {
-								std::ifstream tmp(_path, std::ios::binary);
-								std::stringstream ss;
-								ss << tmp.rdbuf();
-								vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(ss.str()));
+								vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(std::filesystem::path(_path)));
 								break;
 							}
 							case hashpp::ALGORITHMS::SHA2_256: {
-								std::ifstream tmp(_path, std::ios::binary);
-								std::stringstream ss;
-								ss << tmp.rdbuf();
-								vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(ss.str()));
+								vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(std::filesystem::path(_path)));
 								break;
 							}
 							case hashpp::ALGORITHMS::SHA2_384: {
-								std::ifstream tmp(_path, std::ios::binary);
-								std::stringstream ss;
-								ss << tmp.rdbuf();
-								vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(ss.str()));
+								vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(std::filesystem::path(_path)));
 								break;
 							}
 							case hashpp::ALGORITHMS::SHA2_512: {
-								std::ifstream tmp(_path, std::ios::binary);
-								std::stringstream ss;
-								ss << tmp.rdbuf();
-								vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(ss.str()));
+								vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(std::filesystem::path(_path)));
 								break;
 							}
 							case hashpp::ALGORITHMS::SHA2_512_224: {
-								std::ifstream tmp(_path, std::ios::binary);
-								std::stringstream ss;
-								ss << tmp.rdbuf();
-								vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(ss.str()));
+								vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(std::filesystem::path(_path)));
 								break;
 							}
 							case hashpp::ALGORITHMS::SHA2_512_256: {
-								std::ifstream tmp(_path, std::ios::binary);
-								std::stringstream ss;
-								ss << tmp.rdbuf();
-								vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(ss.str()));
+								vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(std::filesystem::path(_path)));
 								break;
 							}
 						}
@@ -2480,73 +2229,43 @@ namespace hashpp {
 							if (item.is_regular_file()) {
 								switch (twin.first) {
 									case hashpp::ALGORITHMS::MD5: {
-										std::ifstream tmp(item.path().generic_string(), std::ios::binary);
-										std::stringstream ss;
-										ss << tmp.rdbuf();
-										vMD5.push_back(hashpp::MD::MD5().getHash(ss.str()));
+										vMD5.push_back(hashpp::MD::MD5().getHash(item.path()));
 										break;
 									}
 									case hashpp::ALGORITHMS::MD4: {
-										std::ifstream tmp(item.path().generic_string(), std::ios::binary);
-										std::stringstream ss;
-										ss << tmp.rdbuf();
-										vMD4.push_back(hashpp::MD::MD4().getHash(ss.str()));
+										vMD4.push_back(hashpp::MD::MD4().getHash(item.path()));
 										break;
 									}
 									case hashpp::ALGORITHMS::MD2: {
-										std::ifstream tmp(item.path().generic_string(), std::ios::binary);
-										std::stringstream ss;
-										ss << tmp.rdbuf();
-										vMD2.push_back(hashpp::MD::MD2().getHash(ss.str()));
+										vMD2.push_back(hashpp::MD::MD2().getHash(item.path()));
 										break;
 									}
 									case hashpp::ALGORITHMS::SHA1: {
-										std::ifstream tmp(item.path().generic_string(), std::ios::binary);
-										std::stringstream ss;
-										ss << tmp.rdbuf();
-										vSHA1.push_back(hashpp::SHA::SHA1().getHash(ss.str()));
+										vSHA1.push_back(hashpp::SHA::SHA1().getHash(item.path()));
 										break;
 									}
 									case hashpp::ALGORITHMS::SHA2_224: {
-										std::ifstream tmp(item.path().generic_string(), std::ios::binary);
-										std::stringstream ss;
-										ss << tmp.rdbuf();
-										vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(ss.str()));
+										vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(item.path()));
 										break;
 									}
 									case hashpp::ALGORITHMS::SHA2_256: {
-										std::ifstream tmp(item.path().generic_string(), std::ios::binary);
-										std::stringstream ss;
-										ss << tmp.rdbuf();
-										vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(ss.str()));
+										vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(item.path()));
 										break;
 									}
 									case hashpp::ALGORITHMS::SHA2_384: {
-										std::ifstream tmp(item.path().generic_string(), std::ios::binary);
-										std::stringstream ss;
-										ss << tmp.rdbuf();
-										vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(ss.str()));
+										vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(item.path()));
 										break;
 									}
 									case hashpp::ALGORITHMS::SHA2_512: {
-										std::ifstream tmp(item.path().generic_string(), std::ios::binary);
-										std::stringstream ss;
-										ss << tmp.rdbuf();
-										vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(ss.str()));
+										vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(item.path()));
 										break;
 									}
 									case hashpp::ALGORITHMS::SHA2_512_224: {
-										std::ifstream tmp(item.path().generic_string(), std::ios::binary);
-										std::stringstream ss;
-										ss << tmp.rdbuf();
-										vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(ss.str()));
+										vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(item.path()));
 										break;
 									}
 									case hashpp::ALGORITHMS::SHA2_512_256: {
-										std::ifstream tmp(item.path().generic_string(), std::ios::binary);
-										std::stringstream ss;
-										ss << tmp.rdbuf();
-										vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(ss.str()));
+										vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(item.path()));
 										break;
 									}
 								}
