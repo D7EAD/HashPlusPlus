@@ -67,7 +67,7 @@ Below you can find single-threaded speed metrics of each algorithm when calculat
 | 64-bit test:     |           |           |
 |   [MD5]          | 7143   ms | 7.143   s |
 |   [MD4]          | 5121   ms | 5.121   s |
-|   [MD2]          | 323220 ms | 323.220 s | 
+|   [MD2]          | *N/A   ms | N/A     s | 
 |   [SHA1]         | 10020  ms | 10.020  s |
 |   [SHA2-224]     | 13442  ms | 13.442  s |
 |   [SHA2-256]     | 13668  ms | 13.668  s |
@@ -88,7 +88,8 @@ Below you can find single-threaded speed metrics of each algorithm when calculat
 |   [SHA2-512/224] | 24418  ms | 24.418  s |
 |   [SHA2-512/256] | 24343  ms | 24.343  s |
 +------------------------------------------+
-*Updated as of 11/15/2021; all computed on a stock i9 12900K
+*Excluded due to impractically long computational times.
+**Updated as of 11/15/2021; all computed on a stock i9 12900K
 ```
 
 <h1><i>Using Hash++</i></h1>
