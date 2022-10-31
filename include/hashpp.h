@@ -2052,42 +2052,42 @@ namespace hashpp {
 		public:
 			// function to return a resulting hash from selected ALGORITHM and passed data
 			static hashpp::hash getHash(hashpp::ALGORITHMS algorithm, const std::string& data) {
-				switch (algorithm) {
-					case hashpp::ALGORITHMS::MD5: {
-						return { hashpp::MD::MD5().getHash(data) };
-					}
-					case hashpp::ALGORITHMS::MD4: {
-						return { hashpp::MD::MD4().getHash(data) };
-					}
-					case hashpp::ALGORITHMS::MD2: {
-						return { hashpp::MD::MD2().getHash(data) };
-					}
-					case hashpp::ALGORITHMS::SHA1: {
-						return { hashpp::SHA::SHA1().getHash(data) };
-					}
-					case hashpp::ALGORITHMS::SHA2_224: {
-						return { hashpp::SHA::SHA2_224().getHash(data) };
-					}
-					case hashpp::ALGORITHMS::SHA2_256: {
-						return { hashpp::SHA::SHA2_256().getHash(data) };
-					}
-					case hashpp::ALGORITHMS::SHA2_384: {
-						return { hashpp::SHA::SHA2_384().getHash(data) };
-					}
-					case hashpp::ALGORITHMS::SHA2_512: {
-						return { hashpp::SHA::SHA2_512().getHash(data) };
-					}
-					case hashpp::ALGORITHMS::SHA2_512_224: {
-						return { hashpp::SHA::SHA2_512_224().getHash(data) };
-					}
-					case hashpp::ALGORITHMS::SHA2_512_256: {
-						return { hashpp::SHA::SHA2_512_256().getHash(data) };
-					}
-					default: {
-						return hashpp::hash();
-					}
+			switch (algorithm) {
+				case hashpp::ALGORITHMS::MD5: {
+					return { hashpp::MD::MD5().getHash(data) };
+				}
+				case hashpp::ALGORITHMS::MD4: {
+					return { hashpp::MD::MD4().getHash(data) };
+				}
+				case hashpp::ALGORITHMS::MD2: {
+					return { hashpp::MD::MD2().getHash(data) };
+				}
+				case hashpp::ALGORITHMS::SHA1: {
+					return { hashpp::SHA::SHA1().getHash(data) };
+				}
+				case hashpp::ALGORITHMS::SHA2_224: {
+					return { hashpp::SHA::SHA2_224().getHash(data) };
+				}
+				case hashpp::ALGORITHMS::SHA2_256: {
+					return { hashpp::SHA::SHA2_256().getHash(data) };
+				}
+				case hashpp::ALGORITHMS::SHA2_384: {
+					return { hashpp::SHA::SHA2_384().getHash(data) };
+				}
+				case hashpp::ALGORITHMS::SHA2_512: {
+					return { hashpp::SHA::SHA2_512().getHash(data) };
+				}
+				case hashpp::ALGORITHMS::SHA2_512_224: {
+					return { hashpp::SHA::SHA2_512_224().getHash(data) };
+				}
+				case hashpp::ALGORITHMS::SHA2_512_256: {
+					return { hashpp::SHA::SHA2_512_256().getHash(data) };
+				}
+				default: {
+					return hashpp::hash();
 				}
 			}
+		}
 
 			// function to return a collection of resulting hashes from selected ALGORITHMS and passed data
 			static hashpp::hashCollection getHashes(const std::vector<std::pair<hashpp::ALGORITHMS, std::vector<std::string>>>& algorithmDataPairs) {
