@@ -2355,7 +2355,7 @@ namespace hashpp {
 					hashpp::get::getFileHash(algorithm, path);
 					this->stop = std::chrono::high_resolution_clock::now();
 					this->duration = std::chrono::duration_cast<_Ty>(this->stop - this->start);
-					std::cout << this->comparisons[static_cast<uint8_t>(algorithm)].second << " took " << this->duration.count() << " milliseconds to calculate hash of file '" << path << "'.\n" << std::endl;
+					std::cout << this->comparisons[static_cast<uint8_t>(algorithm)].second << " took " << this->duration.count() << " milliseconds to calculate hash of file '" << path << "'" << std::endl;
 				}
 			}
 
