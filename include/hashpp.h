@@ -2352,7 +2352,7 @@ namespace hashpp {
 				std::cout << "Testing algorithm speeds for hashing of file '" << path << "'.\n" << std::endl;
 				for (const hashpp::ALGORITHMS& algorithm : this->algorithms) {
 					this->start = std::chrono::high_resolution_clock::now();
-					hashpp::get::getFileHash(algorithm, std::filesystem::path(path));
+					hashpp::get::getFileHash(algorithm, path);
 					this->stop = std::chrono::high_resolution_clock::now();
 					this->duration = std::chrono::duration_cast<_Ty>(this->stop - this->start);
 					std::cout << this->comparisons[static_cast<uint8_t>(algorithm)].second << " took " << this->duration.count() << " milliseconds to calculate hash of file '" << path << "'.\n" << std::endl;
