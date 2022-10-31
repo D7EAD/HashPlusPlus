@@ -58,6 +58,39 @@ Below you can find single-threaded speed metrics of each algorithm when generati
 *Updated as of 11/15/2021; all computed on a stock i9 12900K
 ```
 
+Below you can find single-threaded speed metrics of each algorithm when calculating a hash for a 3GB binary file.
+
+```
++------------------------------------------+
+|    Algorithms    | Computational Metrics |          
+|------------------|-----------------------|
+| 64-bit test:     |           |           |
+|   [MD5]          | 7143   ms | 7.143   s |
+|   [MD4]          | 5121   ms | 5.121   s |
+|   [MD2]          | 323220 ms | 323.220 s | 
+|   [SHA1]         | 10020  ms | 10.020  s |
+|   [SHA2-224]     | 13442  ms | 13.442  s |
+|   [SHA2-256]     | 13668  ms | 13.668  s |
+|   [SHA2-384]     | 10324  ms | 10.324  s |
+|   [SHA2-512]     | 10680  ms | 10.680  s |
+|   [SHA2-512/224] | 9748   ms | 9.748   s |
+|   [SHA2-512/256] | 9965   ms | 9.965   s |
+|------------------|-----------|-----------|
+| 32-bit test:     |           |           |
+|   [MD5]          | 10707  ms | 10.707  s |
+|   [MD4]          | 7815   ms | 7.815   s |
+|   [MD2]          | 204250 ms | 204.250 s |
+|   [SHA1]         | 11942  ms | 11.942  s |
+|   [SHA2-224]     | 16518  ms | 16.518  s |
+|   [SHA2-256]     | 16306  ms | 16.306  s |
+|   [SHA2-384]     | 25171  ms | 25.171  s |
+|   [SHA2-512]     | 26746  ms | 26.746  s |
+|   [SHA2-512/224] | 24418  ms | 24.418  s |
+|   [SHA2-512/256] | 24343  ms | 24.343  s |
++------------------------------------------+
+*Updated as of 11/15/2021; all computed on a stock i9 12900K
+```
+
 <h1><i>Using Hash++</i></h1>
 My original design idea behind Hash++ was for it to be <b>simple</b>. This has remained unchanged.
 <br><br>
