@@ -89,7 +89,7 @@ No, it doesn't.
 |   [SHA2-512/256] | 18550  ms | 18.550  s |
 +------------------------------------------+
 *Excluded due to impractically long computational times.
-**Updated as of 11/15/2021; all computed on a stock i9 12900K
+**Updated as of 11/03/2022; all computed on a stock i9 12900K
 ```
 
 <h1><i>Using Hash++</i></h1>
