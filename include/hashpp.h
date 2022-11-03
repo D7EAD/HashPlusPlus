@@ -2317,7 +2317,30 @@ namespace hashpp {
 	};
 
 	#if defined(HASHPP_INCLUDE_METRICS)
-	template <class _Ty = std::chrono::milliseconds>
+	// well-defined timer class for use in metrics
+	template <class _Ty>
+	class timer {
+		public:
+			void startTimer() {
+				this->_start = std::chrono::high_resolution_clock::now();
+			}
+			
+			void stopTimer() {
+				this->_end = std::chrono::high_resolution_clock::now();
+				this->_duration = std::chrono::duration_cast<_Ty>(this->_end - this->_start);
+			}
+			
+			constexpr _Ty getTime() const {
+				return std::chrono::duration_cast<_Ty>(this->_end - this->_start);
+			}
+			
+		private:
+			std::chrono::steady_clock::time_point _start;
+			std::chrono::steady_clock::time_point _end;
+			_Ty _duration;
+	};
+	
+	template <bool IncludeMD2 = true, class _Ty = std::chrono::milliseconds>
 	class metrics { // optional class for algorithm metrics and benchmarking
 		public:
 			// Function to check each algorithm for correctness
@@ -2335,15 +2358,19 @@ namespace hashpp {
 			// Function to measure performance of all hashing algorithms when hashing 10 million
 			// repetitions of argument 'target.'
 			void benchmarkAlgorithms(const std::string& target) {
-				std::cout << "Testing 10m hashing repitions of '" << target << "'.\n" << std::endl;
+				std::cout << "Testing 10m hashing repetitions of '" << target << "'.\n" << std::endl;
 				for (const hashpp::ALGORITHMS& algorithm : this->algorithms) {
-					this->start = std::chrono::high_resolution_clock::now();
-					for (uint32_t i = 0; i < 10000000; i++) {
-						hashpp::get::getHash(algorithm, target);
+					if (algorithm == hashpp::ALGORITHMS::MD2 && !IncludeMD2) {
+						continue;
 					}
-					this->stop = std::chrono::high_resolution_clock::now();
-					this->duration = std::chrono::duration_cast<_Ty>(this->stop - this->start);
-					std::cout << this->comparisons[static_cast<uint8_t>(algorithm)].second << " took " << this->duration.count() << " milliseconds." << std::endl;
+					else {
+						this->timer.startTimer();
+						for (uint32_t i = 0; i < 10000000; i++) {
+							hashpp::get::getHash(algorithm, target);
+						}
+						this->timer.stopTimer();
+						std::cout << this->comparisons[static_cast<uint8_t>(algorithm)].second << ": " << this->timer.getTime().count() << std::endl;
+					}
 				}
 			}
 
@@ -2351,11 +2378,15 @@ namespace hashpp {
 			void benchmarkAlgorithms_File(const std::string& path) {
 				std::cout << "Testing algorithm speeds for hashing of file '" << path << "'.\n" << std::endl;
 				for (const hashpp::ALGORITHMS& algorithm : this->algorithms) {
-					this->start = std::chrono::high_resolution_clock::now();
-					hashpp::get::getFileHash(algorithm, path);
-					this->stop = std::chrono::high_resolution_clock::now();
-					this->duration = std::chrono::duration_cast<_Ty>(this->stop - this->start);
-					std::cout << this->comparisons[static_cast<uint8_t>(algorithm)].second << " took " << this->duration.count() << " milliseconds to calculate hash of file '" << path << "'" << std::endl;
+					if (algorithm == hashpp::ALGORITHMS::MD2 && !IncludeMD2) {
+						continue;
+					}
+					else {
+						this->timer.startTimer();
+						hashpp::get::getFileHash(algorithm, path);
+						this->timer.stopTimer();
+						std::cout << this->comparisons[static_cast<uint8_t>(algorithm)].second << ": " << this->timer.getTime().count() << std::endl;
+					}
 				}
 			}
 
@@ -2387,8 +2418,8 @@ namespace hashpp {
 				{ "9a895196448c0a9daa9769b48f29db5b41cfe2f6f65943a8ef2b8f446e388f7e", "SHA2-512/256" }
 			};
 
-			std::chrono::steady_clock::time_point start, stop;
 			_Ty duration;
+			timer<_Ty> timer;
 	};
 	#endif
 }
