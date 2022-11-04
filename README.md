@@ -104,7 +104,7 @@ Retrieve a single hash from a single piece of data.
 
 ```cpp
 // function to return a resulting hash from selected ALGORITHM and passed data
-static hashpp::hash getHash(hashpp::ALGORITHMS algorithm, std::string data)
+static hashpp::hash getHash(hashpp::ALGORITHMS algorithm, const std::string& data)
 ```
 
 <h3><code>getHashes</code></h3>
@@ -112,7 +112,7 @@ Retrieve a collection of hashes from multiple pieces of data.
 
 ```cpp
 // function to return a collection of resulting hashes from selected ALGORITHMS and passed data
-static hashpp::hashCollection getHashes(std::vector<std::pair<hashpp::ALGORITHMS, std::vector<std::string>>> algorithmDataPairs)
+static hashpp::hashCollection getHashes(const std::vector<std::pair<hashpp::ALGORITHMS, std::vector<std::string>>>& algorithmDataPairs)
 ```
 
 <h3><code>getFileHash</code></h3>
@@ -120,7 +120,7 @@ Retrieve a single hash from a single file.
 
 ```cpp
 // function to return a resulting hash from selected ALGORITHM and passed file
-static hashpp::hash getFileHash(hashpp::ALGORITHMS algorithm, std::string path)
+static hashpp::hash getFileHash(hashpp::ALGORITHMS algorithm, const std::string& path)
 ```
 
 <h3><code>getFilesHashes</code></h3>
@@ -128,5 +128,5 @@ Retrieve a collection of hashes from multiple files or files in nested directori
 
 ```cpp
 // function to return a collection of resulting hashes from selected ALGORITHMS and passed files (with recursive directory support)
-static hashpp::hashCollection getFilesHashes(std::vector<std::pair<hashpp::ALGORITHMS, std::vector<std::string>>> algorithmPathPairs)
+static hashpp::hashCollection getFilesHashes(const std::vector<std::pair<hashpp::ALGORITHMS, std::vector<std::string>>>& algorithmPathPairs)
 ```
