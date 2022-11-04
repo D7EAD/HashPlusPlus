@@ -2327,7 +2327,6 @@ namespace hashpp {
 			
 			void stopTimer() {
 				this->_end = std::chrono::high_resolution_clock::now();
-				this->_duration = std::chrono::duration_cast<_Ty>(this->_end - this->_start);
 			}
 			
 			constexpr _Ty getTime() const {
@@ -2337,14 +2336,13 @@ namespace hashpp {
 		private:
 			std::chrono::steady_clock::time_point _start;
 			std::chrono::steady_clock::time_point _end;
-			_Ty _duration;
 	};
 	
 	template <bool IncludeMD2 = true, class _Ty = std::chrono::milliseconds>
-	class metrics { // optional class for algorithm metrics and benchmarking
+	class metrics : private timer<_Ty> { // optional class for algorithm metrics and benchmarking
 		public:
 			// Function to check each algorithm for correctness
-			void checkAlgorithms() {
+			void checkAlgorithms() const {
 				for (const hashpp::ALGORITHMS& algorithm : this->algorithms) {
 					if (hashpp::get::getHash(algorithm, "d").getString() == this->comparisons[static_cast<uint8_t>(algorithm)].first) {
 						std::cout << this->comparisons[static_cast<uint8_t>(algorithm)].second << " pass." << std::endl;
@@ -2364,12 +2362,12 @@ namespace hashpp {
 						continue;
 					}
 					else {
-						this->timer.startTimer();
+						this->startTimer();
 						for (uint32_t i = 0; i < 10000000; i++) {
 							hashpp::get::getHash(algorithm, target);
 						}
-						this->timer.stopTimer();
-						std::cout << this->comparisons[static_cast<uint8_t>(algorithm)].second << ": " << this->timer.getTime().count() << std::endl;
+						this->stopTimer();
+						std::cout << this->comparisons[static_cast<uint8_t>(algorithm)].second << ": " << this->getTime().count() << std::endl;
 					}
 				}
 			}
@@ -2382,16 +2380,16 @@ namespace hashpp {
 						continue;
 					}
 					else {
-						this->timer.startTimer();
+						this->startTimer();
 						hashpp::get::getFileHash(algorithm, path);
-						this->timer.stopTimer();
-						std::cout << this->comparisons[static_cast<uint8_t>(algorithm)].second << ": " << this->timer.getTime().count() << std::endl;
+						this->stopTimer();
+						std::cout << this->comparisons[static_cast<uint8_t>(algorithm)].second << ": " << this->getTime().count() << std::endl;
 					}
 				}
 			}
 
 		private:
-			std::vector<hashpp::ALGORITHMS> algorithms = {
+			const std::vector<hashpp::ALGORITHMS> algorithms = {
 				hashpp::ALGORITHMS::MD5,
 				hashpp::ALGORITHMS::MD4,
 				hashpp::ALGORITHMS::MD2,
@@ -2405,7 +2403,7 @@ namespace hashpp {
 			};
 
 			// All correct hashes of data 'd' for comparison
-			std::vector<std::pair<std::string, std::string>> comparisons = {
+			const std::vector<std::pair<std::string, std::string>> comparisons = {
 				{ "8277e0910d750195b448797616e091ad", "MD5" },
 				{ "5d3f7ed29552c4ab4612fb7686bb52bb", "MD4" },
 				{ "96978c0796ce94f7beb31576946b6bed", "MD2" },
@@ -2417,9 +2415,6 @@ namespace hashpp {
 				{ "a8c9aa3f45f2ada72e3ae9278407b4ade221490596c69b27af611dae", "SHA2-512/224" },
 				{ "9a895196448c0a9daa9769b48f29db5b41cfe2f6f65943a8ef2b8f446e388f7e", "SHA2-512/256" }
 			};
-
-			_Ty duration;
-			timer<_Ty> timer;
 	};
 	#endif
 }
