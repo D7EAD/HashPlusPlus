@@ -1993,8 +1993,8 @@ namespace hashpp {
 
 	class hashCollection {
 		public:
-			hashCollection(const std::vector<std::pair<std::string, std::vector<std::string>>>& data) : collection(data) {}
-			hashCollection(std::vector<std::pair<std::string, std::vector<std::string>>>&& data) : collection(std::move(data)) {}
+			hashCollection(const std::vector<std::pair<std::string, std::vector<std::string>>>& data) noexcept : collection(data) {}
+			hashCollection(std::vector<std::pair<std::string, std::vector<std::string>>>&& data) noexcept : collection(std::move(data)) {}
 
 			// operator[] overload to access collections of hashpp
 			// by their specific algorithm
