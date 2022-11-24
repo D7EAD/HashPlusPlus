@@ -1947,23 +1947,28 @@ namespace hashpp {
 	class hash {
 		public:
 			hash() = default;
-			hash(const std::string& hex) : hashStr(hex) {}
-			hash(std::string&& hex) : hashStr(std::move(hex)) {}
+			hash(const std::string& hex) noexcept : hashStr(hex) {}
+			hash(std::string&& hex) noexcept : hashStr(std::move(hex)) {}
 
 			bool valid() const noexcept { return !this->hashStr.empty(); }
 			std::string getString() const noexcept { return this->hashStr; };
 
-			template <class _Ty>
-			friend std::ostream& operator<<(std::ostream& _Ostr, _Ty object) {
+			operator std::string() const noexcept { return this->hashStr; }
+			friend std::ostream& operator<<(std::ostream& _Ostr, const hashpp::hash& object) {
 				_Ostr << object.hashStr;
 				return _Ostr;
 			}
 
-			template <class _Ty, std::enable_if_t<std::is_convertible_v<_Ty, std::string>, int> = 0>
+			bool operator==(const hashpp::hash& _rhs) {
+				return _rhs.hashStr == this->hashStr;
+			}
+			
+			template <class _Ty,
+				std::enable_if_t<std::is_constructible_v<std::string, _Ty>, int> = 0>
 			bool operator==(const _Ty& _rhs) {
 				return _rhs == this->hashStr;
 			}
-			
+
 		private:
 			std::string hashStr;
 	};
@@ -2000,7 +2005,7 @@ namespace hashpp {
 			// function used to check if there are any hashes in the collection
 			// under the requested algorithm
 			//
-			// for instance, the below will check if allHashes has hashpp of type MD5
+			// for instance, the below will check if allHashes has hash of type MD5
 			// auto allHashes = getHashes(...); if (allHashes.valid("MD5")) { ... }
 			bool valid(const std::string& algoID) const noexcept { return !this->operator[](algoID).empty(); }
 
