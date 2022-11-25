@@ -1946,7 +1946,9 @@ namespace hashpp {
 	// hash returned by the above described function(s)
 	class hash {
 		public:
-			hash() = default;
+			hash() noexcept = default;
+			hash(const hash& hashObj) noexcept : hashStr(hashObj.hashStr) {}
+			hash(hash&& hashObj) noexcept : hashStr(std::move(hashObj.hashStr)) {}
 			hash(const std::string& hex) noexcept : hashStr(hex) {}
 			hash(std::string&& hex) noexcept : hashStr(std::move(hex)) {}
 
@@ -1959,13 +1961,22 @@ namespace hashpp {
 				return _Ostr;
 			}
 
-			bool operator==(const hashpp::hash& _rhs) {
+			hash& operator=(const hashpp::hash& _rhs) noexcept {
+				this->hashStr = _rhs.hashStr;
+				return *this;
+			}
+
+			hash& operator=(hashpp::hash&& _rhs) noexcept {
+				this->hashStr = std::move(_rhs.hashStr);
+				return *this;
+			}
+
+			bool operator==(const hashpp::hash& _rhs) noexcept {
 				return _rhs.hashStr == this->hashStr;
 			}
-			
-			template <class _Ty,
-				std::enable_if_t<std::is_constructible_v<std::string, _Ty>, int> = 0>
-			bool operator==(const _Ty& _rhs) {
+
+			template <class _Ty, std::enable_if_t<std::is_constructible_v<std::string, _Ty>, int> = 0>
+			bool operator==(const _Ty& _rhs) noexcept {
 				return _rhs == this->hashStr;
 			}
 
@@ -1993,9 +2004,12 @@ namespace hashpp {
 
 	class hashCollection {
 		public:
+			hashCollection() noexcept = default;
+			hashCollection(const hashCollection& hc) noexcept : collection(hc.collection) {}
+			hashCollection(hashCollection&& hc) noexcept : collection(std::move(hc.collection)) {}
 			hashCollection(const std::vector<std::pair<std::string, std::vector<std::string>>>& data) noexcept : collection(data) {}
 			hashCollection(std::vector<std::pair<std::string, std::vector<std::string>>>&& data) noexcept : collection(std::move(data)) {}
-
+			
 			// operator[] overload to access collections of hashpp
 			// by their specific algorithm
 			std::vector<std::string> operator[](const std::string& algoID) const {
