@@ -164,7 +164,8 @@ namespace hashpp {
 				return this->bytesToHexString();
 			}
 
-			std::string getHMAC(std::string key, std::string data) {
+                        // get hexadecimal HMAC from key-data pair
+			std::string getHMAC(const std::string& key, const std::string& data) {
 				return this->HMAC(key, data);
 			}
 
