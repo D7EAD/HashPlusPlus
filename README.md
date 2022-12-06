@@ -112,24 +112,27 @@ static hashpp::hash getHMAC(hashpp::ALGORITHMS algorithm, const std::string& key
 Retrieve a collection of hashes from multiple pieces of data, or retrieve a collection of HMACs from multiple pieces of data.
 
 ```cpp
-static hashpp::hashCollection getHashes(const std::vector<std::pair<hashpp::ALGORITHMS, std::vector<std::string>>>& algorithmDataPairs);
-template <class... _Ts, ...> static hashpp::hashCollection getHashes(hashpp::ALGORITHMS algorithm, const _Ts&... data);
-static hashpp::hashCollection getHMACs(const std::vector<std::pair<hashpp::ALGORITHMS, std::vector<std::pair<std::string, std::string>>>>& algorithmKeyDataPairs);
-template <class... _Ts, ...> static hashpp::hashCollection getHMACs(hashpp::ALGORITHMS algorithm, const std::string& key, const _Ts&... data)
+static hashpp::hashCollection getHashes(const std::vector<DataContainer>& dataSets);
+static hashpp::hashCollection getHashes(const std::initializer_list<DataContainer>& dataSets);
+template <class... _Ts, ...>
+static hashpp::hashCollection getHashes(hashpp::ALGORITHMS algorithm, const _Ts&... data);
+static hashpp::hashCollection getHMACs(const std::vector<HMAC_DataContainer>& keyDataSets);
+static hashpp::hashCollection getHMACs(const std::initializer_list<HMAC_DataContainer>& keyDataSets);
+template <class... _Ts, ...>
+static hashpp::hashCollection getHMACs(hashpp::ALGORITHMS algorithm, const std::string& key, const _Ts&... data);
 ```
 
 <h3><code>getFileHash(...)</code></h3>
 Retrieve a single hash from a single file.
 
 ```cpp
-// function to return a resulting hash from selected ALGORITHM and passed file
-static hashpp::hash getFileHash(hashpp::ALGORITHMS algorithm, const std::string& path)
+static hashpp::hash getFileHash(hashpp::ALGORITHMS algorithm, const std::string& path);
 ```
 
 <h3><code>getFilesHashes(...)</code></h3>
 Retrieve a collection of hashes from multiple files or files in nested directories.
 
 ```cpp
-// function to return a collection of resulting hashes from selected ALGORITHMS and passed files (with recursive directory support)
-static hashpp::hashCollection getFilesHashes(const std::vector<std::pair<hashpp::ALGORITHMS, std::vector<std::string>>>& algorithmPathPairs)
+static hashpp::hashCollection getFilesHashes(const std::vector<FilePathsContainer>& filePathSets);
+static hashpp::hashCollection getFilesHashes(const std::initializer_list<FilePathsContainer>& filePathSets);
 ```
