@@ -98,7 +98,7 @@ My original design idea behind Hash++ was for it to be <b>simple</b>. This has r
 <br><br>
 Below you can find the signatures of the <i>only</i> functions necessary to accomplish retrieving hashes from both single or multiple sets of data, files, and files in nested directories. All functions are located in the <code>hashpp</code> namespace under class <code>get</code> (<code>hashpp::get</code>).
 <br><br>
-You can find examples of Hash++ in use in the <a href="/examples">/examples</a> and <a href="/tests">/tests</a> directories.
+You can find examples of Hash++ in use in the <a href="/documentation">/documentation</a> directory.
 <br>
 <h3><code>getHash(...), getHMAC(...)</code></h3>
 Retrieve a single hash from a single piece of data, or retrieve an HMAC from a key-data pair.
