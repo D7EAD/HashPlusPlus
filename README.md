@@ -94,45 +94,4 @@ No, it doesn't.
 ```
 
 <h1><i>Using Hash++</i></h1>
-My original design idea behind Hash++ was for it to be <b>simple</b>. This has remained unchanged.
-<br><br>
-Below you can find the signatures of the <i>only</i> functions necessary to accomplish retrieving hashes from both single or multiple sets of data, files, and files in nested directories. All functions are located in the <code>hashpp</code> namespace under class <code>get</code> (<code>hashpp::get</code>).
-<br><br>
-You can find examples of Hash++ in use in the <a href="/documentation">/documentation</a> directory.
-<br>
-<h3><code>getHash(...), getHMAC(...)</code></h3>
-Retrieve a single hash from a single piece of data, or retrieve an HMAC from a key-data pair.
-
-```cpp
-static hashpp::hash getHash(hashpp::ALGORITHMS algorithm, const std::string& data);
-static hashpp::hash getHMAC(hashpp::ALGORITHMS algorithm, const std::string& key, const std::string& data)
-```
-
-<h3><code>getHashes(...), getHMACs(...)</code></h3>
-Retrieve a collection of hashes from multiple pieces of data, or retrieve a collection of HMACs from multiple pieces of data.
-
-```cpp
-static hashpp::hashCollection getHashes(const std::vector<DataContainer>& dataSets);
-static hashpp::hashCollection getHashes(const std::initializer_list<DataContainer>& dataSets);
-template <class... _Ts, ...>
-static hashpp::hashCollection getHashes(hashpp::ALGORITHMS algorithm, const _Ts&... data);
-static hashpp::hashCollection getHMACs(const std::vector<HMAC_DataContainer>& keyDataSets);
-static hashpp::hashCollection getHMACs(const std::initializer_list<HMAC_DataContainer>& keyDataSets);
-template <class... _Ts, ...>
-static hashpp::hashCollection getHMACs(hashpp::ALGORITHMS algorithm, const std::string& key, const _Ts&... data);
-```
-
-<h3><code>getFileHash(...)</code></h3>
-Retrieve a single hash from a single file.
-
-```cpp
-static hashpp::hash getFileHash(hashpp::ALGORITHMS algorithm, const std::string& path);
-```
-
-<h3><code>getFilesHashes(...)</code></h3>
-Retrieve a collection of hashes from multiple files or files in nested directories.
-
-```cpp
-static hashpp::hashCollection getFilesHashes(const std::vector<FilePathsContainer>& filePathSets);
-static hashpp::hashCollection getFilesHashes(const std::initializer_list<FilePathsContainer>& filePathSets);
-```
+You can find detailed documentation in the <a href="/documentation">/documentation</a> directory.
