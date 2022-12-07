@@ -31,7 +31,7 @@ template <class... _Ts, ...> static hashpp::hashCollection getHashes(hashpp::ALG
 ```
 <br>
 Some function overloads found in Hash++ make use of a container class <code>Container</code> with aliases <code>DataContainer</code>, <code>HMAC_DataContainer</code>, and <code>FilePathsContainer</code>. This class allows developers to contain all data associated with a particular hash algorithm in one name, making it easier to pass several of them, if desired, and, in turn, several sets of data to hash. You can find the detailed implementation of the class below.
-https://github.com/D7EAD/HashPlusPlus/blob/ff79840060de728177390b2f54716cc4e8d1db30/documentation/hashing/container.cpp#L1-L81
+https://github.com/D7EAD/HashPlusPlus/blob/b7ef585198e52e05a2e2b9f9c29d052de98e9110/documentation/hashing/container.cpp#L1-L100
 
 <br>
 While the class may seem daunting at first, below you can find examples of its use and instantiation, as well as how it can be passed to certain function overloads.
