@@ -10,11 +10,30 @@ class Container {
 			const std::vector<std::string>& data
 		) noexcept : algorithm(algorithm), data(data) {}
 		Container(
+			ALGORITHMS algorithm, 
+			std::vector<std::string>&& data
+		) noexcept : algorithm(algorithm), data(std::move(data)) {}	
+		Container(
 			ALGORITHMS algorithm,
 			const std::vector<std::string>& data,
 			const std::string& key
 		) noexcept : algorithm(algorithm), data(data), key(key) {}
-		
+		Container(
+			ALGORITHMS algorithm,
+			std::vector<std::string>&& data,
+			const std::string& key
+		) noexcept : algorithm(algorithm), data(std::move(data)), key(key) {}
+		Container(
+			ALGORITHMS algorithm,
+			const std::vector<std::string>& data,
+			std::string&& key
+		) noexcept : algorithm(algorithm), data(data), key(std::move(key)) {}
+		Container(
+			ALGORITHMS algorithm,
+			std::vector<std::string>&& data,
+			std::string&& key
+		) noexcept : algorithm(algorithm), data(std::move(data)), key(std::move(key)) {}		
+	
 		template <class... _Ts,
 			std::enable_if_t<std::conjunction_v<std::is_constructible<std::string, _Ts>...>, int> = 0>
 		Container(
