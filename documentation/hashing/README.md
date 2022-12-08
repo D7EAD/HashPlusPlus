@@ -40,4 +40,8 @@ https://github.com/D7EAD/HashPlusPlus/blob/8bf4d2971f5fab4ad0df75ea6f71a012841c5
 
 <br>
 As you can see above, when given a properly created <code>Container</code>, the library function <code>getHashes(...)</code> can easily calculate and retrieve the hash digests of the passed data contained in the container(s). The function <code>getHashes(...)</code> itself, though, returns a <code>hashCollection</code> object. This object can be parsed quite easily:
-https://github.com/D7EAD/HashPlusPlus/blob/b7fbc10fc627ab21c39a51698882641e1073c78e/documentation/hashing/getHashes/getHashes_usage.cpp#L10-L29
+https://github.com/D7EAD/HashPlusPlus/blob/b7fbc10fc627ab21c39a51698882641e1073c78e/documentation/hashing/getHashes/getHashes_usage.cpp#L14-L29
+
+<br>
+Parsing <code>hashCollection</code> objects is great and all when you want to get the hashes of several pieces of data. However, what if you want to get the hash of a single piece of data? To do this, we make use of the library function <code>getHash</code> which returns a <code>hash</code> object.
+https://github.com/D7EAD/HashPlusPlus/blob/ffca4d776939f950dbce37d3477bd3e164cc7ba9/documentation/hashing/getHash/getHash_usage.cpp#L14-L26
