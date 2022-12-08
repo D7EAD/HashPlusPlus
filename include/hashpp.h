@@ -3235,6 +3235,7 @@ namespace hashpp {
 				};				
 			}
 
+			// function to return a collection of resulting hashes from passed data container(s)
 			static hashpp::hashCollection getHashes(const std::vector<DataContainer>& dataSets) {
 				std::vector<std::string> vMD5, vMD4, vMD2, vSHA1, vSHA2_224, vSHA2_256, vSHA2_384, vSHA2_512, vSHA2_512_224, vSHA2_512_256;
 
@@ -3317,7 +3318,8 @@ namespace hashpp {
 					}
 				};
 			}
-			
+
+			// function to return a collection of resulting hashes from passed data container(s)
 			static hashpp::hashCollection getHashes(const std::initializer_list<DataContainer>& dataSets) {
 				std::vector<std::string> vMD5, vMD4, vMD2, vSHA1, vSHA2_224, vSHA2_256, vSHA2_384, vSHA2_512, vSHA2_512_224, vSHA2_512_256;
 
@@ -3541,6 +3543,7 @@ namespace hashpp {
 				};				
 			}
 
+			// function to return a collection of resulting HMACs from selected ALGORITHMS and passed key-data container(s)
 			static hashpp::hashCollection getHMACs(const std::vector<HMAC_DataContainer>& keyDataSets) {
 				std::vector<std::string> vMD5, vMD4, vMD2, vSHA1, vSHA2_224, vSHA2_256, vSHA2_384, vSHA2_512, vSHA2_512_224, vSHA2_512_256;
 
@@ -3624,6 +3627,7 @@ namespace hashpp {
 				};
 			}
 			
+			// function to return a collection of resulting HMACs from selected ALGORITHMS and passed key-data container(s)
 			static hashpp::hashCollection getHMACs(const std::initializer_list<HMAC_DataContainer>& keyDataSets) {
 				std::vector<std::string> vMD5, vMD4, vMD2, vSHA1, vSHA2_224, vSHA2_256, vSHA2_384, vSHA2_512, vSHA2_512_224, vSHA2_512_256;
 
