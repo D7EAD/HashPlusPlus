@@ -67,6 +67,7 @@
 #include <filesystem>
 #include <array>
 #include <vector>
+#include <optional>
 #include <chrono>
 
 namespace hashpp {
@@ -164,18 +165,39 @@ namespace hashpp {
 				return this->bytesToHexString();
 			}
 
+			// get hexadecimal HMAC from key-data pair
+			std::string getHMAC(const std::string& key, const std::string& data) {
+				return this->HMAC(key, data);
+			}
+
 		protected:
 			// virtual functions to be overridden by each algorithm implementation.
 			virtual std::vector<uint8_t> getBytes() = 0;
 			virtual void ctx_init() = 0;
 			virtual void ctx_update(const uint8_t*, size_t) = 0;
-			virtual void ctx_final() = 0;	
+			virtual void ctx_final() = 0;
+
+			// H as defined in https://www.rfc-editor.org/rfc/rfc2104 for
+			// Keyed-Hashing for Message Authentication
+			virtual std::string _H(const std::string&, const std::string&) = 0;
+			virtual std::string HMAC(const std::string&, const std::string&) = 0;
+
+			// Helper function to convert hex string to bytes and return them in a vector
+			std::vector<uint8_t> fromHex(const std::string& hex) {
+				std::vector<uint8_t> bytes;
+				for (size_t i = 0; i < hex.length(); i += 2) {
+					std::string byteString = hex.substr(i, 2);
+					uint8_t byte = static_cast<uint8_t>(strtol(byteString.c_str(), NULL, 16));
+					bytes.push_back(byte);
+				}
+				return bytes;	
+			}
 			
 		private:
 			std::string bytesToHexString() {
 				const std::vector<uint8_t> digest = this->getBytes();
 				std::string hash;
-					
+					 
 				for (const auto& d : digest) {
 					hash += this->hexTable[d];
 				}
@@ -194,6 +216,8 @@ namespace hashpp {
 
 			// private members
 			private:
+				const uint8_t BLOCK_SIZE = 64, DIGEST_SIZE = 16;
+				
 				typedef struct {
 					uint64_t size;
 					uint32_t buf[4];
@@ -242,6 +266,30 @@ namespace hashpp {
 				const uint32_t B = 0xefcdab89;
 				const uint32_t C = 0x98badcfe;
 				const uint32_t D = 0x10325476;
+				
+				// the byte 0x36 repeated 'B' times where 'B' => block size
+				std::vector<uint8_t> ipad = {
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36
+				};
+
+				// the byte 0x5c repeated 'B' times
+				std::vector<uint8_t> opad = {
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c
+				};
 
 			// private class methods
 			private:
@@ -250,6 +298,9 @@ namespace hashpp {
 				inline void ctx_transform(const uint32_t* data);
 				inline void ctx_update(const uint8_t* data, size_t len) override;
 				inline void ctx_final() override;
+
+				inline std::string _H(const std::string& a, const std::string& b) override;
+				inline std::string HMAC(const std::string& key, const std::string& data) override;
 
 				// auxiliary functions defined by the algorithm
 				// as per: https://en.wikipedia.org/wiki/MD5#Algorithm
@@ -266,6 +317,8 @@ namespace hashpp {
 
 			// private members
 			private:
+				const uint8_t BLOCK_SIZE = 64, DIGEST_SIZE = 16;
+
 				typedef struct {
 					uint64_t size;
 					uint32_t buf[4];
@@ -311,6 +364,30 @@ namespace hashpp {
 				const uint32_t C = 0x98badcfe;
 				const uint32_t D = 0x10325476;
 
+				// the byte 0x36 repeated 'B' times where 'B' => block size
+				std::vector<uint8_t> ipad = {
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36
+				};
+
+				// the byte 0x5c repeated 'B' times
+				std::vector<uint8_t> opad = {
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c
+				};
+
 			// private class methods
 			private:
 				// initialize our context for this hash function
@@ -318,6 +395,9 @@ namespace hashpp {
 				inline void ctx_transform(const uint32_t* data);
 				inline void ctx_update(const uint8_t* data, size_t len) override;
 				inline void ctx_final() override;
+
+				inline std::string _H(const std::string& a, const std::string& b) override;
+				inline std::string HMAC(const std::string& key, const std::string& data) override;
 
 				// auxiliary functions defined by the algorithm
 				// as per: http://practicalcryptography.com/hashes/md4-hash/
@@ -338,6 +418,8 @@ namespace hashpp {
 
 			// private members
 			private:
+				const uint8_t BLOCK_SIZE = 16, DIGEST_SIZE = 16;
+
 				typedef struct {
 					uint8_t buf[16], state[48], checksum[16], digest[16];
 					uint64_t size;
@@ -366,10 +448,25 @@ namespace hashpp {
 					0x31, 0x44, 0x50, 0xB4, 0x8F, 0xED, 0x1F, 0x1A, 0xDB, 0x99, 0x8D, 0x33, 0x9F, 0x11, 0x83, 0x14
 				};
 
+				// the byte 0x36 repeated 'B' times where 'B' => block size
+				std::vector<uint8_t> ipad = {
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36
+				};
+
+				// the byte 0x5c repeated 'B' times
+				std::vector<uint8_t> opad = {
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c
+				};
+
 				inline void ctx_init() override;
 				inline void ctx_transform(const uint8_t* data);
 				inline void ctx_update(const uint8_t* data, size_t len) override;
 				inline void ctx_final() override;
+
+				inline std::string _H(const std::string& a, const std::string& b) override;
+				inline std::string HMAC(const std::string& key, const std::string& data) override;
 		};
 
 		// MD5
@@ -467,6 +564,60 @@ namespace hashpp {
 				this->context.digest[(i * 4) + 3] = static_cast<uint8_t>((this->context.buf[i] & 0xFF000000) >> 24);
 			}
 		}
+		inline std::string MD5::_H(const std::string& a, const std::string& b) {
+			return this->getHash(a + b);
+		}
+		inline std::string MD5::HMAC(const std::string& key, const std::string& data) {
+			std::array<uint8_t, 64> k = { 0 }; std::fill(k.begin(), k.end(), 0x00);
+
+			// (1) append zeros to the end of K to create a B byte string
+			// (e.g., if K is of length 20 bytes and B = 64, then K will be
+			//	appended with 44 zero bytes 0x00) where B is the block size
+			if (key.length() > this->BLOCK_SIZE) {
+				// if K is longer than B bytes, reset K to K=H(K)
+				// where K can either be composed of entirely bytes of H(K)
+				// (if H(K) == L [where L => digest]) or the first L bytes of
+				// H(K) (if H(K) != L) followed by the remaining zeros (if H(K) < L)
+				std::vector<uint8_t> k_ = this->fromHex(this->getHash(key));
+				for (uint32_t i = 0; i < this->DIGEST_SIZE; ++i) {
+					k[i] = k_[i];
+				}
+			}
+			else {
+				// if K is shorter than B bytes, append zeros to the end of K
+				// until K is B bytes long
+				for (uint32_t i = 0; i < key.length(); ++i) {
+					k[i] = key[i];
+				}
+			}
+
+			// (2) XOR (bitwise exclusive-OR) the B byte string computed in step (1) with ipad
+			for (uint32_t i = 0; i < this->BLOCK_SIZE; ++i) {
+				this->ipad[i] ^= k[i];
+			}
+
+			// (3) append the stream of data 'data' to the B byte string resulting from step (2)
+			for (uint32_t i = 0; i < data.length(); ++i) {
+				this->ipad.push_back(data[i]);
+			}
+
+			// (4) apply H to the stream generated in step (3)
+			// see step (6)
+
+			// (5) XOR (bitwise exclusive-OR) the B byte string computed in step (1) with opad
+			for (uint32_t i = 0; i < this->BLOCK_SIZE; ++i) {
+				this->opad[i] ^= k[i];
+			}
+
+			// (6) append the H result from step (4) to the B byte string resulting from step (5)
+			std::vector<uint8_t> h_ = this->fromHex(this->getHash(std::string(this->ipad.begin(), this->ipad.end())));
+			for (uint32_t i = 0; i < this->DIGEST_SIZE; ++i) {
+				this->opad.push_back(h_[i]);
+			}
+
+			// (7) apply H to the stream generated in step (6) and output the result
+			return this->getHash(std::string(this->opad.begin(), this->opad.end()));
+		}
 		constexpr uint32_t hashpp::MD::MD5::F(const uint32_t B, const uint32_t C, const uint32_t D) { return ((B & C) | (~B & D)); }
 		constexpr uint32_t hashpp::MD::MD5::G(const uint32_t B, const uint32_t C, const uint32_t D) { return ((B & D) | (C & ~D)); }
 		constexpr uint32_t hashpp::MD::MD5::H(const uint32_t B, const uint32_t C, const uint32_t D) { return ((B ^ C ^ D)); }
@@ -561,6 +712,60 @@ namespace hashpp {
 				this->context.digest[(i * 4) + 3] = static_cast<uint8_t>((this->context.buf[i] & 0xFF000000) >> 24);
 			}
 		}
+		inline std::string MD4::_H(const std::string& a, const std::string& b) {
+			return this->getHash(a + b);
+		}
+		inline std::string MD4::HMAC(const std::string& key, const std::string& data) {
+			std::array<uint8_t, 64> k = { 0 }; std::fill(k.begin(), k.end(), 0x00);
+
+			// (1) append zeros to the end of K to create a B byte string
+			// (e.g., if K is of length 20 bytes and B = 64, then K will be
+			//	appended with 44 zero bytes 0x00) where B is the block size
+			if (key.length() > this->BLOCK_SIZE) {
+				// if K is longer than B bytes, reset K to K=H(K)
+				// where K can either be composed of entirely bytes of H(K)
+				// (if H(K) == L [where L => digest]) or the first L bytes of
+				// H(K) (if H(K) != L) followed by the remaining zeros (if H(K) < L)
+				std::vector<uint8_t> k_ = this->fromHex(this->getHash(key));
+				for (uint32_t i = 0; i < this->DIGEST_SIZE; ++i) {
+					k[i] = k_[i];
+				}
+			}
+			else {
+				// if K is shorter than B bytes, append zeros to the end of K
+				// until K is B bytes long
+				for (uint32_t i = 0; i < key.length(); ++i) {
+					k[i] = key[i];
+				}
+			}
+
+			// (2) XOR (bitwise exclusive-OR) the B byte string computed in step (1) with ipad
+			for (uint32_t i = 0; i < this->BLOCK_SIZE; ++i) {
+				this->ipad[i] ^= k[i];
+			}
+
+			// (3) append the stream of data 'data' to the B byte string resulting from step (2)
+			for (uint32_t i = 0; i < data.length(); ++i) {
+				this->ipad.push_back(data[i]);
+			}
+
+			// (4) apply H to the stream generated in step (3)
+			// see step (6)
+
+			// (5) XOR (bitwise exclusive-OR) the B byte string computed in step (1) with opad
+			for (uint32_t i = 0; i < this->BLOCK_SIZE; ++i) {
+				this->opad[i] ^= k[i];
+			}
+
+			// (6) append the H result from step (4) to the B byte string resulting from step (5)
+			std::vector<uint8_t> h_ = this->fromHex(this->getHash(std::string(this->ipad.begin(), this->ipad.end())));
+			for (uint32_t i = 0; i < this->DIGEST_SIZE; ++i) {
+				this->opad.push_back(h_[i]);
+			}
+
+			// (7) apply H to the stream generated in step (6) and output the result
+			return this->getHash(std::string(this->opad.begin(), this->opad.end()));
+		}
 		constexpr uint32_t hashpp::MD::MD4::F(const uint32_t B, const uint32_t C, const uint32_t D) { return ((B & C) | (~B & D)); }
 		constexpr uint32_t hashpp::MD::MD4::G(const uint32_t B, const uint32_t C, const uint32_t D) { return ((B & C) | (B & D) | (C & D)); }
 		constexpr uint32_t hashpp::MD::MD4::H(const uint32_t B, const uint32_t C, const uint32_t D) { return ((B ^ C ^ D)); }
@@ -624,6 +829,60 @@ namespace hashpp {
 			ctx_transform(this->context.checksum);
 			memcpy(this->context.digest, this->context.state, 16);
 		}
+		inline std::string MD2::_H(const std::string& a, const std::string& b) {
+			return this->getHash(a + b);
+		}
+		inline std::string MD2::HMAC(const std::string& key, const std::string& data) {
+			std::array<uint8_t, 16> k = { 0 }; std::fill(k.begin(), k.end(), 0x00);
+
+			// (1) append zeros to the end of K to create a B byte string
+			// (e.g., if K is of length 20 bytes and B = 64, then K will be
+			//	appended with 44 zero bytes 0x00) where B is the block size
+			if (key.length() > this->BLOCK_SIZE) {
+				// if K is longer than B bytes, reset K to K=H(K)
+				// where K can either be composed of entirely bytes of H(K)
+				// (if H(K) == L [where L => digest]) or the first L bytes of
+				// H(K) (if H(K) != L) followed by the remaining zeros (if H(K) < L)
+				std::vector<uint8_t> k_ = this->fromHex(this->getHash(key));
+				for (uint32_t i = 0; i < this->DIGEST_SIZE; ++i) {
+					k[i] = k_[i];
+				}
+			}
+			else {
+				// if K is shorter than B bytes, append zeros to the end of K
+				// until K is B bytes long
+				for (uint32_t i = 0; i < key.length(); ++i) {
+					k[i] = key[i];
+				}
+			}
+
+			// (2) XOR (bitwise exclusive-OR) the B byte string computed in step (1) with ipad
+			for (uint32_t i = 0; i < this->BLOCK_SIZE; ++i) {
+				this->ipad[i] ^= k[i];
+			}
+
+			// (3) append the stream of data 'data' to the B byte string resulting from step (2)
+			for (uint32_t i = 0; i < data.length(); ++i) {
+				this->ipad.push_back(data[i]);
+			}
+
+			// (4) apply H to the stream generated in step (3)
+			// see step (6)
+
+			// (5) XOR (bitwise exclusive-OR) the B byte string computed in step (1) with opad
+			for (uint32_t i = 0; i < this->BLOCK_SIZE; ++i) {
+				this->opad[i] ^= k[i];
+			}
+
+			// (6) append the H result from step (4) to the B byte string resulting from step (5)
+			std::vector<uint8_t> h_ = this->fromHex(this->getHash(std::string(this->ipad.begin(), this->ipad.end())));
+			for (uint32_t i = 0; i < this->DIGEST_SIZE; ++i) {
+				this->opad.push_back(h_[i]);
+			}
+
+			// (7) apply H to the stream generated in step (6) and output the result
+			return this->getHash(std::string(this->opad.begin(), this->opad.end()));
+		}
 	}
 
 	// Secure Hash Algorithm (SHA) hash family 
@@ -651,6 +910,8 @@ namespace hashpp {
 				}
 
 			private:
+				const uint8_t BLOCK_SIZE = 64, DIGEST_SIZE = 20;
+
 				typedef struct {
 					uint32_t state[5], k[4], size;
 					uint64_t bitsize;
@@ -677,10 +938,37 @@ namespace hashpp {
 					0xca62c1d6
 				};
 
+				// the byte 0x36 repeated 'B' times where 'B' => block size
+				std::vector<uint8_t> ipad = {
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36
+				};
+
+				// the byte 0x5c repeated 'B' times
+				std::vector<uint8_t> opad = {
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c
+				};
+
 				inline void ctx_init() override;
 				inline void ctx_transform(const uint8_t* data);
 				inline void ctx_update(const uint8_t* data, size_t len) override;
 				inline void ctx_final() override;
+
+				inline std::string _H(const std::string& a, const std::string& b) override;
+				inline std::string HMAC(const std::string& key, const std::string& data) override;
 
 				// SHA-1 functions defined by the algorithm
 				constexpr uint32_t A(const uint32_t A, const uint32_t B, const uint32_t C, const uint32_t D);
@@ -699,6 +987,8 @@ namespace hashpp {
 				}
 
 			private:
+				const uint8_t BLOCK_SIZE = 64, DIGEST_SIZE = 28;
+
 				typedef struct {
 					uint32_t state[8];
 					uint64_t size, bitsize;
@@ -740,10 +1030,37 @@ namespace hashpp {
 					0x90BEFFFA, 0xA4506CEB, 0xBEF9A3F7, 0xC67178F2
 				};
 
+				// the byte 0x36 repeated 'B' times where 'B' => block size
+				std::vector<uint8_t> ipad = {
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36
+				};
+
+				// the byte 0x5c repeated 'B' times
+				std::vector<uint8_t> opad = {
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c
+				};
+
 				inline void ctx_init() override;
 				inline void ctx_transform(const uint8_t* data);
 				inline void ctx_update(const uint8_t* data, size_t len) override;
 				inline void ctx_final() override;
+
+				inline std::string _H(const std::string& a, const std::string& b) override;
+				inline std::string HMAC(const std::string& key, const std::string& data) override;
 
 				constexpr uint32_t A(const uint32_t A, const uint32_t B, const uint32_t C, const uint32_t D);
 				constexpr uint32_t F(const uint32_t B, const uint32_t C, const uint32_t D);
@@ -763,6 +1080,8 @@ namespace hashpp {
 				}
 
 			private:
+				const uint8_t BLOCK_SIZE = 64, DIGEST_SIZE = 32;
+
 				typedef struct {
 					uint32_t state[8], size;
 					uint64_t bitsize;
@@ -804,10 +1123,37 @@ namespace hashpp {
 					0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 				};
 
+				// the byte 0x36 repeated 'B' times where 'B' => block size
+				std::vector<uint8_t> ipad = {
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36
+				};
+
+				// the byte 0x5c repeated 'B' times
+				std::vector<uint8_t> opad = {
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c
+				};
+
 				inline void ctx_init() override;
 				inline void ctx_transform(const uint8_t* data);
 				inline void ctx_update(const uint8_t* data, size_t len) override;
 				inline void ctx_final() override;
+
+				inline std::string _H(const std::string& a, const std::string& b) override;
+				inline std::string HMAC(const std::string& key, const std::string& data) override;
 
 				constexpr uint32_t A(const uint32_t A, const uint32_t B, const uint32_t C, const uint32_t D);
 				constexpr uint32_t F(const uint32_t B, const uint32_t C, const uint32_t D);
@@ -827,6 +1173,8 @@ namespace hashpp {
 				}
 
 			private:
+				const uint8_t BLOCK_SIZE = 128, DIGEST_SIZE = 48;
+
 				typedef struct {
 					uint64_t state[8], count[2];
 					uint8_t  data[128], digest[48];
@@ -871,10 +1219,53 @@ namespace hashpp {
 					0x4CC5D4BECB3E42B6, 0x597F299CFC657E2A, 0x5FCB6FAB3AD6FAEC, 0x6C44198C4A475817
 				};
 
+				// the byte 0x36 repeated 'B' times where 'B' => block size
+				std::vector<uint8_t> ipad = {
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36
+				};
+
+				// the byte 0x5c repeated 'B' times
+				std::vector<uint8_t> opad = {
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c
+				};
+
 				inline void ctx_init() override;
 				inline void ctx_transform(const uint8_t* data);
 				inline void ctx_update(const uint8_t* data, size_t len) override;
 				inline void ctx_final() override;
+
+				inline std::string _H(const std::string& a, const std::string& b) override;
+				inline std::string HMAC(const std::string& key, const std::string& data) override;
 
 				constexpr uint64_t F(const uint64_t A, const uint64_t B, const uint64_t C);
 				constexpr uint64_t G(const uint64_t A, const uint64_t B, const uint64_t C);
@@ -893,6 +1284,8 @@ namespace hashpp {
 				}
 
 			private:
+				const uint8_t BLOCK_SIZE = 128, DIGEST_SIZE = 64;
+
 				typedef struct {
 					uint64_t state[8], count[2];
 					uint8_t  data[128], digest[64];
@@ -937,10 +1330,53 @@ namespace hashpp {
 					0x4CC5D4BECB3E42B6, 0x597F299CFC657E2A, 0x5FCB6FAB3AD6FAEC, 0x6C44198C4A475817
 				};
 
+				// the byte 0x36 repeated 'B' times where 'B' => block size
+				std::vector<uint8_t> ipad = {
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36
+				};
+
+				// the byte 0x5c repeated 'B' times
+				std::vector<uint8_t> opad = {
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c
+				};
+
 				inline void ctx_init() override;
 				inline void ctx_transform(const uint8_t* data);
 				inline void ctx_update(const uint8_t* data, size_t len) override;
 				inline void ctx_final() override;
+
+				inline std::string _H(const std::string& a, const std::string& b) override;
+				inline std::string HMAC(const std::string& key, const std::string& data) override;
 
 				constexpr uint64_t F(const uint64_t A, const uint64_t B, const uint64_t C);
 				constexpr uint64_t G(const uint64_t A, const uint64_t B, const uint64_t C);
@@ -959,6 +1395,8 @@ namespace hashpp {
 				}
 
 			private:
+				const uint8_t BLOCK_SIZE = 128, DIGEST_SIZE = 28;
+				
 				typedef struct {
 					uint64_t state[8], count[2];
 					uint8_t  data[128], digest[32];
@@ -1003,10 +1441,53 @@ namespace hashpp {
 					0x4CC5D4BECB3E42B6, 0x597F299CFC657E2A, 0x5FCB6FAB3AD6FAEC, 0x6C44198C4A475817
 				};
 
+				// the byte 0x36 repeated 'B' times where 'B' => block size
+				std::vector<uint8_t> ipad = {
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36
+				};
+
+				// the byte 0x5c repeated 'B' times
+				std::vector<uint8_t> opad = {
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c
+				};
+
 				inline void ctx_init() override;
 				inline void ctx_transform(const uint8_t* data);
 				inline void ctx_update(const uint8_t* data, size_t len) override;
 				inline void ctx_final() override;
+
+				inline std::string _H(const std::string& a, const std::string& b) override;
+				inline std::string HMAC(const std::string& key, const std::string& data) override;
 
 				constexpr uint64_t F(const uint64_t A, const uint64_t B, const uint64_t C);
 				constexpr uint64_t G(const uint64_t A, const uint64_t B, const uint64_t C);
@@ -1025,6 +1506,8 @@ namespace hashpp {
 				}
 				
 			private:
+				const uint8_t BLOCK_SIZE = 128, DIGEST_SIZE = 32;
+
 				typedef struct {
 					uint64_t state[8], count[2];
 					uint8_t  data[128], digest[32];
@@ -1069,10 +1552,53 @@ namespace hashpp {
 					0x4CC5D4BECB3E42B6, 0x597F299CFC657E2A, 0x5FCB6FAB3AD6FAEC, 0x6C44198C4A475817
 				};
 				
+				// the byte 0x36 repeated 'B' times where 'B' => block size
+				std::vector<uint8_t> ipad = {
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
+					0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36
+				};
+
+				// the byte 0x5c repeated 'B' times
+				std::vector<uint8_t> opad = {
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
+					0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c
+				};
+
 				inline void ctx_init() override;
 				inline void ctx_transform(const uint8_t* data);
 				inline void ctx_update(const uint8_t* data, size_t len) override;
 				inline void ctx_final() override;
+
+				inline std::string _H(const std::string& a, const std::string& b) override;
+				inline std::string HMAC(const std::string& key, const std::string& data) override;
 
 				constexpr uint64_t F(const uint64_t A, const uint64_t B, const uint64_t C);
 				constexpr uint64_t G(const uint64_t A, const uint64_t B, const uint64_t C);
@@ -1199,6 +1725,60 @@ namespace hashpp {
 				this->context.digest[L + 16] = (this->context.state[4] >> (24 - L * 8)) & 0x000000ff;
 			}
 		}
+		inline std::string SHA1::_H(const std::string& a, const std::string& b) {
+			return this->getHash(a + b);
+		}
+		inline std::string SHA1::HMAC(const std::string& key, const std::string& data) {
+			std::array<uint8_t, 64> k = { 0 }; std::fill(k.begin(), k.end(), 0x00);
+
+			// (1) append zeros to the end of K to create a B byte string
+			// (e.g., if K is of length 20 bytes and B = 64, then K will be
+			//	appended with 44 zero bytes 0x00) where B is the block size
+			if (key.length() > this->BLOCK_SIZE) {
+				// if K is longer than B bytes, reset K to K=H(K)
+				// where K can either be composed of entirely bytes of H(K)
+				// (if H(K) == L [where L => digest]) or the first L bytes of
+				// H(K) (if H(K) != L) followed by the remaining zeros (if H(K) < L)
+				std::vector<uint8_t> k_ = this->fromHex(this->getHash(key));
+				for (uint32_t i = 0; i < this->DIGEST_SIZE; ++i) {
+					k[i] = k_[i];
+				}
+			}
+			else {
+				// if K is shorter than B bytes, append zeros to the end of K
+				// until K is B bytes long
+				for (uint32_t i = 0; i < key.length(); ++i) {
+					k[i] = key[i];
+				}
+			}
+
+			// (2) XOR (bitwise exclusive-OR) the B byte string computed in step (1) with ipad
+			for (uint32_t i = 0; i < this->BLOCK_SIZE; ++i) {
+				this->ipad[i] ^= k[i];
+			}
+
+			// (3) append the stream of data 'data' to the B byte string resulting from step (2)
+			for (uint32_t i = 0; i < data.length(); ++i) {
+				this->ipad.push_back(data[i]);
+			}
+
+			// (4) apply H to the stream generated in step (3)
+			// see step (6)
+
+			// (5) XOR (bitwise exclusive-OR) the B byte string computed in step (1) with opad
+			for (uint32_t i = 0; i < this->BLOCK_SIZE; ++i) {
+				this->opad[i] ^= k[i];
+			}
+
+			// (6) append the H result from step (4) to the B byte string resulting from step (5)
+			std::vector<uint8_t> h_ = this->fromHex(this->getHash(std::string(this->ipad.begin(), this->ipad.end())));
+			for (uint32_t i = 0; i < this->DIGEST_SIZE; ++i) {
+				this->opad.push_back(h_[i]);
+			}
+
+			// (7) apply H to the stream generated in step (6) and output the result
+			return this->getHash(std::string(this->opad.begin(), this->opad.end()));
+		}
 		constexpr uint32_t hashpp::SHA::SHA1::A(const uint32_t A, const uint32_t B, const uint32_t C, const uint32_t D) {
 			return ((A << 24) + (B << 16) + (C << 8) + (D));
 		}
@@ -1307,6 +1887,60 @@ namespace hashpp {
 				this->context.digest[i + 20] = (this->context.state[5] >> (24 - i * 8)) & 0x000000ff;
 				this->context.digest[i + 24] = (this->context.state[6] >> (24 - i * 8)) & 0x000000ff;
 			}
+		}
+		inline std::string SHA2_224::_H(const std::string& a, const std::string& b) {
+			return this->getHash(a + b);
+		}
+		inline std::string SHA2_224::HMAC(const std::string& key, const std::string& data) {
+			std::array<uint8_t, 64> k = { 0 }; std::fill(k.begin(), k.end(), 0x00);
+
+			// (1) append zeros to the end of K to create a B byte string
+			// (e.g., if K is of length 20 bytes and B = 64, then K will be
+			//	appended with 44 zero bytes 0x00) where B is the block size
+			if (key.length() > this->BLOCK_SIZE) {
+				// if K is longer than B bytes, reset K to K=H(K)
+				// where K can either be composed of entirely bytes of H(K)
+				// (if H(K) == L [where L => digest]) or the first L bytes of
+				// H(K) (if H(K) != L) followed by the remaining zeros (if H(K) < L)
+				std::vector<uint8_t> k_ = this->fromHex(this->getHash(key));
+				for (uint32_t i = 0; i < this->DIGEST_SIZE; ++i) {
+					k[i] = k_[i];
+				}
+			}
+			else {
+				// if K is shorter than B bytes, append zeros to the end of K
+				// until K is B bytes long
+				for (uint32_t i = 0; i < key.length(); ++i) {
+					k[i] = key[i];
+				}
+			}
+
+			// (2) XOR (bitwise exclusive-OR) the B byte string computed in step (1) with ipad
+			for (uint32_t i = 0; i < this->BLOCK_SIZE; ++i) {
+				this->ipad[i] ^= k[i];
+			}
+
+			// (3) append the stream of data 'data' to the B byte string resulting from step (2)
+			for (uint32_t i = 0; i < data.length(); ++i) {
+				this->ipad.push_back(data[i]);
+			}
+
+			// (4) apply H to the stream generated in step (3)
+			// see step (6)
+
+			// (5) XOR (bitwise exclusive-OR) the B byte string computed in step (1) with opad
+			for (uint32_t i = 0; i < this->BLOCK_SIZE; ++i) {
+				this->opad[i] ^= k[i];
+			}
+
+			// (6) append the H result from step (4) to the B byte string resulting from step (5)
+			std::vector<uint8_t> h_ = this->fromHex(this->getHash(std::string(this->ipad.begin(), this->ipad.end())));
+			for (uint32_t i = 0; i < this->DIGEST_SIZE; ++i) {
+				this->opad.push_back(h_[i]);
+			}
+
+			// (7) apply H to the stream generated in step (6) and output the result
+			return this->getHash(std::string(this->opad.begin(), this->opad.end()));
 		}
 		constexpr uint32_t hashpp::SHA::SHA2_224::A(const uint32_t A, const uint32_t B, const uint32_t C, const uint32_t D) {
 			return ((A << 24) + (B << 16) + (C << 8) + (D));
@@ -1417,6 +2051,60 @@ namespace hashpp {
 				this->context.digest[i + 24] = (this->context.state[6] >> (24 - i * 8)) & 0x000000ff;
 				this->context.digest[i + 28] = (this->context.state[7] >> (24 - i * 8)) & 0x000000ff;
 			}
+		}
+		inline std::string SHA2_256::_H(const std::string& a, const std::string& b) {
+			return this->getHash(a + b);
+		}
+		inline std::string SHA2_256::HMAC(const std::string& key, const std::string& data) {
+			std::array<uint8_t, 64> k = { 0 }; std::fill(k.begin(), k.end(), 0x00);
+
+			// (1) append zeros to the end of K to create a B byte string
+			// (e.g., if K is of length 20 bytes and B = 64, then K will be
+			//	appended with 44 zero bytes 0x00) where B is the block size
+			if (key.length() > this->BLOCK_SIZE) {
+				// if K is longer than B bytes, reset K to K=H(K)
+				// where K can either be composed of entirely bytes of H(K)
+				// (if H(K) == L [where L => digest]) or the first L bytes of
+				// H(K) (if H(K) != L) followed by the remaining zeros (if H(K) < L)
+				std::vector<uint8_t> k_ = this->fromHex(this->getHash(key));
+				for (uint32_t i = 0; i < this->DIGEST_SIZE; ++i) {
+					k[i] = k_[i];
+				}
+			}
+			else {
+				// if K is shorter than B bytes, append zeros to the end of K
+				// until K is B bytes long
+				for (uint32_t i = 0; i < key.length(); ++i) {
+					k[i] = key[i];
+				}
+			}
+
+			// (2) XOR (bitwise exclusive-OR) the B byte string computed in step (1) with ipad
+			for (uint32_t i = 0; i < this->BLOCK_SIZE; ++i) {
+				this->ipad[i] ^= k[i];
+			}
+
+			// (3) append the stream of data 'data' to the B byte string resulting from step (2)
+			for (uint32_t i = 0; i < data.length(); ++i) {
+				this->ipad.push_back(data[i]);
+			}
+
+			// (4) apply H to the stream generated in step (3)
+			// see step (6)
+
+			// (5) XOR (bitwise exclusive-OR) the B byte string computed in step (1) with opad
+			for (uint32_t i = 0; i < this->BLOCK_SIZE; ++i) {
+				this->opad[i] ^= k[i];
+			}
+
+			// (6) append the H result from step (4) to the B byte string resulting from step (5)
+			std::vector<uint8_t> h_ = this->fromHex(this->getHash(std::string(this->ipad.begin(), this->ipad.end())));
+			for (uint32_t i = 0; i < this->DIGEST_SIZE; ++i) {
+				this->opad.push_back(h_[i]);
+			}
+
+			// (7) apply H to the stream generated in step (6) and output the result
+			return this->getHash(std::string(this->opad.begin(), this->opad.end()));
 		}
 		constexpr uint32_t hashpp::SHA::SHA2_256::A(const uint32_t A, const uint32_t B, const uint32_t C, const uint32_t D) {
 			return ((A << 24) + (B << 16) + (C << 8) + (D));
@@ -1549,6 +2237,60 @@ namespace hashpp {
 			PU64B(this->context.state[4], this->context.digest, 32);
 			PU64B(this->context.state[5], this->context.digest, 40);
 		}
+		inline std::string SHA2_384::_H(const std::string& a, const std::string& b) {
+			return this->getHash(a + b);
+		}
+		inline std::string SHA2_384::HMAC(const std::string& key, const std::string& data) {
+			std::array<uint8_t, 128> k = { 0 }; std::fill(k.begin(), k.end(), 0x00);
+
+			// (1) append zeros to the end of K to create a B byte string
+			// (e.g., if K is of length 20 bytes and B = 64, then K will be
+			//	appended with 44 zero bytes 0x00) where B is the block size
+			if (key.length() > this->BLOCK_SIZE) {
+				// if K is longer than B bytes, reset K to K=H(K)
+				// where K can either be composed of entirely bytes of H(K)
+				// (if H(K) == L [where L => digest]) or the first L bytes of
+				// H(K) (if H(K) != L) followed by the remaining zeros (if H(K) < L)
+				std::vector<uint8_t> k_ = this->fromHex(this->getHash(key));
+				for (uint32_t i = 0; i < this->DIGEST_SIZE; ++i) {
+					k[i] = k_[i];
+				}
+			}
+			else {
+				// if K is shorter than B bytes, append zeros to the end of K
+				// until K is B bytes long
+				for (uint32_t i = 0; i < key.length(); ++i) {
+					k[i] = key[i];
+				}
+			}
+
+			// (2) XOR (bitwise exclusive-OR) the B byte string computed in step (1) with ipad
+			for (uint32_t i = 0; i < this->BLOCK_SIZE; ++i) {
+				this->ipad[i] ^= k[i];
+			}
+
+			// (3) append the stream of data 'data' to the B byte string resulting from step (2)
+			for (uint32_t i = 0; i < data.length(); ++i) {
+				this->ipad.push_back(data[i]);
+			}
+
+			// (4) apply H to the stream generated in step (3)
+			// see step (6)
+
+			// (5) XOR (bitwise exclusive-OR) the B byte string computed in step (1) with opad
+			for (uint32_t i = 0; i < this->BLOCK_SIZE; ++i) {
+				this->opad[i] ^= k[i];
+			}
+
+			// (6) append the H result from step (4) to the B byte string resulting from step (5)
+			std::vector<uint8_t> h_ = this->fromHex(this->getHash(std::string(this->ipad.begin(), this->ipad.end())));
+			for (uint32_t i = 0; i < this->DIGEST_SIZE; ++i) {
+				this->opad.push_back(h_[i]);
+			}
+
+			// (7) apply H to the stream generated in step (6) and output the result
+			return this->getHash(std::string(this->opad.begin(), this->opad.end()));
+		}
 		constexpr uint64_t hashpp::SHA::SHA2_384::F(const uint64_t A, const uint64_t B, const uint64_t C) { return ((A & B) ^ (~A & C)); }
 		constexpr uint64_t hashpp::SHA::SHA2_384::G(const uint64_t A, const uint64_t B, const uint64_t C) { return ((A & B) ^ (A & C) ^ (B & C)); }
 		constexpr uint64_t hashpp::SHA::SHA2_384::SIGMA0(const uint64_t A) { return this->rr64(A, 28) ^ this->rr64(A, 34) ^ this->rr64(A, 39); }
@@ -1679,6 +2421,60 @@ namespace hashpp {
 			PU64B(this->context.state[6], this->context.digest, 48);
 			PU64B(this->context.state[7], this->context.digest, 56);
 		}
+		inline std::string SHA2_512::_H(const std::string& a, const std::string& b) {
+			return this->getHash(a + b);
+		}
+		inline std::string SHA2_512::HMAC(const std::string& key, const std::string& data) {
+			std::array<uint8_t, 128> k = { 0 }; std::fill(k.begin(), k.end(), 0x00);
+
+			// (1) append zeros to the end of K to create a B byte string
+			// (e.g., if K is of length 20 bytes and B = 64, then K will be
+			//	appended with 44 zero bytes 0x00) where B is the block size
+			if (key.length() > this->BLOCK_SIZE) {
+				// if K is longer than B bytes, reset K to K=H(K)
+				// where K can either be composed of entirely bytes of H(K)
+				// (if H(K) == L [where L => digest]) or the first L bytes of
+				// H(K) (if H(K) != L) followed by the remaining zeros (if H(K) < L)
+				std::vector<uint8_t> k_ = this->fromHex(this->getHash(key));
+				for (uint32_t i = 0; i < this->DIGEST_SIZE; ++i) {
+					k[i] = k_[i];
+				}
+			}
+			else {
+				// if K is shorter than B bytes, append zeros to the end of K
+				// until K is B bytes long
+				for (uint32_t i = 0; i < key.length(); ++i) {
+					k[i] = key[i];
+				}
+			}
+
+			// (2) XOR (bitwise exclusive-OR) the B byte string computed in step (1) with ipad
+			for (uint32_t i = 0; i < this->BLOCK_SIZE; ++i) {
+				this->ipad[i] ^= k[i];
+			}
+
+			// (3) append the stream of data 'data' to the B byte string resulting from step (2)
+			for (uint32_t i = 0; i < data.length(); ++i) {
+				this->ipad.push_back(data[i]);
+			}
+
+			// (4) apply H to the stream generated in step (3)
+			// see step (6)
+
+			// (5) XOR (bitwise exclusive-OR) the B byte string computed in step (1) with opad
+			for (uint32_t i = 0; i < this->BLOCK_SIZE; ++i) {
+				this->opad[i] ^= k[i];
+			}
+
+			// (6) append the H result from step (4) to the B byte string resulting from step (5)
+			std::vector<uint8_t> h_ = this->fromHex(this->getHash(std::string(this->ipad.begin(), this->ipad.end())));
+			for (uint32_t i = 0; i < this->DIGEST_SIZE; ++i) {
+				this->opad.push_back(h_[i]);
+			}
+
+			// (7) apply H to the stream generated in step (6) and output the result
+			return this->getHash(std::string(this->opad.begin(), this->opad.end()));
+		}
 		constexpr uint64_t hashpp::SHA::SHA2_512::F(const uint64_t A, const uint64_t B, const uint64_t C) { return ((A & B) ^ (~A & C)); }
 		constexpr uint64_t hashpp::SHA::SHA2_512::G(const uint64_t A, const uint64_t B, const uint64_t C) { return ((A & B) ^ (A & C) ^ (B & C)); }
 		constexpr uint64_t hashpp::SHA::SHA2_512::SIGMA0(const uint64_t A) { return this->rr64(A, 28) ^ this->rr64(A, 34) ^ this->rr64(A, 39); }
@@ -1806,6 +2602,60 @@ namespace hashpp {
 			PU64B(this->context.state[2], this->context.digest, 16);
 			PU64B(this->context.state[3], this->context.digest, 24);
 		}
+		inline std::string SHA2_512_224::_H(const std::string& a, const std::string& b) {
+			return this->getHash(a + b);
+		}
+		inline std::string SHA2_512_224::HMAC(const std::string& key, const std::string& data) {
+			std::array<uint8_t, 128> k = { 0 }; std::fill(k.begin(), k.end(), 0x00);
+
+			// (1) append zeros to the end of K to create a B byte string
+			// (e.g., if K is of length 20 bytes and B = 64, then K will be
+			//	appended with 44 zero bytes 0x00) where B is the block size
+			if (key.length() > this->BLOCK_SIZE) {
+				// if K is longer than B bytes, reset K to K=H(K)
+				// where K can either be composed of entirely bytes of H(K)
+				// (if H(K) == L [where L => digest]) or the first L bytes of
+				// H(K) (if H(K) != L) followed by the remaining zeros (if H(K) < L)
+				std::vector<uint8_t> k_ = this->fromHex(this->getHash(key));
+				for (uint32_t i = 0; i < this->DIGEST_SIZE; ++i) {
+					k[i] = k_[i];
+				}
+			}
+			else {
+				// if K is shorter than B bytes, append zeros to the end of K
+				// until K is B bytes long
+				for (uint32_t i = 0; i < key.length(); ++i) {
+					k[i] = key[i];
+				}
+			}
+
+			// (2) XOR (bitwise exclusive-OR) the B byte string computed in step (1) with ipad
+			for (uint32_t i = 0; i < this->BLOCK_SIZE; ++i) {
+				this->ipad[i] ^= k[i];
+			}
+
+			// (3) append the stream of data 'data' to the B byte string resulting from step (2)
+			for (uint32_t i = 0; i < data.length(); ++i) {
+				this->ipad.push_back(data[i]);
+			}
+
+			// (4) apply H to the stream generated in step (3)
+			// see step (6)
+
+			// (5) XOR (bitwise exclusive-OR) the B byte string computed in step (1) with opad
+			for (uint32_t i = 0; i < this->BLOCK_SIZE; ++i) {
+				this->opad[i] ^= k[i];
+			}
+
+			// (6) append the H result from step (4) to the B byte string resulting from step (5)
+			std::vector<uint8_t> h_ = this->fromHex(this->getHash(std::string(this->ipad.begin(), this->ipad.end())));
+			for (uint32_t i = 0; i < this->DIGEST_SIZE; ++i) {
+				this->opad.push_back(h_[i]);
+			}
+
+			// (7) apply H to the stream generated in step (6) and output the result
+			return this->getHash(std::string(this->opad.begin(), this->opad.end()));
+		}
 		constexpr uint64_t hashpp::SHA::SHA2_512_224::F(const uint64_t A, const uint64_t B, const uint64_t C) { return ((A & B) ^ (~A & C)); }
 		constexpr uint64_t hashpp::SHA::SHA2_512_224::G(const uint64_t A, const uint64_t B, const uint64_t C) { return ((A & B) ^ (A & C) ^ (B & C)); }
 		constexpr uint64_t hashpp::SHA::SHA2_512_224::SIGMA0(const uint64_t A) { return this->rr64(A, 28) ^ this->rr64(A, 34) ^ this->rr64(A, 39); }
@@ -1932,6 +2782,60 @@ namespace hashpp {
 			PU64B(this->context.state[2], this->context.digest, 16);
 			PU64B(this->context.state[3], this->context.digest, 24);
 		}
+		inline std::string SHA2_512_256::_H(const std::string& a, const std::string& b) {
+			return this->getHash(a + b);
+		}
+		inline std::string SHA2_512_256::HMAC(const std::string& key, const std::string& data) {
+			std::array<uint8_t, 128> k = { 0 }; std::fill(k.begin(), k.end(), 0x00);
+
+			// (1) append zeros to the end of K to create a B byte string
+			// (e.g., if K is of length 20 bytes and B = 64, then K will be
+			//	appended with 44 zero bytes 0x00) where B is the block size
+			if (key.length() > this->BLOCK_SIZE) {
+				// if K is longer than B bytes, reset K to K=H(K)
+				// where K can either be composed of entirely bytes of H(K)
+				// (if H(K) == L [where L => digest]) or the first L bytes of
+				// H(K) (if H(K) != L) followed by the remaining zeros (if H(K) < L)
+				std::vector<uint8_t> k_ = this->fromHex(this->getHash(key));
+				for (uint32_t i = 0; i < this->DIGEST_SIZE; ++i) {
+					k[i] = k_[i];
+				}
+			}
+			else {
+				// if K is shorter than B bytes, append zeros to the end of K
+				// until K is B bytes long
+				for (uint32_t i = 0; i < key.length(); ++i) {
+					k[i] = key[i];
+				}
+			}
+
+			// (2) XOR (bitwise exclusive-OR) the B byte string computed in step (1) with ipad
+			for (uint32_t i = 0; i < this->BLOCK_SIZE; ++i) {
+				this->ipad[i] ^= k[i];
+			}
+
+			// (3) append the stream of data 'data' to the B byte string resulting from step (2)
+			for (uint32_t i = 0; i < data.length(); ++i) {
+				this->ipad.push_back(data[i]);
+			}
+
+			// (4) apply H to the stream generated in step (3)
+			// see step (6)
+
+			// (5) XOR (bitwise exclusive-OR) the B byte string computed in step (1) with opad
+			for (uint32_t i = 0; i < this->BLOCK_SIZE; ++i) {
+				this->opad[i] ^= k[i];
+			}
+
+			// (6) append the H result from step (4) to the B byte string resulting from step (5)
+			std::vector<uint8_t> h_ = this->fromHex(this->getHash(std::string(this->ipad.begin(), this->ipad.end())));
+			for (uint32_t i = 0; i < this->DIGEST_SIZE; ++i) {
+				this->opad.push_back(h_[i]);
+			}
+
+			// (7) apply H to the stream generated in step (6) and output the result
+			return this->getHash(std::string(this->opad.begin(), this->opad.end()));
+		}
 		constexpr uint64_t hashpp::SHA::SHA2_512_256::F(const uint64_t A, const uint64_t B, const uint64_t C) { return ((A & B) ^ (~A & C)); }
 		constexpr uint64_t hashpp::SHA::SHA2_512_256::G(const uint64_t A, const uint64_t B, const uint64_t C) { return ((A & B) ^ (A & C) ^ (B & C)); }
 		constexpr uint64_t hashpp::SHA::SHA2_512_256::SIGMA0(const uint64_t A) { return this->rr64(A, 28) ^ this->rr64(A, 34) ^ this->rr64(A, 39); }
@@ -1953,31 +2857,35 @@ namespace hashpp {
 			hash(std::string&& hex) noexcept : hashStr(std::move(hex)) {}
 
 			bool valid() const noexcept { return !this->hashStr.empty(); }
-			std::string getString() const noexcept { return this->hashStr; };
+			constexpr const std::string& getString() const noexcept { return this->hashStr; };
 
 			operator std::string() const noexcept { return this->hashStr; }
 			friend std::ostream& operator<<(std::ostream& _Ostr, const hashpp::hash& object) {
-				_Ostr << object.hashStr;
+				_Ostr << object.getString();
 				return _Ostr;
 			}
 
 			hash& operator=(const hashpp::hash& _rhs) noexcept {
-				this->hashStr = _rhs.hashStr;
+				if (this != &_rhs) {
+					this->hashStr = _rhs.getString();
+				}
 				return *this;
 			}
 
 			hash& operator=(hashpp::hash&& _rhs) noexcept {
-				this->hashStr = std::move(_rhs.hashStr);
+				if (this != &_rhs) {
+					this->hashStr = std::move(_rhs.hashStr);
+				}
 				return *this;
 			}
 
-			bool operator==(const hashpp::hash& _rhs) noexcept {
-				return _rhs.hashStr == this->hashStr;
+			bool operator==(const hashpp::hash& _rhs) const noexcept {
+				return _rhs.getString() == this->getString();
 			}
 
 			template <class _Ty, std::enable_if_t<std::is_constructible_v<std::string, _Ty>, int> = 0>
-			bool operator==(const _Ty& _rhs) noexcept {
-				return _rhs == this->hashStr;
+			bool operator==(const _Ty& _rhs) const noexcept {
+				return _rhs == this->getString();
 			}
 
 		private:
@@ -1991,16 +2899,12 @@ namespace hashpp {
 	//
 	// for instance, we can get several hashes of several algorithms and print only 
 	// selected algorithms like so:
-	//   auto allHashes = hashpp::get::getHashes({ {hashpp::ALGORITHMS::MD4, {"data1", "data2"}},
-	//                                             {hashpp::ALGORITHMS::MD5, {"data1", "data2"}} });
+	//   auto allHashes = hashpp::get::getHashes(ALGORITHMS::MD5, "data1", "data2", "data3", ...);
 	//   for (auto hash : allHashes["MD5"]) {
 	//       std::cout << hash << std::endl;
 	//   }
-	//   for (auto hash : allHashes["MD4"]) {
-	//       std::cout << hash << std::endl;
-	//   }
 	//
-	//   ... et cetera, et cetera ...
+	//   ... et cetera ...
 
 	class hashCollection {
 		public:
@@ -2045,25 +2949,129 @@ namespace hashpp {
 			}
 	};
 
+	// Ambiguous base container class to simplify original function signatures of getHash(...)-related functions
+	class Container {		
+		public: // constructors
+			Container() noexcept = default;
+			Container(const Container& container) noexcept
+				: algorithm(container.algorithm), key(container.key), data(container.data) {}
+			Container(Container&& container) noexcept
+				: algorithm(container.algorithm), key(std::move(container.key)), data(std::move(container.data)) {}
+			Container(
+				ALGORITHMS algorithm, 
+				const std::vector<std::string>& data
+			) noexcept : algorithm(algorithm), data(data) {}
+			Container(
+				ALGORITHMS algorithm, 
+				std::vector<std::string>&& data
+			) noexcept : algorithm(algorithm), data(std::move(data)) {}
+			Container(
+				ALGORITHMS algorithm,
+				const std::vector<std::string>& data,
+				const std::string& key
+			) noexcept : algorithm(algorithm), data(data), key(key) {}
+			Container(
+				ALGORITHMS algorithm,
+				std::vector<std::string>&& data,
+				const std::string& key
+			) noexcept : algorithm(algorithm), data(std::move(data)), key(key) {}
+			Container(
+				ALGORITHMS algorithm,
+				const std::vector<std::string>& data,
+				std::string&& key
+			) noexcept : algorithm(algorithm), data(data), key(std::move(key)) {}
+			Container(
+				ALGORITHMS algorithm,
+				std::vector<std::string>&& data,
+				std::string&& key
+			) noexcept : algorithm(algorithm), data(std::move(data)), key(std::move(key)) {}
+			
+			template <class... _Ts,
+				std::enable_if_t<std::conjunction_v<std::is_constructible<std::string, _Ts>...>, int> = 0>
+			Container(
+				ALGORITHMS algorithm,
+				const _Ts&... data
+			) noexcept : algorithm(algorithm), data({ data... }) {}
 
-	//  interface class to allow use of static methods to access
-	//  all algorithm classes and use their functions without
-	//  the need of several instantiations of each class in 
-	//  the main source code of the user
+			template <class... _Ts,
+				std::enable_if_t<std::conjunction_v<std::is_constructible<std::string, _Ts>..., std::negation<std::is_lvalue_reference<_Ts>>...>, int> = 0>
+			Container(
+				ALGORITHMS algorithm,
+				_Ts&&... data
+			) noexcept : algorithm(algorithm), data({ std::forward<_Ts>(data)... }) {}
+			
+		public: // member functions
+			constexpr const ALGORITHMS& getAlgorithm() const noexcept { return this->algorithm; }
+			constexpr const std::string& getKey() const noexcept { return this->key; }
+			constexpr const std::vector<std::string>& getData() const noexcept { return this->data; }
+			void setAlgorithm(ALGORITHMS algorithm) noexcept { this->algorithm = algorithm; }
+			void setKey(const std::string& key) noexcept { this->key = key; }
+		
+			void setData(const std::vector<std::string>& data) noexcept { this->data = data; }
+			void setData(std::vector<std::string>&& data) noexcept { this->data = std::move(data); }
+			template <class... _Ts> void setData(const _Ts&... data) noexcept { this->data = { data... }; }	
+			template <class... _Ts,
+				std::enable_if_t<std::conjunction_v<std::negation<std::is_lvalue_reference<_Ts>>...>, int> = 0>
+			void setData(_Ts&&... data) noexcept { this->data = { std::forward<_Ts>(data)... }; }
+			
+			void appendData(const std::vector<std::string>& data) noexcept { this->data.insert(this->data.end(), data.begin(), data.end()); }
+			void appendData(std::vector<std::string>&& data) noexcept { this->data.insert(this->data.end(), std::make_move_iterator(data.begin()), std::make_move_iterator(data.end())); }
+			template <class... _Ts> void appendData(const _Ts&... data) noexcept { (this->data.push_back(data), ...); }
+			template <class... _Ts,
+				std::enable_if_t<std::conjunction_v<std::negation<std::is_lvalue_reference<_Ts>>...>, int> = 0>
+			void appendData(_Ts&&... data) noexcept { (this->data.push_back(std::forward<_Ts>(data)), ...); }
+			
+			Container& operator=(const Container& _rhs) noexcept {
+				if (this != &_rhs) {
+					this->algorithm = _rhs.getAlgorithm();
+					this->key = _rhs.getKey();
+					this->data = _rhs.getData();
+				}
+				return *this;
+			}
+
+			Container& operator=(Container&& _rhs) noexcept {
+				if (this != &_rhs) {
+					this->algorithm = _rhs.algorithm;
+					this->key = std::move(_rhs.key);
+					this->data = std::move(_rhs.data);
+				}
+				return *this;
+			}
+
+		private: // member variables
+			ALGORITHMS algorithm;
+			std::string key;
+			
+			// Holds arbitrary data; how this data is defined is determined
+			// by the functions that the container containing said data is passed to.
+			//  (e.g., a call to getFilesHashes with a container will treat all data
+			//  in it as paths to files to be hashed, and a call to getHashes with
+			//  a container will treat all data as generic data to be hashed)
+			std::vector<std::string> data;
+	};
+	using HMAC_DataContainer = Container;
+	using DataContainer      = Container;
+	using FilePathsContainer = Container;
+	
+	// interface class to allow use of static methods to access
+	// all algorithm classes and use their functions without
+	// the need of several instantiations of each class in 
+	// the main source code of the user
 	//
-	//  i.e., if a user wants to pass data to one or several
-	//  algorithms and get the hash(es), they can do so via:
-	//  hashpp::get::getHash or hashpp::get::getHashes
+	// i.e., if a user wants to pass data to one or several
+	// algorithms and get the hash(es), they can do so via:
+	// hashpp::get::getHash or hashpp::get::getHashes
 	//
-	//  the retrieval of file hashes is also possible via
-	//  hashpp::get::getFileHash or collectively via 
-	//  hashpp::get::getFileHashes
+	// the retrieval of file hashes is also possible via
+	// hashpp::get::getFileHash or collectively via 
+	// hashpp::get::getFileHashes
 	//
-	//  all hashpp::get methods return a hashpp::hash or a 
-	//  hashpp::hashCollection object.
+	// all hashpp::get methods return a hashpp::hash or a 
+	// hashpp::hashCollection object.
 	//
-	//  refer to the class definitions of both hashpp::hash and 
-	//  hashpp::hashCollection for info on how to use them
+	// refer to the class definitions of both hashpp::hash and 
+	// hashpp::hashCollection for info on how to use them
 
 	class get {
 		public:
@@ -2106,53 +3114,192 @@ namespace hashpp {
 				}
 			}
 
-			// function to return a collection of resulting hashes from selected ALGORITHMS and passed data
-			static hashpp::hashCollection getHashes(const std::vector<std::pair<hashpp::ALGORITHMS, std::vector<std::string>>>& algorithmDataPairs) {
+			// function to return a resulting HMAC from selected ALGORITHM and passed key-data pair
+			static hashpp::hash getHMAC(hashpp::ALGORITHMS algorithm, const std::string& key, const std::string& data) {
+				switch (algorithm) {
+					case hashpp::ALGORITHMS::MD5: {
+						return { hashpp::MD::MD5().getHMAC(key, data) };
+					}
+					case hashpp::ALGORITHMS::MD4: {
+						return { hashpp::MD::MD4().getHMAC(key, data) };
+					}
+					case hashpp::ALGORITHMS::MD2: {
+						return { hashpp::MD::MD2().getHMAC(key, data) };
+					}
+					case hashpp::ALGORITHMS::SHA1: {
+						return { hashpp::SHA::SHA1().getHMAC(key, data) };
+					}
+					case hashpp::ALGORITHMS::SHA2_224: {
+						return { hashpp::SHA::SHA2_224().getHMAC(key, data) };
+					}
+					case hashpp::ALGORITHMS::SHA2_256: {
+						return { hashpp::SHA::SHA2_256().getHMAC(key, data) };
+					}
+					case hashpp::ALGORITHMS::SHA2_384: {
+						return { hashpp::SHA::SHA2_384().getHMAC(key, data) };
+					}
+					case hashpp::ALGORITHMS::SHA2_512: {
+						return { hashpp::SHA::SHA2_512().getHMAC(key, data) };
+					}
+					case hashpp::ALGORITHMS::SHA2_512_224: {
+						return { hashpp::SHA::SHA2_512_224().getHMAC(key, data) };
+					}
+					case hashpp::ALGORITHMS::SHA2_512_256: {
+						return { hashpp::SHA::SHA2_512_256().getHMAC(key, data) };
+					}
+					default: {
+						return hashpp::hash();
+					}
+				}
+			}
+
+			// function to return a collection of resulting hashes from passed data container(s)
+			static hashpp::hashCollection getHashes(const DataContainer& dataSet) {
 				std::vector<std::string> vMD5, vMD4, vMD2, vSHA1, vSHA2_224, vSHA2_256, vSHA2_384, vSHA2_512, vSHA2_512_224, vSHA2_512_256;
 
-				for (const std::pair<hashpp::ALGORITHMS, std::vector<std::string>>& twin : algorithmDataPairs) {
-					for (const std::string& _data : twin.second) {
-						switch (twin.first) {
-							case hashpp::ALGORITHMS::MD5: {
-								vMD5.push_back(hashpp::MD::MD5().getHash(_data));
-								break;
+				switch (dataSet.getAlgorithm()) {
+					case hashpp::ALGORITHMS::MD5: {
+						for (const std::string& data : dataSet.getData()) {
+							vMD5.push_back(hashpp::MD::MD5().getHash(data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::MD4: {
+						for (const std::string& data : dataSet.getData()) {
+							vMD4.push_back(hashpp::MD::MD4().getHash(data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::MD2: {
+						for (const std::string& data : dataSet.getData()) {
+							vMD2.push_back(hashpp::MD::MD2().getHash(data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA1: {
+						for (const std::string& data : dataSet.getData()) {
+							vSHA1.push_back(hashpp::SHA::SHA1().getHash(data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_224: {
+						for (const std::string& data : dataSet.getData()) {
+							vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_256: {
+						for (const std::string& data : dataSet.getData()) {
+							vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_384: {
+						for (const std::string& data : dataSet.getData()) {
+							vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_512: {
+						for (const std::string& data : dataSet.getData()) {
+							vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_512_224: {
+						for (const std::string& data : dataSet.getData()) {
+							vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_512_256: {
+						for (const std::string& data : dataSet.getData()) {
+							vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(data));
+						}
+						break;
+					}
+				}
+				return hashCollection {
+					{
+						{ "MD5", vMD5 },
+						{ "MD4", vMD4 },
+						{ "MD2", vMD2 },
+						{ "SHA1", vSHA1 },
+						{ "SHA2-224", vSHA2_224 },
+						{ "SHA2-256", vSHA2_256 },
+						{ "SHA2-384", vSHA2_384 },
+						{ "SHA2-512", vSHA2_512 },
+						{ "SHA2-512-224", vSHA2_512_224 },
+						{ "SHA2-512-256", vSHA2_512_256 }
+					}
+				};				
+			}
+
+			// function to return a collection of resulting hashes from passed data container(s)
+			static hashpp::hashCollection getHashes(const std::vector<DataContainer>& dataSets) {
+				std::vector<std::string> vMD5, vMD4, vMD2, vSHA1, vSHA2_224, vSHA2_256, vSHA2_384, vSHA2_512, vSHA2_512_224, vSHA2_512_256;
+
+				for (const DataContainer& dataSet : dataSets) {
+					switch (dataSet.getAlgorithm()) {
+						case hashpp::ALGORITHMS::MD5: {
+							for (const std::string& data : dataSet.getData()) {
+								vMD5.push_back(hashpp::MD::MD5().getHash(data));
 							}
-							case hashpp::ALGORITHMS::MD4: {
-								vMD4.push_back(hashpp::MD::MD4().getHash(_data));
-								break;
+							break;
+						}
+						case hashpp::ALGORITHMS::MD4: {
+							for (const std::string& data : dataSet.getData()) {
+								vMD4.push_back(hashpp::MD::MD4().getHash(data));
 							}
-							case hashpp::ALGORITHMS::MD2: {
-								vMD2.push_back(hashpp::MD::MD2().getHash(_data));
-								break;
+							break;
+						}
+						case hashpp::ALGORITHMS::MD2: {
+							for (const std::string& data : dataSet.getData()) {
+								vMD2.push_back(hashpp::MD::MD2().getHash(data));
 							}
-							case hashpp::ALGORITHMS::SHA1: {
-								vSHA1.push_back(hashpp::SHA::SHA1().getHash(_data));
-								break;
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA1: {
+							for (const std::string& data : dataSet.getData()) {
+								vSHA1.push_back(hashpp::SHA::SHA1().getHash(data));
 							}
-							case hashpp::ALGORITHMS::SHA2_224: {
-								vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(_data));
-								break;
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_224: {
+							for (const std::string& data : dataSet.getData()) {
+								vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(data));
 							}
-							case hashpp::ALGORITHMS::SHA2_256: {
-								vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(_data));
-								break;
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_256: {
+							for (const std::string& data : dataSet.getData()) {
+								vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(data));
 							}
-							case hashpp::ALGORITHMS::SHA2_384: {
-								vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(_data));
-								break;
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_384: {
+							for (const std::string& data : dataSet.getData()) {
+								vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(data));
 							}
-							case hashpp::ALGORITHMS::SHA2_512: {
-								vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(_data));
-								break;
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_512: {
+							for (const std::string& data : dataSet.getData()) {
+								vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(data));
 							}
-							case hashpp::ALGORITHMS::SHA2_512_224: {
-								vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(_data));
-								break;
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_512_224: {
+							for (const std::string& data : dataSet.getData()) {
+								vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(data));
 							}
-							case hashpp::ALGORITHMS::SHA2_512_256: {
-								vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(_data));
-								break;
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_512_256: {
+							for (const std::string& data : dataSet.getData()) {
+								vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(data));
 							}
+							break;
 						}
 					}
 				}
@@ -2172,6 +3319,456 @@ namespace hashpp {
 				};
 			}
 
+			// function to return a collection of resulting hashes from passed data container(s)
+			static hashpp::hashCollection getHashes(const std::initializer_list<DataContainer>& dataSets) {
+				std::vector<std::string> vMD5, vMD4, vMD2, vSHA1, vSHA2_224, vSHA2_256, vSHA2_384, vSHA2_512, vSHA2_512_224, vSHA2_512_256;
+
+				for (const DataContainer& dataSet : dataSets) {
+					switch (dataSet.getAlgorithm()) {
+						case hashpp::ALGORITHMS::MD5: {
+							for (const std::string& data : dataSet.getData()) {
+								vMD5.push_back(hashpp::MD::MD5().getHash(data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::MD4: {
+							for (const std::string& data : dataSet.getData()) {
+								vMD4.push_back(hashpp::MD::MD4().getHash(data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::MD2: {
+							for (const std::string& data : dataSet.getData()) {
+								vMD2.push_back(hashpp::MD::MD2().getHash(data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA1: {
+							for (const std::string& data : dataSet.getData()) {
+								vSHA1.push_back(hashpp::SHA::SHA1().getHash(data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_224: {
+							for (const std::string& data : dataSet.getData()) {
+								vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_256: {
+							for (const std::string& data : dataSet.getData()) {
+								vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_384: {
+							for (const std::string& data : dataSet.getData()) {
+								vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_512: {
+							for (const std::string& data : dataSet.getData()) {
+								vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_512_224: {
+							for (const std::string& data : dataSet.getData()) {
+								vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_512_256: {
+							for (const std::string& data : dataSet.getData()) {
+								vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(data));
+							}
+							break;
+						}
+					}
+				}
+				return hashCollection {
+					{
+						{ "MD5", vMD5 },
+						{ "MD4", vMD4 },
+						{ "MD2", vMD2 },
+						{ "SHA1", vSHA1 },
+						{ "SHA2-224", vSHA2_224 },
+						{ "SHA2-256", vSHA2_256 },
+						{ "SHA2-384", vSHA2_384 },
+						{ "SHA2-512", vSHA2_512 },
+						{ "SHA2-512-224", vSHA2_512_224 },
+						{ "SHA2-512-256", vSHA2_512_256 }
+					}
+				};
+			}			
+
+			// function to return a collection of resulting hashes from selected ALGORITHM and passed data
+			template <class... _Ts,
+				std::enable_if_t<std::conjunction_v<std::is_constructible<std::string, _Ts>...>, int> = 0>
+			static hashpp::hashCollection getHashes(hashpp::ALGORITHMS algorithm, const _Ts&... data) {
+				switch (algorithm) {
+					case hashpp::ALGORITHMS::MD5: {
+						std::vector<std::string> vMD5;
+						(vMD5.push_back(hashpp::MD::MD5().getHash(static_cast<std::string>(data))), ...);
+						return hashCollection {{{ "MD5", vMD5 }}};
+					}
+					case hashpp::ALGORITHMS::MD4: {
+						std::vector<std::string> vMD4;
+						(vMD4.push_back(hashpp::MD::MD4().getHash(static_cast<std::string>(data))), ...);
+						return hashCollection {{{ "MD4", vMD4 }}};
+					}
+					case hashpp::ALGORITHMS::MD2: {
+						std::vector<std::string> vMD2;
+						(vMD2.push_back(hashpp::MD::MD2().getHash(static_cast<std::string>(data))), ...);
+						return hashCollection {{{ "MD2", vMD2 }}};
+					}
+					case hashpp::ALGORITHMS::SHA1: {
+						std::vector<std::string> vSHA1;
+						(vSHA1.push_back(hashpp::SHA::SHA1().getHash(static_cast<std::string>(data))), ...);
+						return hashCollection {{{ "SHA1", vSHA1 }}};
+					}
+					case hashpp::ALGORITHMS::SHA2_224: {
+						std::vector<std::string> vSHA2_224;
+						(vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(static_cast<std::string>(data))), ...);
+						return hashCollection {{{ "SHA2-224", vSHA2_224 }}};
+					}
+					case hashpp::ALGORITHMS::SHA2_256: {
+						std::vector<std::string> vSHA2_256;
+						(vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(static_cast<std::string>(data))), ...);
+						return hashCollection {{{ "SHA2-256", vSHA2_256 }}};
+					}
+					case hashpp::ALGORITHMS::SHA2_384: {
+						std::vector<std::string> vSHA_384;
+						(vSHA_384.push_back(hashpp::SHA::SHA2_384().getHash(static_cast<std::string>(data))), ...);
+						return hashCollection {{{ "SHA2-384", vSHA_384 }}};
+					}
+					case hashpp::ALGORITHMS::SHA2_512: {
+						std::vector<std::string> vSHA2_512;
+						(vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(static_cast<std::string>(data))), ...);
+						return hashCollection {{{ "SHA2-512", vSHA2_512 }}};
+					}
+					case hashpp::ALGORITHMS::SHA2_512_224: {
+						std::vector<std::string> vSHA2_512_224;
+						(vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(static_cast<std::string>(data))), ...);
+						return hashCollection {{{ "SHA2-512-224", vSHA2_512_224 }}};
+					}
+					case hashpp::ALGORITHMS::SHA2_512_256: {
+						std::vector<std::string> vSHA2_512_256;
+						(vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(static_cast<std::string>(data))), ...);
+						return hashCollection {{{ "SHA2-512-256", vSHA2_512_256 }}};
+					}
+				}
+			}
+
+			// function to return a collection of resulting HMACs from selected ALGORITHMS and passed key-data container(s)
+			static hashpp::hashCollection getHMACs(const HMAC_DataContainer& keyDataSet) {
+				std::vector<std::string> vMD5, vMD4, vMD2, vSHA1, vSHA2_224, vSHA2_256, vSHA2_384, vSHA2_512, vSHA2_512_224, vSHA2_512_256;
+
+				switch (keyDataSet.getAlgorithm()) {
+					case hashpp::ALGORITHMS::MD5: {
+						for (const std::string& data : keyDataSet.getData()) {
+							vMD5.push_back(hashpp::MD::MD5().getHMAC(keyDataSet.getKey(), data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::MD4: {
+						for (const std::string& data : keyDataSet.getData()) {
+							vMD4.push_back(hashpp::MD::MD4().getHMAC(keyDataSet.getKey(), data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::MD2: {
+						for (const std::string& data : keyDataSet.getData()) {
+							vMD2.push_back(hashpp::MD::MD2().getHMAC(keyDataSet.getKey(), data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA1: {
+						for (const std::string& data : keyDataSet.getData()) {
+							vSHA1.push_back(hashpp::SHA::SHA1().getHMAC(keyDataSet.getKey(), data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_224: {
+						for (const std::string& data : keyDataSet.getData()) {
+							vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHMAC(keyDataSet.getKey(), data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_256: {
+						for (const std::string& data : keyDataSet.getData()) {
+							vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHMAC(keyDataSet.getKey(), data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_384: {
+						for (const std::string& data : keyDataSet.getData()) {
+							vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHMAC(keyDataSet.getKey(), data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_512: {
+						for (const std::string& data : keyDataSet.getData()) {
+							vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHMAC(keyDataSet.getKey(), data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_512_224: {
+						for (const std::string& data : keyDataSet.getData()) {
+							vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHMAC(keyDataSet.getKey(), data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_512_256: {
+						for (const std::string& data : keyDataSet.getData()) {
+							vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHMAC(keyDataSet.getKey(), data));
+						}
+						break;
+					}
+				}
+				return hashCollection {
+					{
+						{ "MD5", vMD5 },
+						{ "MD4", vMD4 },
+						{ "MD2", vMD2 },
+						{ "SHA1", vSHA1 },
+						{ "SHA2-224", vSHA2_224 },
+						{ "SHA2-256", vSHA2_256 },
+						{ "SHA2-384", vSHA2_384 },
+						{ "SHA2-512", vSHA2_512 },
+						{ "SHA2-512-224", vSHA2_512_224 },
+						{ "SHA2-512-256", vSHA2_512_256 }
+					}
+				};				
+			}
+
+			// function to return a collection of resulting HMACs from selected ALGORITHMS and passed key-data container(s)
+			static hashpp::hashCollection getHMACs(const std::vector<HMAC_DataContainer>& keyDataSets) {
+				std::vector<std::string> vMD5, vMD4, vMD2, vSHA1, vSHA2_224, vSHA2_256, vSHA2_384, vSHA2_512, vSHA2_512_224, vSHA2_512_256;
+
+				for (const DataContainer& keyDataSet : keyDataSets) {
+					switch (keyDataSet.getAlgorithm()) {
+						case hashpp::ALGORITHMS::MD5: {
+							for (const std::string& data : keyDataSet.getData()) {
+								vMD5.push_back(hashpp::MD::MD5().getHMAC(keyDataSet.getKey(), data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::MD4: {
+							for (const std::string& data : keyDataSet.getData()) {
+								vMD4.push_back(hashpp::MD::MD4().getHMAC(keyDataSet.getKey(), data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::MD2: {
+							for (const std::string& data : keyDataSet.getData()) {
+								vMD2.push_back(hashpp::MD::MD2().getHMAC(keyDataSet.getKey(), data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA1: {
+							for (const std::string& data : keyDataSet.getData()) {
+								vSHA1.push_back(hashpp::SHA::SHA1().getHMAC(keyDataSet.getKey(), data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_224: {
+							for (const std::string& data : keyDataSet.getData()) {
+								vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHMAC(keyDataSet.getKey(), data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_256: {
+							for (const std::string& data : keyDataSet.getData()) {
+								vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHMAC(keyDataSet.getKey(), data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_384: {
+							for (const std::string& data : keyDataSet.getData()) {
+								vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHMAC(keyDataSet.getKey(), data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_512: {
+							for (const std::string& data : keyDataSet.getData()) {
+								vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHMAC(keyDataSet.getKey(), data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_512_224: {
+							for (const std::string& data : keyDataSet.getData()) {
+								vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHMAC(keyDataSet.getKey(), data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_512_256: {
+							for (const std::string& data : keyDataSet.getData()) {
+								vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHMAC(keyDataSet.getKey(), data));
+							}
+							break;
+						}
+					}
+				}
+				return hashCollection {
+					{
+						{ "MD5", vMD5 },
+						{ "MD4", vMD4 },
+						{ "MD2", vMD2 },
+						{ "SHA1", vSHA1 },
+						{ "SHA2-224", vSHA2_224 },
+						{ "SHA2-256", vSHA2_256 },
+						{ "SHA2-384", vSHA2_384 },
+						{ "SHA2-512", vSHA2_512 },
+						{ "SHA2-512-224", vSHA2_512_224 },
+						{ "SHA2-512-256", vSHA2_512_256 }
+					}
+				};
+			}
+			
+			// function to return a collection of resulting HMACs from selected ALGORITHMS and passed key-data container(s)
+			static hashpp::hashCollection getHMACs(const std::initializer_list<HMAC_DataContainer>& keyDataSets) {
+				std::vector<std::string> vMD5, vMD4, vMD2, vSHA1, vSHA2_224, vSHA2_256, vSHA2_384, vSHA2_512, vSHA2_512_224, vSHA2_512_256;
+
+				for (const DataContainer& keyDataSet : keyDataSets) {
+					switch (keyDataSet.getAlgorithm()) {
+						case hashpp::ALGORITHMS::MD5: {
+							for (const std::string& data : keyDataSet.getData()) {
+								vMD5.push_back(hashpp::MD::MD5().getHMAC(keyDataSet.getKey(), data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::MD4: {
+							for (const std::string& data : keyDataSet.getData()) {
+								vMD4.push_back(hashpp::MD::MD4().getHMAC(keyDataSet.getKey(), data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::MD2: {
+							for (const std::string& data : keyDataSet.getData()) {
+								vMD2.push_back(hashpp::MD::MD2().getHMAC(keyDataSet.getKey(), data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA1: {
+							for (const std::string& data : keyDataSet.getData()) {
+								vSHA1.push_back(hashpp::SHA::SHA1().getHMAC(keyDataSet.getKey(), data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_224: {
+							for (const std::string& data : keyDataSet.getData()) {
+								vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHMAC(keyDataSet.getKey(), data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_256: {
+							for (const std::string& data : keyDataSet.getData()) {
+								vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHMAC(keyDataSet.getKey(), data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_384: {
+							for (const std::string& data : keyDataSet.getData()) {
+								vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHMAC(keyDataSet.getKey(), data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_512: {
+							for (const std::string& data : keyDataSet.getData()) {
+								vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHMAC(keyDataSet.getKey(), data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_512_224: {
+							for (const std::string& data : keyDataSet.getData()) {
+								vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHMAC(keyDataSet.getKey(), data));
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_512_256: {
+							for (const std::string& data : keyDataSet.getData()) {
+								vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHMAC(keyDataSet.getKey(), data));
+							}
+							break;
+						}
+					}
+				}
+				return hashCollection {
+					{
+						{ "MD5", vMD5 },
+						{ "MD4", vMD4 },
+						{ "MD2", vMD2 },
+						{ "SHA1", vSHA1 },
+						{ "SHA2-224", vSHA2_224 },
+						{ "SHA2-256", vSHA2_256 },
+						{ "SHA2-384", vSHA2_384 },
+						{ "SHA2-512", vSHA2_512 },
+						{ "SHA2-512-224", vSHA2_512_224 },
+						{ "SHA2-512-256", vSHA2_512_256 }
+					}
+				};
+			}			
+
+			// function to return a collection of resulting HMACs from selected ALGORITHM, key, and data
+			template <class... _Ts,
+				std::enable_if_t<std::conjunction_v<std::is_constructible<std::string, _Ts>...>, int> = 0>
+			static hashpp::hashCollection getHMACs(hashpp::ALGORITHMS algorithm, const std::string& key, const _Ts&... data) {
+				switch (algorithm) {
+					case hashpp::ALGORITHMS::MD5: {
+						std::vector<std::string> vMD5;
+						(vMD5.push_back(hashpp::MD::MD5().getHMAC(key, data)), ...);
+						return hashCollection {{{ "MD5", vMD5 }}};
+					}
+					case hashpp::ALGORITHMS::MD4: {
+						std::vector<std::string> vMD4;
+						(vMD4.push_back(hashpp::MD::MD4().getHMAC(key, data)), ...);
+						return hashCollection {{{ "MD4", vMD4 }}};
+					}
+					case hashpp::ALGORITHMS::MD2: {
+						std::vector<std::string> vMD2;
+						(vMD2.push_back(hashpp::MD::MD2().getHMAC(key, data)), ...);
+						return hashCollection {{{ "MD2", vMD2 }}};
+					}
+					case hashpp::ALGORITHMS::SHA1: {
+						std::vector<std::string> vSHA1;
+						(vSHA1.push_back(hashpp::SHA::SHA1().getHMAC(key, data)), ...);
+						return hashCollection {{{ "SHA1", vSHA1 }}};
+					}
+					case hashpp::ALGORITHMS::SHA2_224: {
+						std::vector<std::string> vSHA2_224;
+						(vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHMAC(key, data)), ...);
+						return hashCollection {{{ "SHA2-224", vSHA2_224 }}};
+					}
+					case hashpp::ALGORITHMS::SHA2_256: {
+						std::vector<std::string> vSHA2_256;
+						(vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHMAC(key, data)), ...);
+						return hashCollection {{{ "SHA2-256", vSHA2_256 }}};
+					}
+					case hashpp::ALGORITHMS::SHA2_384: {
+						std::vector<std::string> vSHA_384;
+						(vSHA_384.push_back(hashpp::SHA::SHA2_384().getHMAC(key, data)), ...);
+						return hashCollection {{{ "SHA2-384", vSHA_384 }}};
+					}
+					case hashpp::ALGORITHMS::SHA2_512: {
+						std::vector<std::string> vSHA2_512;
+						(vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHMAC(key, data)), ...);
+						return hashCollection {{{ "SHA2-512", vSHA2_512 }}};
+					}
+					case hashpp::ALGORITHMS::SHA2_512_224: {
+						std::vector<std::string> vSHA2_512_224;
+						(vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHMAC(key, data)), ...);
+						return hashCollection {{{ "SHA2-512-224", vSHA2_512_224 }}};
+					}
+					case hashpp::ALGORITHMS::SHA2_512_256: {
+						std::vector<std::string> vSHA2_512_256;
+						(vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHMAC(key, data)), ...);
+						return hashCollection {{{ "SHA2-512-256", vSHA2_512_256 }}};
+					}
+				}
+			}
+			
 			// function to return a resulting hash from selected ALGORITHM and passed file
 			static hashpp::hash getFileHash(hashpp::ALGORITHMS algorithm, const std::string& path) {
 				if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
@@ -2216,103 +3813,333 @@ namespace hashpp {
 				}
 			}
 
-			// function to return a collection of resulting hashes from selected ALGORITHMS and passed files (with recursive directory support)
-			static hashpp::hashCollection getFilesHashes(const std::vector<std::pair<hashpp::ALGORITHMS, std::vector<std::string>>>& algorithmPathPairs) {
+			// function to return a collection of resulting hashes from selected ALGORITHMS and passed file path container(s) (with recursive directory support)
+			static hashpp::hashCollection getFilesHashes(const FilePathsContainer& filePathSet) {
 				std::vector<std::string> vMD5, vMD4, vMD2, vSHA1, vSHA2_224, vSHA2_256, vSHA2_384, vSHA2_512, vSHA2_512_224, vSHA2_512_256;
 
-				for (const std::pair<hashpp::ALGORITHMS, std::vector<std::string>>& twin : algorithmPathPairs) {
-					for (const std::string& _path : twin.second) {
-						if (std::filesystem::exists(_path) && std::filesystem::is_regular_file(_path)) {
-							switch (twin.first) {
-								case hashpp::ALGORITHMS::MD5: {	
-									vMD5.push_back(hashpp::MD::MD5().getHash(std::filesystem::path(_path)));
-									break;
-								}
-								case hashpp::ALGORITHMS::MD4: {
-									vMD4.push_back(hashpp::MD::MD4().getHash(std::filesystem::path(_path)));
-									break;
-								}
-								case hashpp::ALGORITHMS::MD2: {
-									vMD2.push_back(hashpp::MD::MD2().getHash(std::filesystem::path(_path)));
-									break;
-								}
-								case hashpp::ALGORITHMS::SHA1: {
-									vSHA1.push_back(hashpp::SHA::SHA1().getHash(std::filesystem::path(_path)));
-									break;
-								}
-								case hashpp::ALGORITHMS::SHA2_224: {
-									vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(std::filesystem::path(_path)));
-									break;
-								}
-								case hashpp::ALGORITHMS::SHA2_256: {
-									vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(std::filesystem::path(_path)));
-									break;
-								}
-								case hashpp::ALGORITHMS::SHA2_384: {
-									vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(std::filesystem::path(_path)));
-									break;
-								}
-								case hashpp::ALGORITHMS::SHA2_512: {
-									vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(std::filesystem::path(_path)));
-									break;
-								}
-								case hashpp::ALGORITHMS::SHA2_512_224: {
-									vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(std::filesystem::path(_path)));
-									break;
-								}
-								case hashpp::ALGORITHMS::SHA2_512_256: {
-									vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(std::filesystem::path(_path)));
-									break;
+				switch (filePathSet.getAlgorithm()) {
+					case hashpp::ALGORITHMS::MD5: {	
+						for (const std::string& path : filePathSet.getData()) {
+							if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+								vMD5.push_back(hashpp::MD::MD5().getHash(std::filesystem::path(path)));
+							}
+							else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+								for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+									if (item.is_regular_file()) {
+										vMD5.push_back(hashpp::MD::MD5().getHash(item.path()));
+									}
 								}
 							}
 						}
-						else if (std::filesystem::exists(_path) && std::filesystem::is_directory(_path)) {
-							for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(_path)) {
-								if (item.is_regular_file()) {
-									switch (twin.first) {
-										case hashpp::ALGORITHMS::MD5: {
+						break;
+					}
+					case hashpp::ALGORITHMS::MD4: {
+						for (const std::string& path : filePathSet.getData()) {
+							if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+								vMD4.push_back(hashpp::MD::MD4().getHash(std::filesystem::path(path)));
+							}
+							else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+								for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+									if (item.is_regular_file()) {
+										vMD4.push_back(hashpp::MD::MD4().getHash(item.path()));
+									}
+								}
+							}
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::MD2: {
+						for (const std::string& path : filePathSet.getData()) {
+							if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+								vMD2.push_back(hashpp::MD::MD2().getHash(std::filesystem::path(path)));
+							}
+							else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+								for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+									if (item.is_regular_file()) {
+										vMD2.push_back(hashpp::MD::MD2().getHash(item.path()));
+									}
+								}
+							}
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA1: {
+						for (const std::string& path : filePathSet.getData()) {
+							if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+								vSHA1.push_back(hashpp::SHA::SHA1().getHash(std::filesystem::path(path)));
+							}
+							else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+								for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+									if (item.is_regular_file()) {
+										vSHA1.push_back(hashpp::SHA::SHA1().getHash(item.path()));
+									}
+								}
+							}
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_224: {
+						for (const std::string& path : filePathSet.getData()) {
+							if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+								vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(std::filesystem::path(path)));
+							}
+							else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+								for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+									if (item.is_regular_file()) {
+										vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(item.path()));
+									}
+								}
+							}
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_256: {
+						for (const std::string& path : filePathSet.getData()) {
+							if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+								vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(std::filesystem::path(path)));
+							}
+							else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+								for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+									if (item.is_regular_file()) {
+										vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(item.path()));
+									}
+								}
+							}
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_384: {
+						for (const std::string& path : filePathSet.getData()) {
+							if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+								vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(std::filesystem::path(path)));
+							}
+							else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+								for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+									if (item.is_regular_file()) {
+										vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(item.path()));
+									}
+								}
+							}
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_512: {
+						for (const std::string& path : filePathSet.getData()) {
+							if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+								vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(std::filesystem::path(path)));
+							}
+							else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+								for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+									if (item.is_regular_file()) {
+										vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(item.path()));
+									}
+								}
+							}
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_512_224: {
+						for (const std::string& path : filePathSet.getData()) {
+							if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+								vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(std::filesystem::path(path)));
+							}
+							else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+								for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+									if (item.is_regular_file()) {
+										vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(item.path()));
+									}
+								}
+							}
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_512_256: {
+						for (const std::string& path : filePathSet.getData()) {
+							if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+								vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(std::filesystem::path(path)));
+							}
+							else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+								for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+									if (item.is_regular_file()) {
+										vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(item.path()));
+									}
+								}
+							}
+						}
+						break;
+					}
+				}
+				return hashCollection {
+					{
+						{ "MD5", vMD5 },
+						{ "MD4", vMD4 },
+						{ "MD2", vMD2 },
+						{ "SHA1", vSHA1 },
+						{ "SHA2-224", vSHA2_224 },
+						{ "SHA2-256", vSHA2_256 },
+						{ "SHA2-384", vSHA2_384 },
+						{ "SHA2-512", vSHA2_512 },
+						{ "SHA2-512-224", vSHA2_512_224 },
+						{ "SHA2-512-256", vSHA2_512_256 }
+					}
+				};				
+			}
+
+			// function to return a collection of resulting hashes from selected ALGORITHMS and passed file path container(s) (with recursive directory support)
+			static hashpp::hashCollection getFilesHashes(const std::vector<FilePathsContainer>& filePathSets) {
+				std::vector<std::string> vMD5, vMD4, vMD2, vSHA1, vSHA2_224, vSHA2_256, vSHA2_384, vSHA2_512, vSHA2_512_224, vSHA2_512_256;
+
+				for (const FilePathsContainer& filePathSet : filePathSets) {
+					switch (filePathSet.getAlgorithm()) {
+						case hashpp::ALGORITHMS::MD5: {	
+							for (const std::string& path : filePathSet.getData()) {
+								if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+									vMD5.push_back(hashpp::MD::MD5().getHash(std::filesystem::path(path)));
+								}
+								else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+									for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+										if (item.is_regular_file()) {
 											vMD5.push_back(hashpp::MD::MD5().getHash(item.path()));
-											break;
-										}
-										case hashpp::ALGORITHMS::MD4: {
-											vMD4.push_back(hashpp::MD::MD4().getHash(item.path()));
-											break;
-										}
-										case hashpp::ALGORITHMS::MD2: {
-											vMD2.push_back(hashpp::MD::MD2().getHash(item.path()));
-											break;
-										}
-										case hashpp::ALGORITHMS::SHA1: {
-											vSHA1.push_back(hashpp::SHA::SHA1().getHash(item.path()));
-											break;
-										}
-										case hashpp::ALGORITHMS::SHA2_224: {
-											vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(item.path()));
-											break;
-										}
-										case hashpp::ALGORITHMS::SHA2_256: {
-											vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(item.path()));
-											break;
-										}
-										case hashpp::ALGORITHMS::SHA2_384: {
-											vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(item.path()));
-											break;
-										}
-										case hashpp::ALGORITHMS::SHA2_512: {
-											vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(item.path()));
-											break;
-										}
-										case hashpp::ALGORITHMS::SHA2_512_224: {
-											vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(item.path()));
-											break;
-										}
-										case hashpp::ALGORITHMS::SHA2_512_256: {
-											vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(item.path()));
-											break;
 										}
 									}
 								}
 							}
+							break;
+						}
+						case hashpp::ALGORITHMS::MD4: {
+							for (const std::string& path : filePathSet.getData()) {
+								if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+									vMD4.push_back(hashpp::MD::MD4().getHash(std::filesystem::path(path)));
+								}
+								else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+									for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+										if (item.is_regular_file()) {
+											vMD4.push_back(hashpp::MD::MD4().getHash(item.path()));
+										}
+									}
+								}
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::MD2: {
+							for (const std::string& path : filePathSet.getData()) {
+								if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+									vMD2.push_back(hashpp::MD::MD2().getHash(std::filesystem::path(path)));
+								}
+								else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+									for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+										if (item.is_regular_file()) {
+											vMD2.push_back(hashpp::MD::MD2().getHash(item.path()));
+										}
+									}
+								}
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA1: {
+							for (const std::string& path : filePathSet.getData()) {
+								if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+									vSHA1.push_back(hashpp::SHA::SHA1().getHash(std::filesystem::path(path)));
+								}
+								else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+									for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+										if (item.is_regular_file()) {
+											vSHA1.push_back(hashpp::SHA::SHA1().getHash(item.path()));
+										}
+									}
+								}
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_224: {
+							for (const std::string& path : filePathSet.getData()) {
+								if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+									vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(std::filesystem::path(path)));
+								}
+								else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+									for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+										if (item.is_regular_file()) {
+											vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(item.path()));
+										}
+									}
+								}
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_256: {
+							for (const std::string& path : filePathSet.getData()) {
+								if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+									vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(std::filesystem::path(path)));
+								}
+								else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+									for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+										if (item.is_regular_file()) {
+											vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(item.path()));
+										}
+									}
+								}
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_384: {
+							for (const std::string& path : filePathSet.getData()) {
+								if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+									vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(std::filesystem::path(path)));
+								}
+								else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+									for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+										if (item.is_regular_file()) {
+											vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(item.path()));
+										}
+									}
+								}
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_512: {
+							for (const std::string& path : filePathSet.getData()) {
+								if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+									vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(std::filesystem::path(path)));
+								}
+								else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+									for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+										if (item.is_regular_file()) {
+											vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(item.path()));
+										}
+									}
+								}
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_512_224: {
+							for (const std::string& path : filePathSet.getData()) {
+								if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+									vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(std::filesystem::path(path)));
+								}
+								else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+									for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+										if (item.is_regular_file()) {
+											vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(item.path()));
+										}
+									}
+								}
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_512_256: {
+							for (const std::string& path : filePathSet.getData()) {
+								if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+									vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(std::filesystem::path(path)));
+								}
+								else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+									for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+										if (item.is_regular_file()) {
+											vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(item.path()));
+										}
+									}
+								}
+							}
+							break;
 						}
 					}
 				}
@@ -2330,7 +4157,181 @@ namespace hashpp {
 						{ "SHA2-512-256", vSHA2_512_256 }
 					}
 				};
-		}
+			}
+
+			// function to return a collection of resulting hashes from selected ALGORITHMS and passed file path container(s) (with recursive directory support)
+			static hashpp::hashCollection getFilesHashes(const std::initializer_list<FilePathsContainer>& filePathSets) {
+				std::vector<std::string> vMD5, vMD4, vMD2, vSHA1, vSHA2_224, vSHA2_256, vSHA2_384, vSHA2_512, vSHA2_512_224, vSHA2_512_256;
+
+				for (const FilePathsContainer& filePathSet : filePathSets) {
+					switch (filePathSet.getAlgorithm()) {
+						case hashpp::ALGORITHMS::MD5: {	
+							for (const std::string& path : filePathSet.getData()) {
+								if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+									vMD5.push_back(hashpp::MD::MD5().getHash(std::filesystem::path(path)));
+								}
+								else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+									for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+										if (item.is_regular_file()) {
+											vMD5.push_back(hashpp::MD::MD5().getHash(item.path()));
+										}
+									}
+								}
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::MD4: {
+							for (const std::string& path : filePathSet.getData()) {
+								if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+									vMD4.push_back(hashpp::MD::MD4().getHash(std::filesystem::path(path)));
+								}
+								else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+									for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+										if (item.is_regular_file()) {
+											vMD4.push_back(hashpp::MD::MD4().getHash(item.path()));
+										}
+									}
+								}
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::MD2: {
+							for (const std::string& path : filePathSet.getData()) {
+								if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+									vMD2.push_back(hashpp::MD::MD2().getHash(std::filesystem::path(path)));
+								}
+								else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+									for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+										if (item.is_regular_file()) {
+											vMD2.push_back(hashpp::MD::MD2().getHash(item.path()));
+										}
+									}
+								}
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA1: {
+							for (const std::string& path : filePathSet.getData()) {
+								if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+									vSHA1.push_back(hashpp::SHA::SHA1().getHash(std::filesystem::path(path)));
+								}
+								else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+									for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+										if (item.is_regular_file()) {
+											vSHA1.push_back(hashpp::SHA::SHA1().getHash(item.path()));
+										}
+									}
+								}
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_224: {
+							for (const std::string& path : filePathSet.getData()) {
+								if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+									vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(std::filesystem::path(path)));
+								}
+								else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+									for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+										if (item.is_regular_file()) {
+											vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(item.path()));
+										}
+									}
+								}
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_256: {
+							for (const std::string& path : filePathSet.getData()) {
+								if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+									vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(std::filesystem::path(path)));
+								}
+								else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+									for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+										if (item.is_regular_file()) {
+											vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(item.path()));
+										}
+									}
+								}
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_384: {
+							for (const std::string& path : filePathSet.getData()) {
+								if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+									vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(std::filesystem::path(path)));
+								}
+								else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+									for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+										if (item.is_regular_file()) {
+											vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(item.path()));
+										}
+									}
+								}
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_512: {
+							for (const std::string& path : filePathSet.getData()) {
+								if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+									vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(std::filesystem::path(path)));
+								}
+								else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+									for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+										if (item.is_regular_file()) {
+											vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(item.path()));
+										}
+									}
+								}
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_512_224: {
+							for (const std::string& path : filePathSet.getData()) {
+								if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+									vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(std::filesystem::path(path)));
+								}
+								else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+									for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+										if (item.is_regular_file()) {
+											vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(item.path()));
+										}
+									}
+								}
+							}
+							break;
+						}
+						case hashpp::ALGORITHMS::SHA2_512_256: {
+							for (const std::string& path : filePathSet.getData()) {
+								if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+									vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(std::filesystem::path(path)));
+								}
+								else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+									for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+										if (item.is_regular_file()) {
+											vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(item.path()));
+										}
+									}
+								}
+							}
+							break;
+						}
+					}
+				}
+				return hashCollection {
+					{
+						{ "MD5", vMD5 },
+						{ "MD4", vMD4 },
+						{ "MD2", vMD2 },
+						{ "SHA1", vSHA1 },
+						{ "SHA2-224", vSHA2_224 },
+						{ "SHA2-256", vSHA2_256 },
+						{ "SHA2-384", vSHA2_384 },
+						{ "SHA2-512", vSHA2_512 },
+						{ "SHA2-512-224", vSHA2_512_224 },
+						{ "SHA2-512-256", vSHA2_512_256 }
+					}
+				};
+			}			
 	};
 
 	#if defined(HASHPP_INCLUDE_METRICS)
@@ -2370,6 +4371,18 @@ namespace hashpp {
 				}
 			}
 
+			// Function to check each algorithm for HMAC correctness
+			void checkAlgorithms_HMAC() const {
+				for (const hashpp::ALGORITHMS& algorithm : this->algorithms) {
+					if (hashpp::get::getHMAC(algorithm, "k", "d").getString() == this->hmac_comparisons[static_cast<uint8_t>(algorithm)].first) {
+						std::cout << this->hmac_comparisons[static_cast<uint8_t>(algorithm)].second << " HMAC pass." << std::endl;
+					}
+					else {
+						std::cout << this->hmac_comparisons[static_cast<uint8_t>(algorithm)].second << " HMAC fail." << std::endl;
+					}
+				}
+			}
+
 			// Function to measure performance of all hashing algorithms when hashing 10 million
 			// repetitions of argument 'target.'
 			void benchmarkAlgorithms(const std::string& target) {
@@ -2385,6 +4398,25 @@ namespace hashpp {
 						}
 						this->stopTimer();
 						std::cout << this->comparisons[static_cast<uint8_t>(algorithm)].second << ": " << this->getTime().count() << std::endl;
+					}
+				}
+			}
+
+			// Function to measure performance of all HMAC hashing algorithms when hashing 10 million
+			// repetitions of argument 'target' with key 'key.'
+			void benchmarkAlgorithms_HMAC(const std::string& key, const std::string& target) {
+				std::cout << "Testing 10m HMAC hashing repetitions of '" << target << "' with key '" << key << "'.\n" << std::endl;
+				for (const hashpp::ALGORITHMS& algorithm : this->algorithms) {
+					if (algorithm == hashpp::ALGORITHMS::MD2 && !IncludeMD2) {
+						continue;
+					}
+					else {
+						this->startTimer();
+						for (uint32_t i = 0; i < 10000000; i++) {
+							hashpp::get::getHMAC(algorithm, key, target);
+						}
+						this->stopTimer();
+						std::cout << this->hmac_comparisons[static_cast<uint8_t>(algorithm)].second << ": " << this->getTime().count() << std::endl;
 					}
 				}
 			}
@@ -2431,6 +4463,20 @@ namespace hashpp {
 				{ "48fb10b15f3d44a09dc82d02b06581e0c0c69478c9fd2cf8f9093659019a1687baecdbb38c9e72b12169dc4148690f87467f9154f5931c5df665c6496cbfd5f5", "SHA2-512" },
 				{ "a8c9aa3f45f2ada72e3ae9278407b4ade221490596c69b27af611dae", "SHA2-512/224" },
 				{ "9a895196448c0a9daa9769b48f29db5b41cfe2f6f65943a8ef2b8f446e388f7e", "SHA2-512/256" }
+			};
+
+			// All correct hashes of data 'd' with key 'k' for HMAC comparison
+			const std::vector<std::pair<std::string, std::string>> hmac_comparisons = {
+				{ "7f330edb3a84f317f7ca433d6038ff9a", "MD5" },
+				{ "de693e9b565099e8fe8129b3833a702d", "MD4" },
+				{ "a10a9e7a2bcfa4cd38d0a1cab3f25816", "MD2" },
+				{ "2b90e41e7c0cc8e2f75c02910c3899cc468ba316", "SHA1" },
+				{ "c9b7d3a28728c8a0b10dd425247af65e00725f6e5d32131b0c9a4ac1", "SHA2-224" },
+				{ "e7ea21c3bcb63a4da3ad78503168d36bdca0be622382ea60a108fad4e4966679", "SHA2-256" },
+				{ "48da203588bac88ca21d843f0dd201e15e33fe08a4db11ff4f07d2b62e2e10dee4e55d49612a658a9e5ac2c0a6b8e945", "SHA2-384" },
+				{ "75e6621bf12000a13d8dae79fed84aadffbbceaefd36ae061493b34aef6a2988f0fb91b8ba4fef293ed0bd09e6bb7578858b8f2f7f70fe3ca7490d37f655fd38", "SHA2-512" },
+				{ "7882112b43ad00ad1a01bc1a8df3745aad04e27a999ceb60da32bb18", "SHA2-512/224" },
+				{ "df48fa6a1e87fc2ccdce7a79028b4cd891ce905ebf411898c9aba975f3a2f8ad", "SHA2-512/256" }
 			};
 	};
 	#endif

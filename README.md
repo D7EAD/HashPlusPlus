@@ -6,18 +6,19 @@
 Hash++ is a C++17 header-only library that allows a user to retrieve multiple types of hashes from data, files, and files in nested directories. The original purpose behind this library was to create a header-file only implementation of multiple different hash algorithms. You can find a list of the <i>currently</i> supported hash algorithms below.
 <br>
 <h1><i>Supported Algorithms</i></h1>
-<ul>
-  <li>MD5</li>
-  <li>MD4</li>
-  <li>MD2</li>
-  <li>SHA-1</li>
-  <li>SHA2-224</li>
-  <li>SHA2-256</li>
-  <li>SHA2-384</li>
-  <li>SHA2-512</li>
-  <li>SHA2-512/224</li>
-  <li>SHA2-512/256</li>
-</ul>
+
+|    Algorithm    |    HMAC Support?    |
+| :-------------: | :-----------------: |
+| MD5             | :heavy_check_mark:  |
+| MD4             | :heavy_check_mark:  |
+| MD2             | :heavy_check_mark:  |
+| SHA1            | :heavy_check_mark:  |
+| SHA2-224        | :heavy_check_mark:  |
+| SHA2-256        | :heavy_check_mark:  |
+| SHA2-384        | :heavy_check_mark:  |
+| SHA2-512        | :heavy_check_mark:  |
+| SHA2-512/224    | :heavy_check_mark:  |
+| SHA2-512/256    | :heavy_check_mark:  |
 
 Hash++ also aims to be a suitable alternative to heavier, statically and dynamically-linked libraries such as OpenSSL and Crypto++. I created it keeping in mind the mindset of a programmer who simply wants a header-only file that lets them easily and comfortably <i>"just hash sh*t."</i> Does it really have to be that difficult?
 
@@ -93,40 +94,4 @@ No, it doesn't.
 ```
 
 <h1><i>Using Hash++</i></h1>
-My original design idea behind Hash++ was for it to be <b>simple</b>. This has remained unchanged.
-<br><br>
-Below you can find the signatures of the <i>only</i> functions necessary to accomplish retrieving hashes from both single or multiple sets of data, files, and files in nested directories. All functions are located in the <code>hashpp</code> namespace under class <code>get</code> (<code>hashpp::get</code>).
-<br><br>
-You can find examples of Hash++ in use in the <a href="/examples">/examples</a> and <a href="/tests">/tests</a> directories.
-<br>
-<h3><code>getHash</code></h3>
-Retrieve a single hash from a single piece of data.
-
-```cpp
-// function to return a resulting hash from selected ALGORITHM and passed data
-static hashpp::hash getHash(hashpp::ALGORITHMS algorithm, const std::string& data)
-```
-
-<h3><code>getHashes</code></h3>
-Retrieve a collection of hashes from multiple pieces of data.
-
-```cpp
-// function to return a collection of resulting hashes from selected ALGORITHMS and passed data
-static hashpp::hashCollection getHashes(const std::vector<std::pair<hashpp::ALGORITHMS, std::vector<std::string>>>& algorithmDataPairs)
-```
-
-<h3><code>getFileHash</code></h3>
-Retrieve a single hash from a single file.
-
-```cpp
-// function to return a resulting hash from selected ALGORITHM and passed file
-static hashpp::hash getFileHash(hashpp::ALGORITHMS algorithm, const std::string& path)
-```
-
-<h3><code>getFilesHashes</code></h3>
-Retrieve a collection of hashes from multiple files or files in nested directories.
-
-```cpp
-// function to return a collection of resulting hashes from selected ALGORITHMS and passed files (with recursive directory support)
-static hashpp::hashCollection getFilesHashes(const std::vector<std::pair<hashpp::ALGORITHMS, std::vector<std::string>>>& algorithmPathPairs)
-```
+You can find detailed documentation in the <a href="/documentation">/documentation</a> directory.
