@@ -1,5 +1,5 @@
 <h1>Using Hash++ to Generate File Hashes</h1>
-Much like how hashes can be generated using generic data, Hash++ provides functions for developers to find hashes for files. The signatures for the methods can be found below.
+Much like how hashes can be generated using generic data, Hash++ provides functions for developers to find hashes for files and files in nested directories. The signatures for the methods can be found below.
 
 ```
 static hashpp::hash getFileHash(hashpp::ALGORITHMS algorithm, const std::string& path);
