@@ -25,6 +25,10 @@ Hash++ also aims to be a suitable alternative to heavier, statically and dynamic
 No, it doesn't. 
 <br>
 
+
+<h1><i>Documentation</i></h1>
+You can find detailed documentation in the <a href="/documentation">/documentation</a> directory.
+
 <h1><i>Algorithm Metrics</i></h1>
 *Below you can find single-threaded speed metrics of each algorithm when generating ten million hashes of 4 repetitions of the upper and lowercase alphabet, plus base 10 digits: 4(a-z+A-Z+0-9)
 
@@ -92,6 +96,3 @@ No, it doesn't.
 *Excluded due to impractically long computational times.
 **Updated as of 11/03/2022; all computed on a stock i9 12900K
 ```
-
-<h1><i>Using Hash++</i></h1>
-You can find detailed documentation in the <a href="/documentation">/documentation</a> directory.
