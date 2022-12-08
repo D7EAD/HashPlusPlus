@@ -36,3 +36,7 @@ https://github.com/D7EAD/HashPlusPlus/blob/8bf4d2971f5fab4ad0df75ea6f71a012841c5
 <br>
 While the class may seem daunting at first, below you can find examples of its use and instantiation, as well as how it can be passed to certain function overloads.
 https://github.com/D7EAD/HashPlusPlus/blob/8bf4d2971f5fab4ad0df75ea6f71a012841c504e/documentation/hashing/container/container_use.cpp#L14-L37
+
+<br>
+As you can see above, when given a properly created <code>Container</code>, the library function <code>getHashes(...)</code> can easily calculate and retrieve the hash digests of the passed data contained in the container(s). The function <code>getHashes(...)</code> itself, though, returns a <code>hashCollection</code> object. This object can be parsed quite easily:
+https://github.com/D7EAD/HashPlusPlus/blob/b7fbc10fc627ab21c39a51698882641e1073c78e/documentation/hashing/getHashes/getHashes_usage.cpp#L10-L29
