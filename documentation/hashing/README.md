@@ -25,6 +25,7 @@ Hash++ offers a simple set of methods to take advantage of the cryptographic-mag
 
 ```
 static hashpp::hash getHash(hashpp::ALGORITHMS algorithm, const std::string& data);
+static hashpp::hashCollection getHashes(const DataContainer& dataSet)
 static hashpp::hashCollection getHashes(const std::vector<DataContainer>& dataSets);
 static hashpp::hashCollection getHashes(const std::initializer_list<DataContainer>& dataSets);
 template <class... _Ts, ...> static hashpp::hashCollection getHashes(hashpp::ALGORITHMS algorithm, const _Ts&... data);
