@@ -12,7 +12,7 @@
 - The input supplied to said function.
 - The key data.
 
-<p>Hash functions provide collision-resistance whereas an HMAC provides both collision-resistance and <i>unforgeability</i>. Due to this provided element of unforgeability, HMACs are used in combination with hash algorithms to prove not only that data is unmodified, but that whoeever calculated the hash for said data did so with the correct key--otherwise the incorrect HMAC would result.</p>
+<p>Hash functions provide collision-resistance whereas an HMAC provides both collision-resistance and <i>unforgeability</i>. Due to this provided element of unforgeability, HMACs are used in combination with hash algorithms to prove not only that data is unmodified, but that whoever calculated the hash for said data did so with the correct key--otherwise the incorrect HMAC would result.</p>
 
 <p>Simply put, a hash allows for <b>verification of the authenticity of data</b> whereas an HMAC allows for <b>verification of both the authenticity of data and the originator of said data</b>.</p>
 
