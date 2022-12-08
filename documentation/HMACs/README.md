@@ -29,3 +29,11 @@ static hashpp::hashCollection getHMACs(const std::vector<HMAC_DataContainer>& ke
 static hashpp::hashCollection getHMACs(const std::initializer_list<HMAC_DataContainer>& keyDataSets);
 template <class... _Ts, ...> static hashpp::hashCollection getHMACs(hashpp::ALGORITHMS algorithm, const std::string& key, const _Ts&... data);
 ```
+
+<br>
+You can easily generate an HMAC for a single piece of data using Hash++. See below for an example.
+https://github.com/D7EAD/HashPlusPlus/blob/0ac434933e4d54b584b810d863a9f1a4a4f5f7b4/documentation/HMACs/getHMAC/getHMAC_usage.cpp#L10-L29
+
+<br>
+In order to generate several HMACs for several pieces of data, we can use a <code>Container</code> alias <code>HMAC_DataContainer</code> (if you have not read about the Container class used by Hash++, please see the documentation for Hashing). See below for an example.
+https://github.com/D7EAD/HashPlusPlus/blob/fc5edb76cd829794a3fb34c416df7431653044e0/documentation/HMACs/getHMACs/getHMACs_usage.cpp#L14-L42
