@@ -16,7 +16,7 @@
 
 <p>Simply put, a hash allows for <b>verification of the authenticity of data</b> whereas an HMAC allows for <b>verification of both the authenticity of data and the originator of said data</b>.</p>
 
-<p><i>*Keep in mind that HMACs do not simply operate as a hash function <code>H</code> applied on the key <code>k</code> appended to data <code>x</code>. How HMACs are calculated is a bit more nuanced. You can read more about the RFC specification <a href="https://www.rfc-editor.org/rfc/rfc2104">here</a>.</i></p>
+<p><i>*Keep in mind that HMACs do not simply operate as a hash function <code>H</code> applied on a key <code>k</code> appended to data <code>x</code>. Hash algorithms are not HMACs and vice-versa--the HMAC mechanism works atop existing hash algorithms. How HMACs are calculated is a bit more nuanced. You can read more about the RFC specification <a href="https://www.rfc-editor.org/rfc/rfc2104">here</a>.</i></p>
 
 <br>
 <h1>Using Hash++</h1>
