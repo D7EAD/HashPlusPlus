@@ -3153,7 +3153,88 @@ namespace hashpp {
 				}
 			}
 
-			// function to return a collection of resulting hashes from passed data containers
+			// function to return a collection of resulting hashes from passed data container(s)
+			static hashpp::hashCollection getHashes(const DataContainer& dataSet) {
+				std::vector<std::string> vMD5, vMD4, vMD2, vSHA1, vSHA2_224, vSHA2_256, vSHA2_384, vSHA2_512, vSHA2_512_224, vSHA2_512_256;
+
+				switch (dataSet.getAlgorithm()) {
+					case hashpp::ALGORITHMS::MD5: {
+						for (const std::string& data : dataSet.getData()) {
+							vMD5.push_back(hashpp::MD::MD5().getHash(data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::MD4: {
+						for (const std::string& data : dataSet.getData()) {
+							vMD4.push_back(hashpp::MD::MD4().getHash(data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::MD2: {
+						for (const std::string& data : dataSet.getData()) {
+							vMD2.push_back(hashpp::MD::MD2().getHash(data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA1: {
+						for (const std::string& data : dataSet.getData()) {
+							vSHA1.push_back(hashpp::SHA::SHA1().getHash(data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_224: {
+						for (const std::string& data : dataSet.getData()) {
+							vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_256: {
+						for (const std::string& data : dataSet.getData()) {
+							vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_384: {
+						for (const std::string& data : dataSet.getData()) {
+							vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_512: {
+						for (const std::string& data : dataSet.getData()) {
+							vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_512_224: {
+						for (const std::string& data : dataSet.getData()) {
+							vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_512_256: {
+						for (const std::string& data : dataSet.getData()) {
+							vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(data));
+						}
+						break;
+					}
+				}
+				return hashCollection {
+					{
+						{ "MD5", vMD5 },
+						{ "MD4", vMD4 },
+						{ "MD2", vMD2 },
+						{ "SHA1", vSHA1 },
+						{ "SHA2-224", vSHA2_224 },
+						{ "SHA2-256", vSHA2_256 },
+						{ "SHA2-384", vSHA2_384 },
+						{ "SHA2-512", vSHA2_512 },
+						{ "SHA2-512-224", vSHA2_512_224 },
+						{ "SHA2-512-256", vSHA2_512_256 }
+					}
+				};				
+			}
+
 			static hashpp::hashCollection getHashes(const std::vector<DataContainer>& dataSets) {
 				std::vector<std::string> vMD5, vMD4, vMD2, vSHA1, vSHA2_224, vSHA2_256, vSHA2_384, vSHA2_512, vSHA2_512_224, vSHA2_512_256;
 
@@ -3378,7 +3459,88 @@ namespace hashpp {
 				}
 			}
 
-			// function to return a collection of resulting HMACs from selected ALGORITHMS and passed key-data containers
+			// function to return a collection of resulting HMACs from selected ALGORITHMS and passed key-data container(s)
+			static hashpp::hashCollection getHMACs(const HMAC_DataContainer& keyDataSet) {
+				std::vector<std::string> vMD5, vMD4, vMD2, vSHA1, vSHA2_224, vSHA2_256, vSHA2_384, vSHA2_512, vSHA2_512_224, vSHA2_512_256;
+
+				switch (keyDataSet.getAlgorithm()) {
+					case hashpp::ALGORITHMS::MD5: {
+						for (const std::string& data : keyDataSet.getData()) {
+							vMD5.push_back(hashpp::MD::MD5().getHMAC(keyDataSet.getKey(), data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::MD4: {
+						for (const std::string& data : keyDataSet.getData()) {
+							vMD4.push_back(hashpp::MD::MD4().getHMAC(keyDataSet.getKey(), data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::MD2: {
+						for (const std::string& data : keyDataSet.getData()) {
+							vMD2.push_back(hashpp::MD::MD2().getHMAC(keyDataSet.getKey(), data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA1: {
+						for (const std::string& data : keyDataSet.getData()) {
+							vSHA1.push_back(hashpp::SHA::SHA1().getHMAC(keyDataSet.getKey(), data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_224: {
+						for (const std::string& data : keyDataSet.getData()) {
+							vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHMAC(keyDataSet.getKey(), data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_256: {
+						for (const std::string& data : keyDataSet.getData()) {
+							vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHMAC(keyDataSet.getKey(), data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_384: {
+						for (const std::string& data : keyDataSet.getData()) {
+							vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHMAC(keyDataSet.getKey(), data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_512: {
+						for (const std::string& data : keyDataSet.getData()) {
+							vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHMAC(keyDataSet.getKey(), data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_512_224: {
+						for (const std::string& data : keyDataSet.getData()) {
+							vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHMAC(keyDataSet.getKey(), data));
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_512_256: {
+						for (const std::string& data : keyDataSet.getData()) {
+							vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHMAC(keyDataSet.getKey(), data));
+						}
+						break;
+					}
+				}
+				return hashCollection {
+					{
+						{ "MD5", vMD5 },
+						{ "MD4", vMD4 },
+						{ "MD2", vMD2 },
+						{ "SHA1", vSHA1 },
+						{ "SHA2-224", vSHA2_224 },
+						{ "SHA2-256", vSHA2_256 },
+						{ "SHA2-384", vSHA2_384 },
+						{ "SHA2-512", vSHA2_512 },
+						{ "SHA2-512-224", vSHA2_512_224 },
+						{ "SHA2-512-256", vSHA2_512_256 }
+					}
+				};				
+			}
+
 			static hashpp::hashCollection getHMACs(const std::vector<HMAC_DataContainer>& keyDataSets) {
 				std::vector<std::string> vMD5, vMD4, vMD2, vSHA1, vSHA2_224, vSHA2_256, vSHA2_384, vSHA2_512, vSHA2_512_224, vSHA2_512_256;
 
@@ -3647,7 +3809,179 @@ namespace hashpp {
 				}
 			}
 
-			// function to return a collection of resulting hashes from selected ALGORITHMS and passed files (with recursive directory support)
+			// function to return a collection of resulting hashes from selected ALGORITHMS and passed file path container(s) (with recursive directory support)
+			static hashpp::hashCollection getFilesHashes(const FilePathsContainer& filePathSet) {
+				std::vector<std::string> vMD5, vMD4, vMD2, vSHA1, vSHA2_224, vSHA2_256, vSHA2_384, vSHA2_512, vSHA2_512_224, vSHA2_512_256;
+
+				switch (filePathSet.getAlgorithm()) {
+					case hashpp::ALGORITHMS::MD5: {	
+						for (const std::string& path : filePathSet.getData()) {
+							if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+								vMD5.push_back(hashpp::MD::MD5().getHash(std::filesystem::path(path)));
+							}
+							else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+								for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+									if (item.is_regular_file()) {
+										vMD5.push_back(hashpp::MD::MD5().getHash(item.path()));
+									}
+								}
+							}
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::MD4: {
+						for (const std::string& path : filePathSet.getData()) {
+							if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+								vMD4.push_back(hashpp::MD::MD4().getHash(std::filesystem::path(path)));
+							}
+							else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+								for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+									if (item.is_regular_file()) {
+										vMD4.push_back(hashpp::MD::MD4().getHash(item.path()));
+									}
+								}
+							}
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::MD2: {
+						for (const std::string& path : filePathSet.getData()) {
+							if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+								vMD2.push_back(hashpp::MD::MD2().getHash(std::filesystem::path(path)));
+							}
+							else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+								for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+									if (item.is_regular_file()) {
+										vMD2.push_back(hashpp::MD::MD2().getHash(item.path()));
+									}
+								}
+							}
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA1: {
+						for (const std::string& path : filePathSet.getData()) {
+							if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+								vSHA1.push_back(hashpp::SHA::SHA1().getHash(std::filesystem::path(path)));
+							}
+							else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+								for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+									if (item.is_regular_file()) {
+										vSHA1.push_back(hashpp::SHA::SHA1().getHash(item.path()));
+									}
+								}
+							}
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_224: {
+						for (const std::string& path : filePathSet.getData()) {
+							if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+								vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(std::filesystem::path(path)));
+							}
+							else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+								for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+									if (item.is_regular_file()) {
+										vSHA2_224.push_back(hashpp::SHA::SHA2_224().getHash(item.path()));
+									}
+								}
+							}
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_256: {
+						for (const std::string& path : filePathSet.getData()) {
+							if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+								vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(std::filesystem::path(path)));
+							}
+							else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+								for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+									if (item.is_regular_file()) {
+										vSHA2_256.push_back(hashpp::SHA::SHA2_256().getHash(item.path()));
+									}
+								}
+							}
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_384: {
+						for (const std::string& path : filePathSet.getData()) {
+							if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+								vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(std::filesystem::path(path)));
+							}
+							else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+								for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+									if (item.is_regular_file()) {
+										vSHA2_384.push_back(hashpp::SHA::SHA2_384().getHash(item.path()));
+									}
+								}
+							}
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_512: {
+						for (const std::string& path : filePathSet.getData()) {
+							if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+								vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(std::filesystem::path(path)));
+							}
+							else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+								for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+									if (item.is_regular_file()) {
+										vSHA2_512.push_back(hashpp::SHA::SHA2_512().getHash(item.path()));
+									}
+								}
+							}
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_512_224: {
+						for (const std::string& path : filePathSet.getData()) {
+							if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+								vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(std::filesystem::path(path)));
+							}
+							else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+								for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+									if (item.is_regular_file()) {
+										vSHA2_512_224.push_back(hashpp::SHA::SHA2_512_224().getHash(item.path()));
+									}
+								}
+							}
+						}
+						break;
+					}
+					case hashpp::ALGORITHMS::SHA2_512_256: {
+						for (const std::string& path : filePathSet.getData()) {
+							if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+								vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(std::filesystem::path(path)));
+							}
+							else if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+								for (const std::filesystem::directory_entry& item : std::filesystem::recursive_directory_iterator(path)) {
+									if (item.is_regular_file()) {
+										vSHA2_512_256.push_back(hashpp::SHA::SHA2_512_256().getHash(item.path()));
+									}
+								}
+							}
+						}
+						break;
+					}
+				}
+				return hashCollection {
+					{
+						{ "MD5", vMD5 },
+						{ "MD4", vMD4 },
+						{ "MD2", vMD2 },
+						{ "SHA1", vSHA1 },
+						{ "SHA2-224", vSHA2_224 },
+						{ "SHA2-256", vSHA2_256 },
+						{ "SHA2-384", vSHA2_384 },
+						{ "SHA2-512", vSHA2_512 },
+						{ "SHA2-512-224", vSHA2_512_224 },
+						{ "SHA2-512-256", vSHA2_512_256 }
+					}
+				};				
+			}
+
+			// function to return a collection of resulting hashes from selected ALGORITHMS and passed file path container(s) (with recursive directory support)
 			static hashpp::hashCollection getFilesHashes(const std::vector<FilePathsContainer>& filePathSets) {
 				std::vector<std::string> vMD5, vMD4, vMD2, vSHA1, vSHA2_224, vSHA2_256, vSHA2_384, vSHA2_512, vSHA2_512_224, vSHA2_512_256;
 
@@ -3821,6 +4155,7 @@ namespace hashpp {
 				};
 			}
 
+			// function to return a collection of resulting hashes from selected ALGORITHMS and passed file path container(s) (with recursive directory support)
 			static hashpp::hashCollection getFilesHashes(const std::initializer_list<FilePathsContainer>& filePathSets) {
 				std::vector<std::string> vMD5, vMD4, vMD2, vSHA1, vSHA2_224, vSHA2_256, vSHA2_384, vSHA2_512, vSHA2_512_224, vSHA2_512_256;
 
