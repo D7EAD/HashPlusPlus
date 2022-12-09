@@ -22,8 +22,8 @@
 <h1>Using Hash++</h1>
 Hash++ offers a simple set of methods to generate one or multiple HMACs given data and an associated key. You can find the signatures for the functions below.
 
-```
-static hashpp::hash getHMAC(hashpp::ALGORITHMS algorithm, const std::string& key, const std::string& data;
+```cpp
+static hashpp::hash getHMAC(hashpp::ALGORITHMS algorithm, const std::string& key, const std::string& data);
 static hashpp::hashCollection getHMACs(const HMAC_DataContainer& keyDataSet);
 static hashpp::hashCollection getHMACs(const std::vector<HMAC_DataContainer>& keyDataSets);
 static hashpp::hashCollection getHMACs(const std::initializer_list<HMAC_DataContainer>& keyDataSets);
