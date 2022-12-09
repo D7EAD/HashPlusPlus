@@ -32,5 +32,5 @@ You can find detailed documentation in the <a href="/documentation">/documentati
 <h1><i>Algorithm Metrics</i></h1>
 Below you can view benchmarks of Hash++ computing 10 million hashes for each algorithm. Each benchmark is based on the hashing of four concatenations of the lower and uppercase alphabet, plus base ten digits. 
 
-- <a href="/benchmarks/intel/12900K">i9 12900K Benchmark</a>
-- <a href="/benchmarks/amd/5900HX">Ryzen 9 5900HX Benchmark</a>
+- <a href="/benchmarks/intel/12900K/README.md">i9 12900K Benchmark</a>
+- <a href="/benchmarks/amd/5900HX/README.md">Ryzen 9 5900HX Benchmark</a>
