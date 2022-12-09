@@ -1,5 +1,5 @@
 <h1>Benchmark: Intel i9 12900K</h1>
-Below you can find the benchmarks for a stock i9 12900K computing 10 million hashes using Hash++. Each hash is of the result of four concatenations of the lower and uppercase alphabet, plus base ten digits.
+Below you can find the benchmarks for a stock i9 12900K computing 10 million hashes using Hash++. Each hash is the result of four concatenations of the lower and uppercase alphabet plus base ten digits.
 <br><br>
 
 <pre>
