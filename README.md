@@ -25,9 +25,24 @@ Hash++ also aims to be a suitable alternative to heavier, statically and dynamic
 No, it doesn't. 
 <br>
 
+<h1><i>Quick Example</i></h1>
+Below you can find an example of how to calculate the hash of the data <code>Hello, World!</code> using Hash++.
+<br><br>
 
-<h1><i>Documentation</i></h1>
-You can find detailed documentation in the <a href="/documentation">/documentation</a> directory.
+```cpp
+#include "hashpp.h"
+
+using namespace hashpp;
+
+int main() {
+	std::cout << get::getHash(ALGORITHMS::SHA2_256, "Hello World!") << std::endl;
+
+	// output:
+	//   7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069
+}
+```
+
+You can find further detailed documentation in the <a href="/documentation">/documentation</a> directory.
 
 <h1><i>Algorithm Metrics</i></h1>
 Below you can view benchmarks of Hash++ computing 10 million hashes for each algorithm. Each benchmark is based on the hashing of four concatenations of the lower and uppercase alphabet, plus base ten digits. 
