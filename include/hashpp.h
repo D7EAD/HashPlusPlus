@@ -67,8 +67,9 @@
 #include <filesystem>
 #include <array>
 #include <vector>
-#include <optional>
-#include <chrono>
+#if defined(HASHPP_INCLUDE_METRICS)
+	#include <chrono>
+#endif
 
 namespace hashpp {
 	enum class ALGORITHMS : uint8_t {
@@ -3045,7 +3046,7 @@ namespace hashpp {
 			
 			// Holds arbitrary data; how this data is defined is determined
 			// by the functions that the container containing said data is passed to.
-			//  (e.g., a call to getFilesHashes with a container will treat all data
+			//	(e.g., a call to getFilesHashes with a container will treat all data
 			//  in it as paths to files to be hashed, and a call to getHashes with
 			//  a container will treat all data as generic data to be hashed)
 			std::vector<std::string> data;
