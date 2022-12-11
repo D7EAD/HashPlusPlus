@@ -26,7 +26,7 @@ No, it doesn't.
 <br>
 
 <h1><i>Quick Example</i></h1>
-Below you can find a minimal example of how to calculate the SHA2-256 hash of the data <code>Hello, World!</code> using Hash++.
+Below you can find a minimal example of how to calculate the SHA2-256 hash of the data <code>Hello World!</code> using Hash++.
 <br><br>
 
 ```cpp
