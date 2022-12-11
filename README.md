@@ -19,6 +19,7 @@ Hash++ is a C++17 header-only library that allows a user to retrieve multiple ty
 | SHA2-512        | :heavy_check_mark:  |
 | SHA2-512/224    | :heavy_check_mark:  |
 | SHA2-512/256    | :heavy_check_mark:  |
+| SHA-3           | In Progress         |
 
 Hash++ also aims to be a suitable alternative to heavier, statically and dynamically-linked libraries such as OpenSSL and Crypto++. I created it keeping in mind the mindset of a programmer who simply wants a header-only file that lets them easily and comfortably <i>"just hash sh*t."</i> Does it really have to be that difficult?
 
