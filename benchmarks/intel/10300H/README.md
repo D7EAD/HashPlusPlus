@@ -20,7 +20,7 @@ Below you can find the benchmarks for a stock i5 10300H computing 10 million has
 |------------------|-----------|-----------|---------------------|
 | 32-bit test:     |           |           |                     |
 |   [MD5]          | 26660  ms | 26.660  s | 375,094    hashes/s |
-|   [MD4]          | 19281   ms | 19.281   s | 518,645  hashes/s |
+|   [MD4]          | 19281  ms | 19.281  s | 518,645    hashes/s |
 |   [MD2]          | 318013 ms | 318.013 s | 31,445     hashes/s |
 |   [SHA1]         | 21684  ms | 21.684  s | 461,169    hashes/s |
 |   [SHA2-224]     | 31088  ms | 31.088  s | 321,668    hashes/s |
