@@ -62,6 +62,7 @@
 	PU64B(((l) << 3), (y), (z) + 8);           \
 } while(0)					   \
 
+#include <cstring>
 #include <iostream>
 #include <fstream>
 #include <filesystem>
